@@ -6,8 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "./navbar";
 
 const heroes = [
-    { id: 1, name: "HERO JIMMY" },
-    { id: 2, name: "HERO TERRY" },
+    { id: 1, name: "GIRL" },
+    { id: 2, name: "BOY" },
     { id: 3, name: "HERO PANG" },
     { id: 4, name: "HERO UNKNOWN" },
 ];
@@ -17,10 +17,10 @@ const WebGL = () => {
     const [selectedHeroId, setSelectedHeroId] = useState(0);
 
     const { unityProvider, isLoaded, loadingProgression, addEventListener, removeEventListener } = useUnityContext({
-        loaderUrl: "build/v6.loader.js",
-        dataUrl: "build/v6.data.unityweb",
-        frameworkUrl: "build/v6.framework.js.unityweb",
-        codeUrl: "build/v6.wasm.unityweb",
+        loaderUrl: "build/MainMenuScene.loader.js",
+        dataUrl: "build/MainMenuScene.data.unityweb",
+        frameworkUrl: "build/MainMenuScene.framework.js.unityweb",
+        codeUrl: "build/MainMenuScene.wasm.unityweb",
     });
 
     const [isClient, setIsClient] = useState(false);
@@ -68,11 +68,11 @@ const WebGL = () => {
                 <AnimatePresence>
                     {  !isMenuOpen && selectedHeroId > 0 && (
                         <motion.div
-                            className="font-bold text-5xl text-white"
+                            className="absolute font-bold text-5xl text-white"
                             initial={{ y: "100%", rotate: 3 }}
                             animate={{ y: "0%", rotate: 0 }}
-                            //exit={{ opacity: 0, y: "100%" }}
-                            transition={{ duration: 0.5 }}
+                            exit={{ opacity: 0, y: "100%" }}
+                            transition={{ duration: 0.6 }}
                             key={selectedHeroId} // Ensure animation runs for each new ID
                         >
                             {
@@ -82,7 +82,6 @@ const WebGL = () => {
                     )}
                 </AnimatePresence>                
             </div>
-
             <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} />
             <Unity className={`h-full w-full ${isMenuOpen ? "pointer-events-none" : ""}`} unityProvider={unityProvider} />
         </div>
