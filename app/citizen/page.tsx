@@ -263,20 +263,28 @@ const Citizen = () => {
                                     key={index}
                                     onClick={() => {
                                         dispatch(setContent(
-                                            <div className="flex flex-col lg:flex-row max-h-[calc(100vh-20px)] max-w-[1280px] overflow-y-auto relative">
+                                            <div className="flex flex-col lg:flex-row max-h-[calc(100vh-20px)] max-w-[500px] lg:max-w-[1024px] xl:max-w-[1280px] overflow-y-auto relative">
                                                 <button onClick={() => dispatch(setIsOpen(false))} className="absolute duration-200 p-2 right-4 rounded-full hover:bg-slate-50 hover:shadow-sm top-4 text-4xl">
                                                     <IoIosClose />
                                                 </button>
                                                 <Image
                                                     alt={c.code.toString()}
-                                                    className="w-[50%]"
+                                                    className="lg:w-[50%]"
                                                     width={1080}
                                                     height={1080}
                                                     src={`/assets/images/citizens/${c.code}.png`}
                                                 />
-                                                <div className="flex flex-col gap-4 p-8 w-full">
-                                                    <span className="font-bold text-3xl">No. {c.code}</span>
-                                                    <div id="attributes" className="gap-4 grid grid-cols-2">
+                                                <div className="flex flex-col gap-2 p-8 w-full">
+                                                    <div className="text-slate-500">Citizen Name</div>
+                                                    <div className="font-bold text-3xl">No. {c.code}</div>
+                                                    <div className="flex gap-4 items-center">
+                                                        <Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/ranking.png`} />
+                                                        <div className="flex flex-col text-xs ">
+                                                            <span className="text-slate-400">RANK</span>
+                                                            <span className="font-bold">1000</span>
+                                                        </div>
+                                                    </div>
+                                                    <div id="attributes" className="gap-4 grid grid-cols-1 lg:grid-cols-2">
                                                         {
                                                             [
                                                                 { name: "BACKGROUND", image: "background", type: "background" as keyof citizenProps },
