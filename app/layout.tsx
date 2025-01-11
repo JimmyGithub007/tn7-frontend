@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Audiowide, Inter, Staatliches } from "next/font/google";
 import "./globals.css";
 
+import { StoreProvider } from "@/store/StoreProvider";
+import { Dialog } from "@/components";
+
 const audiowide = Audiowide({ subsets: ["latin"], weight: "400" });
 
 export const metadata: Metadata = {
@@ -14,9 +17,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
+  return (<StoreProvider>
     <html lang="en">
-      <body className={audiowide.className}>{children}</body>
+      <body className={audiowide.className}>
+          {children}
+          <Dialog />
+        </body>
     </html>
-  );
+  </StoreProvider>);
 }

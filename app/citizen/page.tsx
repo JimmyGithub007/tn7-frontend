@@ -4,37 +4,39 @@ import Image from "next/image";
 import { useState, useReducer, useEffect } from "react";
 import { BiLike, BiSearch } from "react-icons/bi";
 import { motion, AnimatePresence } from "framer-motion";
-import { Navbar } from "@/components";
 import { BsArrowLeftCircleFill } from "react-icons/bs";
 import { MdClose } from "react-icons/md";
+import { useDispatch } from "react-redux";
+import { setContent, setIsOpen } from "@/store/slice/dialogSlice";
+import { IoIosClose } from "react-icons/io";
 
 type citizenProps = {
     code: number;
     background: string;
     body: string;
     eyes: string;
-    tatoo: string | null;
+    tattoo: string | null;
     clothes: string;
     headgear: string | null;
 };
 
 const Citizens: citizenProps[] = [
-    { code: 10032, background: "BG-2", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tatoo: null, clothes: "CLOTHES-4-GREY", headgear: null },
-    { code: 10040, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tatoo: null, clothes: "CLOTHES-3", headgear: "HEADGEAR-9" },
-    { code: 10083, background: "BG-6", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tatoo: null, clothes: "CLOTHES-31", headgear: null },
-    { code: 10111, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_RED", tatoo: null, clothes: "CLOTHES-17", headgear: "HEADGEAR-4" },
-    { code: 10144, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tatoo: null, clothes: "CLOTHES-23", headgear: "HEADGEAR-10" },
-    { code: 10155, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PINK", tatoo: null, clothes: "CLOTHES-12", headgear: null },
-    { code: 10156, background: "BG-4", body: "M_BODY_ANGRY_2", eyes: "M_RED", tatoo: "TATTOO-10", clothes: "CLOTHES-6", headgear: null },
-    { code: 10175, background: "BG-2", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tatoo: null, clothes: "CLOTHES-30", headgear: "HEADGEAR-8" },
-    { code: 10180, background: "BG-3", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tatoo: "TATTOO-6", clothes: "CLOTHES-13", headgear: "HEADGEAR-3"  },
-    { code: 10182, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tatoo: null, clothes: "CLOTHES-16", headgear: null  },
-    { code: 10183, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tatoo: null, clothes: "CLOTHES-21", headgear: "HEADGEAR-4"  },
-    { code: 10215, background: "BG-2", body: "M_BODY_ANGRY_2", eyes: "M_RED", tatoo: null, clothes: "CLOTHES-28", headgear: null },
-    { code: 10224, background: "BG-3", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tatoo: null, clothes: "CLOTHES-25", headgear: "HEADGEAR-7" },
-    { code: 10230, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tatoo: null, clothes: "CLOTHES-6", headgear: null },
-    { code: 10243, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PINK", tatoo: "TATTOO-2", clothes: "CLOTHES-12", headgear: "HEADGEAR-6" },
-    { code: 10255, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tatoo: null, clothes: "CLOTHES-11", headgear: null },
+    { code: 10032, background: "BG-2", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: null, clothes: "CLOTHES-4-GREY", headgear: null },
+    { code: 10040, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: null, clothes: "CLOTHES-3", headgear: "HEADGEAR-9" },
+    { code: 10083, background: "BG-6", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: null, clothes: "CLOTHES-31", headgear: null },
+    { code: 10111, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_RED", tattoo: null, clothes: "CLOTHES-17", headgear: "HEADGEAR-4" },
+    { code: 10144, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-23", headgear: "HEADGEAR-10" },
+    { code: 10155, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PINK", tattoo: null, clothes: "CLOTHES-12", headgear: null },
+    { code: 10156, background: "BG-4", body: "M_BODY_ANGRY_2", eyes: "M_RED", tattoo: "TATTOO-10", clothes: "CLOTHES-6", headgear: null },
+    { code: 10175, background: "BG-2", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-30", headgear: "HEADGEAR-8" },
+    { code: 10180, background: "BG-3", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: "TATTOO-6", clothes: "CLOTHES-13", headgear: "HEADGEAR-3" },
+    { code: 10182, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: null, clothes: "CLOTHES-16", headgear: null },
+    { code: 10183, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-21", headgear: "HEADGEAR-4" },
+    { code: 10215, background: "BG-2", body: "M_BODY_ANGRY_2", eyes: "M_RED", tattoo: null, clothes: "CLOTHES-28", headgear: null },
+    { code: 10224, background: "BG-3", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-25", headgear: "HEADGEAR-7" },
+    { code: 10230, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-6", headgear: null },
+    { code: 10243, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PINK", tattoo: "TATTOO-2", clothes: "CLOTHES-12", headgear: "HEADGEAR-6" },
+    { code: 10255, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: null, clothes: "CLOTHES-11", headgear: null },
 
 ];
 
@@ -85,19 +87,20 @@ const Collapse = ({ icon, text, children }: { icon: string, text: string; childr
 };
 
 const Citizen = () => {
-    const [ isOpenSidebar, setIsOpenSidebar ] = useState<boolean>(true);
+    const dispatch = useDispatch();
+    const [isOpenSidebar, setIsOpenSidebar] = useState<boolean>(true);
 
-    const [filters, dispatch] = useReducer(filterReducer, {
+    const [filters, dispatchFilter] = useReducer(filterReducer, {
         background: [],
         body: [],
         eyes: [],
-        tatoo: [],
+        tattoo: [],
         clothes: [],
         headgear: [],
     });
 
     const handleFilterClick = (filterType: string, value: string) => {
-        dispatch({ type: "TOGGLE_FILTER", payload: { filterType, value } });
+        dispatchFilter({ type: "TOGGLE_FILTER", payload: { filterType, value } });
     };
 
     const filteredCitizens = Citizens.filter((c) =>
@@ -123,11 +126,11 @@ const Citizen = () => {
     }, []);
 
     useEffect(() => {
-        if(isOpenSidebar && window.innerWidth < 1024) { 
-            document.body.classList.add("overflow-y-hidden"); 
+        if (isOpenSidebar && window.innerWidth < 1024) {
+            document.body.classList.add("overflow-y-hidden");
         }
-        else { 
-            document.body.classList.remove("overflow-y-hidden"); 
+        else {
+            document.body.classList.remove("overflow-y-hidden");
         }
     }, [isOpenSidebar])
 
@@ -135,10 +138,10 @@ const Citizen = () => {
         <div className="bg-white min-h-screen w-full">
             <div className="flex gap-2">
                 {/* Left Sidebar */}
-                <div className={`bg-white duration-200 filter-bar absolute lg:fixed flex flex-col gap-4 h-screen overflow-y-auto px-8 w-full lg:w-96 z-50 ${ isOpenSidebar ? "left-0" : "-left-full" }`}>
+                <div className={`bg-white duration-200 filter-bar absolute lg:fixed flex flex-col gap-4 h-screen overflow-y-auto px-8 w-full lg:w-96 z-50 ${isOpenSidebar ? "left-0" : "-left-full"}`}>
                     <div className="flex items-center justify-between">
                         <Image alt="logo" className="w-32" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} />
-                        <MdClose onClick={() => setIsOpenSidebar(false) } className="cursor-pointer text-5xl lg:hidden" />
+                        <MdClose onClick={() => setIsOpenSidebar(false)} className="cursor-pointer text-5xl lg:hidden" />
                     </div>
                     <div className="flex font-bold gap-4 text-xl">
                         <Image className="w-6" alt="filters" width={512} height={512} src={`/assets/images/icons/filter.png`} />
@@ -152,9 +155,8 @@ const Citizen = () => {
                                 onClick={() => handleFilterClick("background", bg)}
                             >
                                 <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${
-                                        filters.background.includes(bg) ? "bg-red-800" : "bg-gray-300"
-                                    }`}
+                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.background.includes(bg) ? "bg-red-800" : "bg-gray-300"
+                                        }`}
                                 ></div>
                                 <span className="text-xs text-slate-800">{bg}</span>
                             </div>
@@ -168,9 +170,8 @@ const Citizen = () => {
                                 onClick={() => handleFilterClick("body", body)}
                             >
                                 <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${
-                                        filters.body.includes(body) ? "bg-red-800" : "bg-gray-300"
-                                    }`}
+                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.body.includes(body) ? "bg-red-800" : "bg-gray-300"
+                                        }`}
                                 ></div>
                                 <span className="text-xs text-slate-800">{body}</span>
                             </div>
@@ -184,27 +185,25 @@ const Citizen = () => {
                                 onClick={() => handleFilterClick("eyes", eyes)}
                             >
                                 <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${
-                                        filters.eyes.includes(eyes) ? "bg-red-800" : "bg-gray-300"
-                                    }`}
+                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.eyes.includes(eyes) ? "bg-red-800" : "bg-gray-300"
+                                        }`}
                                 ></div>
                                 <span className="text-xs text-slate-800">{eyes}</span>
                             </div>
                         ))}
                     </Collapse>
                     <Collapse icon={`/assets/images/icons/tattoo.png`} text="TATTOO">
-                        {["TATTOO-2", "TATTOO-6", "TATTOO-10"].map((tatoo) => (
+                        {["TATTOO-2", "TATTOO-6", "TATTOO-10"].map((tattoo) => (
                             <div
-                                key={tatoo}
+                                key={tattoo}
                                 className="flex items-center gap-2 cursor-pointer mb-2"
-                                onClick={() => handleFilterClick("tatoo", tatoo)}
+                                onClick={() => handleFilterClick("tattoo", tattoo)}
                             >
                                 <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${
-                                        filters.tatoo.includes(tatoo) ? "bg-red-800" : "bg-gray-300"
-                                    }`}
+                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.tattoo.includes(tattoo) ? "bg-red-800" : "bg-gray-300"
+                                        }`}
                                 ></div>
-                                <span className="text-xs text-slate-800">{tatoo}</span>
+                                <span className="text-xs text-slate-800">{tattoo}</span>
                             </div>
                         ))}
                     </Collapse>
@@ -216,9 +215,8 @@ const Citizen = () => {
                                 onClick={() => handleFilterClick("clothes", clothes)}
                             >
                                 <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${
-                                        filters.clothes.includes(clothes) ? "bg-red-800" : "bg-gray-300"
-                                    }`}
+                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.clothes.includes(clothes) ? "bg-red-800" : "bg-gray-300"
+                                        }`}
                                 ></div>
                                 <span className="text-xs text-slate-800">{clothes}</span>
                             </div>
@@ -232,9 +230,8 @@ const Citizen = () => {
                                 onClick={() => handleFilterClick("headgear", headgear)}
                             >
                                 <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${
-                                        filters.headgear.includes(headgear) ? "bg-red-800" : "bg-gray-300"
-                                    }`}
+                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.headgear.includes(headgear) ? "bg-red-800" : "bg-gray-300"
+                                        }`}
                                 ></div>
                                 <span className="text-xs text-slate-800">{headgear}</span>
                             </div>
@@ -243,9 +240,9 @@ const Citizen = () => {
                 </div>
 
                 {/* Main Content */}
-                <div className={`duration-200 flex flex-col items-center w-full ${ isOpenSidebar ? "lg:pl-96" : "pl-0" }`}>
+                <div className={`duration-200 flex flex-col items-center w-full ${isOpenSidebar ? "lg:pl-96" : "pl-0"}`}>
                     <div className="bg-slate-50 flex justify-between p-4 shadow-sm w-full">
-                        <BsArrowLeftCircleFill onClick={() => setIsOpenSidebar(!isOpenSidebar) } className={`cursor-pointer duration-300 text-3xl ${isOpenSidebar && "rotate-180"}`} />
+                        <BsArrowLeftCircleFill onClick={() => setIsOpenSidebar(!isOpenSidebar)} className={`cursor-pointer duration-300 text-3xl ${isOpenSidebar && "rotate-180"}`} />
                     </div>
                     <div className="flex flex-col gap-4 py-8">
                         <div className="flex items-center relative w-fit">
@@ -264,28 +261,69 @@ const Citizen = () => {
                                     viewport={{ once: true }}
                                     className="flex flex-col gap-2"
                                     key={index}
+                                    onClick={() => {
+                                        dispatch(setContent(
+                                            <div className="flex flex-col lg:flex-row max-h-[calc(100vh-20px)] max-w-[1280px] overflow-y-auto relative">
+                                                <button onClick={() => dispatch(setIsOpen(false))} className="absolute duration-200 p-2 right-4 rounded-full hover:bg-slate-50 hover:shadow-sm top-4 text-4xl">
+                                                    <IoIosClose />
+                                                </button>
+                                                <Image
+                                                    alt={c.code.toString()}
+                                                    className="w-[50%]"
+                                                    width={1080}
+                                                    height={1080}
+                                                    src={`/assets/images/citizens/${c.code}.png`}
+                                                />
+                                                <div className="flex flex-col gap-4 p-8 w-full">
+                                                    <span className="font-bold text-3xl">No. {c.code}</span>
+                                                    <div id="attributes" className="gap-4 grid grid-cols-2">
+                                                        {
+                                                            [
+                                                                { name: "BACKGROUND", image: "background", type: "background" as keyof citizenProps },
+                                                                { name: "BODY", image: "upper-body", type: "body" as keyof citizenProps },
+                                                                { name: "EYES", image: "eye-makeup", type: "eyes" as keyof citizenProps },
+                                                                { name: "TATTOO", image: "tattoo", type: "tattoo" as keyof citizenProps },
+                                                                { name: "CLOTHES", image: "hood", type: "clothes" as keyof citizenProps },
+                                                                { name: "HEADGEAR", image: "helmet", type: "headgear" as keyof citizenProps }
+                                                            ].map((attr, index) => (
+                                                                c[attr.type] !== null ?
+                                                                <div key={index} className="bg-slate-100 duration-300 flex gap-2 hover:scale-105 items-center p-4 rounded-sm shadow-sm">
+                                                                    <Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/${attr.image}.png`} />
+                                                                    <div className="flex flex-col text-xs ">
+                                                                        <span className="text-slate-400">{attr.name}</span>
+                                                                        <span className="font-bold">{c[attr.type]}</span>
+                                                                    </div>
+                                                                </div> : null
+                                                            ))
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ));
+                                        dispatch(setIsOpen(true));
+                                    }}
                                 >
-                                    <Image
-                                        alt={c.code.toString()}
-                                        className="cursor-pointer duration-300 rounded-xl hover:scale-[1.05] h-48 w-48 shadow-lg"
-                                        width={1080}
-                                        height={1080}
-                                        src={`/assets/images/citizens/${c.code}.png`}
-                                    />
-                                    <div className="flex items-center justify-between text-xs">
-                                        <span>No. {c.code}</span>
-                                        <div className="flex gap-2 items-center">
-                                            1000{" "}
-                                            <BiLike className="bg-slate-200 p-1 rounded-md shadow-sm text-2xl" />
-                                        </div>
-                                    </div>
-                                </motion.div>
+                            <Image
+                                alt={c.code.toString()}
+                                className="cursor-pointer duration-300 rounded-xl hover:scale-[1.05] h-48 w-48 shadow-md shadow-slate-800/50"
+                                width={1080}
+                                height={1080}
+                                src={`/assets/images/citizens/${c.code}.png`}
+                            />
+                            <div className="flex items-center justify-between text-xs">
+                                <span>No. {c.code}</span>
+                                <div className="flex gap-2 items-center">
+                                    1000{" "}
+                                    <BiLike className="bg-slate-200 p-1 rounded-md shadow-sm text-2xl" />
+                                </div>
+                            </div>
+                        </motion.div>
                             ))}
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        </div >
     );
 };
 
