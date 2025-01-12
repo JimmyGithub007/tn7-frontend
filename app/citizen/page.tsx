@@ -6,9 +6,15 @@ import { BiLike, BiSearch } from "react-icons/bi";
 import { motion, AnimatePresence } from "framer-motion";
 import { BsArrowLeftCircleFill } from "react-icons/bs";
 import { MdClose } from "react-icons/md";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setContent, setIsOpen } from "@/store/slice/dialogSlice";
 import { IoIosClose } from "react-icons/io";
+import Lenis from '@studio-freight/lenis';
+
+import { Pixelify_Sans } from "next/font/google";
+import { RootState } from "@/store";
+
+const pixelify_sans = Pixelify_Sans({ subsets: ["latin"], weight: "400" });
 
 type citizenProps = {
     code: number;
@@ -18,25 +24,29 @@ type citizenProps = {
     tattoo: string | null;
     clothes: string;
     headgear: string | null;
+    facegear: string | null;
+    eyes_flare: string | null;
+    hair: string | null;
+    weapon: string | null;
 };
 
 const Citizens: citizenProps[] = [
-    { code: 10032, background: "BG-2", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: null, clothes: "CLOTHES-4-GREY", headgear: null },
-    { code: 10040, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: null, clothes: "CLOTHES-3", headgear: "HEADGEAR-9" },
-    { code: 10083, background: "BG-6", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: null, clothes: "CLOTHES-31", headgear: null },
-    { code: 10111, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_RED", tattoo: null, clothes: "CLOTHES-17", headgear: "HEADGEAR-4" },
-    { code: 10144, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-23", headgear: "HEADGEAR-10" },
-    { code: 10155, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PINK", tattoo: null, clothes: "CLOTHES-12", headgear: null },
-    { code: 10156, background: "BG-4", body: "M_BODY_ANGRY_2", eyes: "M_RED", tattoo: "TATTOO-10", clothes: "CLOTHES-6", headgear: null },
-    { code: 10175, background: "BG-2", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-30", headgear: "HEADGEAR-8" },
-    { code: 10180, background: "BG-3", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: "TATTOO-6", clothes: "CLOTHES-13", headgear: "HEADGEAR-3" },
-    { code: 10182, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: null, clothes: "CLOTHES-16", headgear: null },
-    { code: 10183, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-21", headgear: "HEADGEAR-4" },
-    { code: 10215, background: "BG-2", body: "M_BODY_ANGRY_2", eyes: "M_RED", tattoo: null, clothes: "CLOTHES-28", headgear: null },
-    { code: 10224, background: "BG-3", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-25", headgear: "HEADGEAR-7" },
-    { code: 10230, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-6", headgear: null },
-    { code: 10243, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PINK", tattoo: "TATTOO-2", clothes: "CLOTHES-12", headgear: "HEADGEAR-6" },
-    { code: 10255, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: null, clothes: "CLOTHES-11", headgear: null },
+    { code: 10032, background: "BG-2", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: null, clothes: "CLOTHES-4-GREY", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-5", weapon: "WEAPON-14" },
+    { code: 10040, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: null, clothes: "CLOTHES-3", headgear: "HEADGEAR-9", facegear: null, eyes_flare: null, hair: "HAIR-11-BLACK", weapon: "WEAPON-1" },
+    { code: 10083, background: "BG-6", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: null, clothes: "CLOTHES-31", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-3", weapon: "WEAPON-11" },
+    { code: 10111, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_RED", tattoo: null, clothes: "CLOTHES-17", headgear: "HEADGEAR-4", facegear: null, eyes_flare: null, hair: "HAIR-11-BLACK", weapon: "WEAPON-7" },
+    { code: 10144, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-23", headgear: "HEADGEAR-10", facegear: null, eyes_flare: null, hair: "HAIR-11", weapon: "WEAPON-28" },
+    { code: 10155, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PINK", tattoo: null, clothes: "CLOTHES-12", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-7-GREY", weapon: "WEAPON-14" },
+    { code: 10156, background: "BG-4", body: "M_BODY_ANGRY_2", eyes: "M_RED", tattoo: "TATTOO-10", clothes: "CLOTHES-6", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-20", weapon: "WEAPON-16" },
+    { code: 10175, background: "BG-2", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-30", headgear: "HEADGEAR-8", facegear: null, eyes_flare: null, hair: "HAIR-7-GREY", weapon: "WEAPON-15" },
+    { code: 10180, background: "BG-3", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: "TATTOO-6", clothes: "CLOTHES-13", headgear: "HEADGEAR-3", facegear: null, eyes_flare: null, hair: "HAIR-9", weapon: "WEAPON-8" },
+    { code: 10182, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: null, clothes: "CLOTHES-16", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-4", weapon: "WEAPON-30" },
+    { code: 10183, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-21", headgear: "HEADGEAR-4", facegear: null, eyes_flare: null, hair: "HAIR-19", weapon: "WEAPON-26" },
+    { code: 10215, background: "BG-2", body: "M_BODY_ANGRY_2", eyes: "M_RED", tattoo: null, clothes: "CLOTHES-28", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-3", weapon: "WEAPON-9" },
+    { code: 10224, background: "BG-3", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-25", headgear: "HEADGEAR-7", facegear: null, eyes_flare: null, hair: "HAIR-11-BLACK", weapon: "WEAPON-13" },
+    { code: 10230, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-6", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-3", weapon: "WEAPON-25" },
+    { code: 10243, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PINK", tattoo: "TATTOO-2", clothes: "CLOTHES-12", headgear: "HEADGEAR-6", facegear: null, eyes_flare: null, hair: "HAIR-18-GREY", weapon: "WEAPON-7" },
+    { code: 10255, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: null, clothes: "CLOTHES-11", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-8", weapon: "WEAPON-32" },
 
 ];
 
@@ -89,6 +99,7 @@ const Collapse = ({ icon, text, children }: { icon: string, text: string; childr
 const Citizen = () => {
     const dispatch = useDispatch();
     const [isOpenSidebar, setIsOpenSidebar] = useState<boolean>(true);
+    const { isOpen } = useSelector((state: RootState) => state.dialog);
 
     const [filters, dispatchFilter] = useReducer(filterReducer, {
         background: [],
@@ -97,6 +108,10 @@ const Citizen = () => {
         tattoo: [],
         clothes: [],
         headgear: [],
+        facegear: [],
+        eyes_flare: [],
+        hair: [],
+        weapon: [],
     });
 
     const handleFilterClick = (filterType: string, value: string) => {
@@ -133,6 +148,28 @@ const Citizen = () => {
             document.body.classList.remove("overflow-y-hidden");
         }
     }, [isOpenSidebar])
+
+    useEffect(() => {
+        const lenis = new Lenis();
+
+        // Hook into Lenis's animation frame loop
+        const raf = (time: any) => {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+
+        // Pause or resume Lenis based on `isOPen`
+        if (isOpen) {
+            lenis.stop(); // Stop scrolling
+        } else {
+            lenis.start(); // Resume scrolling
+        }
+
+        return () => {
+            lenis.destroy();
+        };
+    }, [isOpen])
 
     return (
         <div className="bg-white min-h-screen w-full">
@@ -237,6 +274,66 @@ const Citizen = () => {
                             </div>
                         ))}
                     </Collapse>
+                    <Collapse icon={`/assets/images/icons/balaclava.png`} text="FACEGEAR">
+                        {["FACEGEAR-1"].map((facegear) => (
+                            <div
+                                key={facegear}
+                                className="flex items-center gap-2 cursor-pointer mb-2"
+                                onClick={() => handleFilterClick("headgear", facegear)}
+                            >
+                                <div
+                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.facegear.includes(facegear) ? "bg-red-800" : "bg-gray-300"
+                                        }`}
+                                ></div>
+                                <span className="text-xs text-slate-800">{facegear}</span>
+                            </div>
+                        ))}
+                    </Collapse>
+                    <Collapse icon={`/assets/images/icons/sun-glasses.png`} text="EYES FLARE">
+                        {["EYESFLARE-1"].map((eyes_flare) => (
+                            <div
+                                key={eyes_flare}
+                                className="flex items-center gap-2 cursor-pointer mb-2"
+                                onClick={() => handleFilterClick("headgear", eyes_flare)}
+                            >
+                                <div
+                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.eyes_flare.includes(eyes_flare) ? "bg-red-800" : "bg-gray-300"
+                                        }`}
+                                ></div>
+                                <span className="text-xs text-slate-800">{eyes_flare}</span>
+                            </div>
+                        ))}
+                    </Collapse>
+                    <Collapse icon={`/assets/images/icons/long-wavy-hair-variant.png`} text="HAIR">
+                        {["HAIR-3", "HAIR-4", "HAIR-5", "HAIR-7-GREY", "HAIR-8", "HAIR-9", "HAIR-11", "HAIR-11-BLACK", "HAIR-18-GREY", "HAIR-19", "HAIR-20"].map((hair) => (
+                            <div
+                                key={hair}
+                                className="flex items-center gap-2 cursor-pointer mb-2"
+                                onClick={() => handleFilterClick("hair", hair)}
+                            >
+                                <div
+                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.hair.includes(hair) ? "bg-red-800" : "bg-gray-300"
+                                        }`}
+                                ></div>
+                                <span className="text-xs text-slate-800">{hair}</span>
+                            </div>
+                        ))}
+                    </Collapse>
+                    <Collapse icon={`/assets/images/icons/weapons.png`} text="WEAPON">
+                        {["WEAPON-1", "WEAPON-7", "WEAPON-8", "WEAPON-9", "WEAPON-11", "WEAPON-13", "WEAPON-14", "WEAPON-15", "WEAPON-16", "WEAPON-25", "WEAPON-28", "WEAPON-30", "WEAPON-32"].map((weapon) => (
+                            <div
+                                key={weapon}
+                                className="flex items-center gap-2 cursor-pointer mb-2"
+                                onClick={() => handleFilterClick("weapon", weapon)}
+                            >
+                                <div
+                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.weapon.includes(weapon) ? "bg-red-800" : "bg-gray-300"
+                                        }`}
+                                ></div>
+                                <span className="text-xs text-slate-800">{weapon}</span>
+                            </div>
+                        ))}
+                    </Collapse>
                 </div>
 
                 {/* Main Content */}
@@ -244,7 +341,7 @@ const Citizen = () => {
                     <div className="bg-slate-50 flex justify-between p-4 shadow-sm w-full">
                         <BsArrowLeftCircleFill onClick={() => setIsOpenSidebar(!isOpenSidebar)} className={`cursor-pointer duration-300 text-3xl ${isOpenSidebar && "rotate-180"}`} />
                     </div>
-                    <div className="flex flex-col gap-4 py-8">
+                    <div className="flex flex-col gap-4 px-4 py-8 w-full">
                         <div className="flex items-center relative w-fit">
                             <BiSearch className="absolute left-0 text-slate-800 text-2xl" />
                             <input
@@ -252,7 +349,7 @@ const Citizen = () => {
                                 placeholder="SEARCH TOKEN"
                             />
                         </div>
-                        <div className="items-center gap-6 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                        <div className="gap-6 flex flex-wrap">
                             {filteredCitizens.map((c, index) => (
                                 <motion.div
                                     initial={{ opacity: 0, y: 20 }}
@@ -295,13 +392,13 @@ const Citizen = () => {
                                                                 { name: "HEADGEAR", image: "helmet", type: "headgear" as keyof citizenProps }
                                                             ].map((attr, index) => (
                                                                 c[attr.type] !== null ?
-                                                                <div key={index} className="bg-slate-100 duration-300 flex gap-2 hover:scale-105 items-center p-4 rounded-sm shadow-sm">
-                                                                    <Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/${attr.image}.png`} />
-                                                                    <div className="flex flex-col text-xs ">
-                                                                        <span className="text-slate-400">{attr.name}</span>
-                                                                        <span className="font-bold">{c[attr.type]}</span>
-                                                                    </div>
-                                                                </div> : null
+                                                                    <div key={index} className="bg-slate-100 duration-300 flex gap-2 hover:scale-105 items-center p-4 rounded-sm shadow-sm">
+                                                                        <Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/${attr.image}.png`} />
+                                                                        <div className="flex flex-col text-xs ">
+                                                                            <span className="text-slate-400">{attr.name}</span>
+                                                                            <span className="font-bold">{c[attr.type]}</span>
+                                                                        </div>
+                                                                    </div> : null
                                                             ))
                                                         }
                                                     </div>
@@ -311,26 +408,26 @@ const Citizen = () => {
                                         dispatch(setIsOpen(true));
                                     }}
                                 >
-                            <Image
-                                alt={c.code.toString()}
-                                className="cursor-pointer duration-300 rounded-xl hover:scale-[1.05] h-48 w-48 shadow-md shadow-slate-800/50"
-                                width={1080}
-                                height={1080}
-                                src={`/assets/images/citizens/${c.code}.png`}
-                            />
-                            <div className="flex items-center justify-between text-xs">
-                                <span>No. {c.code}</span>
-                                <div className="flex gap-2 items-center">
-                                    1000{" "}
-                                    <BiLike className="bg-slate-200 p-1 rounded-md shadow-sm text-2xl" />
-                                </div>
-                            </div>
-                        </motion.div>
+                                    <Image
+                                        alt={c.code.toString()}
+                                        className="cursor-pointer duration-300 rounded-xl hover:scale-[1.05] h-56 w-56 shadow-md shadow-slate-800/50"
+                                        width={1080}
+                                        height={1080}
+                                        src={`/assets/images/citizens/${c.code}.png`}
+                                    />
+                                    <div className={`flex items-center justify-between ${pixelify_sans.className}`}>
+                                        <span className="font-bold">No. {c.code}</span>
+                                        <div className="flex gap-2 items-center text-xs">
+                                            1000
+                                            <BiLike className="" />
+                                        </div>
+                                    </div>
+                                </motion.div>
                             ))}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         </div >
     );
 };
