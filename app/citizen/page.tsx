@@ -149,7 +149,7 @@ const Citizen = () => {
         }
     }, [isOpenSidebar])
 
-    useEffect(() => {
+    /*useEffect(() => {
         const lenis = new Lenis();
 
         // Hook into Lenis's animation frame loop
@@ -169,7 +169,7 @@ const Citizen = () => {
         return () => {
             lenis.destroy();
         };
-    }, [isOpen])
+    }, [isOpen])*/
 
     return (
         <div className="bg-white min-h-screen w-full">
@@ -410,7 +410,7 @@ const Citizen = () => {
                                 >
                                     <Image
                                         alt={c.code.toString()}
-                                        className="cursor-pointer duration-300 rounded-xl hover:scale-[1.05] h-56 w-56 shadow-md shadow-slate-800/50"
+                                        className="cursor-pointer duration-300 rounded-xl hover:scale-[1.05] sm:h-56 sm:w-56 shadow-md shadow-slate-800/50"
                                         width={1080}
                                         height={1080}
                                         src={`/assets/images/citizens/${c.code}.png`}
