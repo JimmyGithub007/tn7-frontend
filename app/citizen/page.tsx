@@ -164,6 +164,28 @@ const Citizen = () => {
         }
     }, [isOpenSidebar])
 
+    const [isHeaderVisible, setIsHeaderVisible] = useState<boolean>(true);
+
+    const handleScroll = () => {
+        const currentScrollY = window.scrollY;
+        if (currentScrollY > 0) {
+            setIsHeaderVisible(false);
+        } else {
+            setIsHeaderVisible(true);
+        }
+    }
+
+    useEffect(() => {
+        window.addEventListener("scroll", handleScroll);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, [])
+
+    useEffect(() => {
+        handleScroll();
+    }, [])
+
     /*useEffect(() => {
         const lenis = new Lenis();
 
@@ -187,9 +209,9 @@ const Citizen = () => {
     }, [isOpen])*/
 
     return (
-        <div className="bg-white min-h-screen overflow-hidden w-full">
+        <div className="bg-white min-h-screen overflow-hidden relative w-full">
             {/* Left Sidebar */}
-            <div className={`bg-white duration-200 filter-bar absolute lg:fixed flex flex-col gap-4 h-full overflow-y-auto px-8 w-full lg:w-96 z-50 ${isOpenSidebar ? "left-0" : "-left-full"}`}>
+            <div className={`bg-white duration-200 filter-bar absolute lg:fixed flex flex-col gap-4 h-full overflow-y-auto px-8 top-0 w-full lg:w-96 z-50 ${isOpenSidebar ? "left-0" : "-left-full"}`}>
                 <div className="flex items-center justify-between">
                     <Image alt="logo" className="w-32" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} />
                     <MdClose onClick={() => setIsOpenSidebar(false)} className="cursor-pointer text-5xl lg:hidden" />
@@ -351,9 +373,13 @@ const Citizen = () => {
 
             {/* Main Content */}
             <div className={`duration-200 flex flex-col items-center w-full ${isOpenSidebar ? "lg:pl-96" : "pl-0"}`}>
-                <div className="bg-slate-50 flex justify-between p-4 shadow-sm shadow-slate-400/50 w-full">
+                <motion.div
+                    initial={{ y: 0 }}
+                    animate={{ y: isHeaderVisible ? 0 : -100 }}
+                    transition={{ duration: 0.3 }}
+                    className={`bg-slate-50 flex justify-between p-4 shadow-sm shadow-slate-400/50 w-full`}>
                     <BsArrowLeft onClick={() => setIsOpenSidebar(!isOpenSidebar)} className={`cursor-pointer duration-300 text-3xl ${!isOpenSidebar && "rotate-180"}`} />
-                </div>
+                </motion.div>
                 <div className="flex flex-col gap-4 px-4 py-8 w-full">
                     <div className="flex items-center relative w-full">
                         <BiSearch className="absolute left-0 text-slate-800 text-2xl" />
