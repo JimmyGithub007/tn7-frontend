@@ -211,7 +211,7 @@ const Citizen = () => {
     return (
         <div className="bg-white min-h-screen overflow-hidden relative w-full">
             {/* Left Sidebar */}
-            <div className={`bg-white duration-200 filter-bar absolute lg:fixed flex flex-col gap-4 h-full overflow-y-auto px-8 top-0 w-full lg:w-96 z-50 ${isOpenSidebar ? "left-0" : "-left-full"}`}>
+            <div className={`bg-white duration-200 filter-bar absolute lg:fixed flex flex-col gap-4 h-screen overflow-y-auto px-8 pb-12 top-0 w-full lg:w-96 z-50 ${isOpenSidebar ? "left-0" : "-left-full"}`}>
                 <div className="flex items-center justify-between">
                     <Image alt="logo" className="w-32" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} />
                     <MdClose onClick={() => setIsOpenSidebar(false)} className="cursor-pointer text-5xl lg:hidden" />
