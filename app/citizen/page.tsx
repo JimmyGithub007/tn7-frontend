@@ -4,17 +4,18 @@ import Image from "next/image";
 import { useState, useReducer, useEffect } from "react";
 import { BiLike, BiSearch } from "react-icons/bi";
 import { motion, AnimatePresence } from "framer-motion";
-import { BsArrowLeftCircleFill } from "react-icons/bs";
+import { BsArrowLeft, BsArrowLeftCircleFill } from "react-icons/bs";
 import { MdClose } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { setContent, setIsOpen } from "@/store/slice/dialogSlice";
 import { IoIosClose } from "react-icons/io";
 import Lenis from '@studio-freight/lenis';
 
-import { Pixelify_Sans } from "next/font/google";
+import { Pixelify_Sans, Rubik_Distressed } from "next/font/google";
 import { RootState } from "@/store";
 
 const pixelify_sans = Pixelify_Sans({ subsets: ["latin"], weight: "400" });
+const rubik_distressed = Rubik_Distressed({ subsets: ["latin"], weight: "400" });
 
 type citizenProps = {
     code: number;
@@ -47,7 +48,21 @@ const Citizens: citizenProps[] = [
     { code: 10230, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-6", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-3", weapon: "WEAPON-25" },
     { code: 10243, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PINK", tattoo: "TATTOO-2", clothes: "CLOTHES-12", headgear: "HEADGEAR-6", facegear: null, eyes_flare: null, hair: "HAIR-18-GREY", weapon: "WEAPON-7" },
     { code: 10255, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: null, clothes: "CLOTHES-11", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-8", weapon: "WEAPON-32" },
+    { code: 10325, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: null, clothes: "CLOTHES-28", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-9", weapon: "WEAPON-4" },
+    { code: 10327, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: "TATTOO-2", clothes: "CLOTHES-6", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-2", weapon: null },
+    { code: 10345, background: "BG-6", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: null, clothes: "CLOTHES-17", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-11", weapon: "WEAPON-25" },
+    { code: 10361, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_PINK", tattoo: null, clothes: "CLOTHES-17", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-11", weapon: "WEAPON-22" },
+    { code: 10374, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: "TATTOO-3", clothes: "CLOTHES-12", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-3", weapon: "WEAPON-22" },
+    { code: 10391, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: null, clothes: "CLOTHES-29", headgear: "HEADGEAR-9", facegear: null, eyes_flare: null, hair: "HAIR-7-GREY", weapon: "WEAPON-7" },
+];
 
+const BGColors = [
+    { background: "BG-1", bg_color: "#3c487f", card_color: "#455495", text_color: "#ffffff" },
+    { background: "BG-2", bg_color: "#1b4850", card_color: "#205e68", text_color: "#ffffff" },
+    { background: "BG-3", bg_color: "#5c2a61", card_color: "#82398a", text_color: "#ffffff" },
+    { background: "BG-4", bg_color: "#415432", card_color: "#4d653b", text_color: "#ffffff" },
+    { background: "BG-5", bg_color: "#3b4244", card_color: "#4b5456", text_color: "#ffffff" },
+    { background: "BG-6", bg_color: "#57471d", card_color: "#6b5825", text_color: "#ffffff" }
 ];
 
 const filterReducer = (state: any, action: any) => {
@@ -172,259 +187,263 @@ const Citizen = () => {
     }, [isOpen])*/
 
     return (
-        <div className="bg-white min-h-screen w-full">
-            <div className="flex gap-2">
-                {/* Left Sidebar */}
-                <div className={`bg-white duration-200 filter-bar absolute lg:fixed flex flex-col gap-4 h-screen overflow-y-auto px-8 w-full lg:w-96 z-50 ${isOpenSidebar ? "left-0" : "-left-full"}`}>
-                    <div className="flex items-center justify-between">
-                        <Image alt="logo" className="w-32" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} />
-                        <MdClose onClick={() => setIsOpenSidebar(false)} className="cursor-pointer text-5xl lg:hidden" />
-                    </div>
-                    <div className="flex font-bold gap-4 text-xl">
-                        <Image className="w-6" alt="filters" width={512} height={512} src={`/assets/images/icons/filter.png`} />
-                        FILTERS
-                    </div>
-                    <Collapse icon={`/assets/images/icons/background.png`} text="BACKGROUND">
-                        {["BG-1", "BG-2", "BG-3", "BG-4", "BG-5", "BG-6"].map((bg) => (
-                            <div
-                                key={bg}
-                                className="flex items-center gap-2 cursor-pointer mb-2"
-                                onClick={() => handleFilterClick("background", bg)}
-                            >
-                                <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.background.includes(bg) ? "bg-red-800" : "bg-gray-300"
-                                        }`}
-                                ></div>
-                                <span className="text-xs text-slate-800">{bg}</span>
-                            </div>
-                        ))}
-                    </Collapse>
-                    <Collapse icon={`/assets/images/icons/upper-body.png`} text="BODY">
-                        {["M_BODY_ANGRY_2"].map((body) => (
-                            <div
-                                key={body}
-                                className="flex items-center gap-2 cursor-pointer mb-2"
-                                onClick={() => handleFilterClick("body", body)}
-                            >
-                                <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.body.includes(body) ? "bg-red-800" : "bg-gray-300"
-                                        }`}
-                                ></div>
-                                <span className="text-xs text-slate-800">{body}</span>
-                            </div>
-                        ))}
-                    </Collapse>
-                    <Collapse icon={`/assets/images/icons/eye-makeup.png`} text="EYES">
-                        {["M_GREY", "M_PURPLE", "M_RED", "M_GREEN", "M_PINK"].map((eyes) => (
-                            <div
-                                key={eyes}
-                                className="flex items-center gap-2 cursor-pointer mb-2"
-                                onClick={() => handleFilterClick("eyes", eyes)}
-                            >
-                                <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.eyes.includes(eyes) ? "bg-red-800" : "bg-gray-300"
-                                        }`}
-                                ></div>
-                                <span className="text-xs text-slate-800">{eyes}</span>
-                            </div>
-                        ))}
-                    </Collapse>
-                    <Collapse icon={`/assets/images/icons/tattoo.png`} text="TATTOO">
-                        {["TATTOO-2", "TATTOO-6", "TATTOO-10"].map((tattoo) => (
-                            <div
-                                key={tattoo}
-                                className="flex items-center gap-2 cursor-pointer mb-2"
-                                onClick={() => handleFilterClick("tattoo", tattoo)}
-                            >
-                                <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.tattoo.includes(tattoo) ? "bg-red-800" : "bg-gray-300"
-                                        }`}
-                                ></div>
-                                <span className="text-xs text-slate-800">{tattoo}</span>
-                            </div>
-                        ))}
-                    </Collapse>
-                    <Collapse icon={`/assets/images/icons/hood.png`} text="CLOTHES">
-                        {["CLOTHES-3", "CLOTHES-4-GREY", "CLOTHES-6", "CLOTHES-12"].map((clothes) => (
-                            <div
-                                key={clothes}
-                                className="flex items-center gap-2 cursor-pointer mb-2"
-                                onClick={() => handleFilterClick("clothes", clothes)}
-                            >
-                                <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.clothes.includes(clothes) ? "bg-red-800" : "bg-gray-300"
-                                        }`}
-                                ></div>
-                                <span className="text-xs text-slate-800">{clothes}</span>
-                            </div>
-                        ))}
-                    </Collapse>
-                    <Collapse icon={`/assets/images/icons/helmet.png`} text="HEADGEAR">
-                        {["HEADGEAR-3", "HEADGEAR-4", "HEADGEAR-6", "HEADGEAR-7", "HEADGEAR-8", "HEADGEAR-9", "HEADGEAR-10"].map((headgear) => (
-                            <div
-                                key={headgear}
-                                className="flex items-center gap-2 cursor-pointer mb-2"
-                                onClick={() => handleFilterClick("headgear", headgear)}
-                            >
-                                <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.headgear.includes(headgear) ? "bg-red-800" : "bg-gray-300"
-                                        }`}
-                                ></div>
-                                <span className="text-xs text-slate-800">{headgear}</span>
-                            </div>
-                        ))}
-                    </Collapse>
-                    <Collapse icon={`/assets/images/icons/balaclava.png`} text="FACEGEAR">
-                        {["FACEGEAR-1"].map((facegear) => (
-                            <div
-                                key={facegear}
-                                className="flex items-center gap-2 cursor-pointer mb-2"
-                                onClick={() => handleFilterClick("headgear", facegear)}
-                            >
-                                <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.facegear.includes(facegear) ? "bg-red-800" : "bg-gray-300"
-                                        }`}
-                                ></div>
-                                <span className="text-xs text-slate-800">{facegear}</span>
-                            </div>
-                        ))}
-                    </Collapse>
-                    <Collapse icon={`/assets/images/icons/sun-glasses.png`} text="EYES FLARE">
-                        {["EYESFLARE-1"].map((eyes_flare) => (
-                            <div
-                                key={eyes_flare}
-                                className="flex items-center gap-2 cursor-pointer mb-2"
-                                onClick={() => handleFilterClick("headgear", eyes_flare)}
-                            >
-                                <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.eyes_flare.includes(eyes_flare) ? "bg-red-800" : "bg-gray-300"
-                                        }`}
-                                ></div>
-                                <span className="text-xs text-slate-800">{eyes_flare}</span>
-                            </div>
-                        ))}
-                    </Collapse>
-                    <Collapse icon={`/assets/images/icons/long-wavy-hair-variant.png`} text="HAIR">
-                        {["HAIR-3", "HAIR-4", "HAIR-5", "HAIR-7-GREY", "HAIR-8", "HAIR-9", "HAIR-11", "HAIR-11-BLACK", "HAIR-18-GREY", "HAIR-19", "HAIR-20"].map((hair) => (
-                            <div
-                                key={hair}
-                                className="flex items-center gap-2 cursor-pointer mb-2"
-                                onClick={() => handleFilterClick("hair", hair)}
-                            >
-                                <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.hair.includes(hair) ? "bg-red-800" : "bg-gray-300"
-                                        }`}
-                                ></div>
-                                <span className="text-xs text-slate-800">{hair}</span>
-                            </div>
-                        ))}
-                    </Collapse>
-                    <Collapse icon={`/assets/images/icons/weapons.png`} text="WEAPON">
-                        {["WEAPON-1", "WEAPON-7", "WEAPON-8", "WEAPON-9", "WEAPON-11", "WEAPON-13", "WEAPON-14", "WEAPON-15", "WEAPON-16", "WEAPON-25", "WEAPON-28", "WEAPON-30", "WEAPON-32"].map((weapon) => (
-                            <div
-                                key={weapon}
-                                className="flex items-center gap-2 cursor-pointer mb-2"
-                                onClick={() => handleFilterClick("weapon", weapon)}
-                            >
-                                <div
-                                    className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.weapon.includes(weapon) ? "bg-red-800" : "bg-gray-300"
-                                        }`}
-                                ></div>
-                                <span className="text-xs text-slate-800">{weapon}</span>
-                            </div>
-                        ))}
-                    </Collapse>
+        <div className="bg-white min-h-screen overflow-hidden w-full">
+            {/* Left Sidebar */}
+            <div className={`bg-white duration-200 filter-bar absolute lg:fixed flex flex-col gap-4 h-full overflow-y-auto px-8 w-full lg:w-96 z-50 ${isOpenSidebar ? "left-0" : "-left-full"}`}>
+                <div className="flex items-center justify-between">
+                    <Image alt="logo" className="w-32" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} />
+                    <MdClose onClick={() => setIsOpenSidebar(false)} className="cursor-pointer text-5xl lg:hidden" />
                 </div>
-
-                {/* Main Content */}
-                <div className={`duration-200 flex flex-col items-center w-full ${isOpenSidebar ? "lg:pl-96" : "pl-0"}`}>
-                    <div className="bg-slate-50 flex justify-between p-4 shadow-sm w-full">
-                        <BsArrowLeftCircleFill onClick={() => setIsOpenSidebar(!isOpenSidebar)} className={`cursor-pointer duration-300 text-3xl ${isOpenSidebar && "rotate-180"}`} />
-                    </div>
-                    <div className="flex flex-col gap-4 px-4 py-8 w-full">
-                        <div className="flex items-center relative w-fit">
-                            <BiSearch className="absolute left-0 text-slate-800 text-2xl" />
-                            <input
-                                className="border-b-2 pl-8 py-2 text-sm focus:outline-none focus:border-slate-800 transition-colors duration-300 w-screen sm:w-80"
-                                placeholder="SEARCH TOKEN"
-                            />
+                <div className="flex font-bold gap-4 text-xl">
+                    FILTERS
+                </div>
+                <Collapse icon={`/assets/images/icons/background.png`} text="BACKGROUND">
+                    {["BG-1", "BG-2", "BG-3", "BG-4", "BG-5", "BG-6"].map((bg) => (
+                        <div
+                            key={bg}
+                            className="flex items-center gap-2 cursor-pointer mb-2"
+                            onClick={() => handleFilterClick("background", bg)}
+                        >
+                            <div
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.background.includes(bg) ? "bg-red-800" : "bg-gray-300"
+                                    }`}
+                            ></div>
+                            <span className="text-xs text-slate-800">{bg}</span>
                         </div>
-                        <div className="gap-6 flex flex-wrap">
-                            {filteredCitizens.map((c, index) => (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.1 * index, duration: 0.8 }}
-                                    viewport={{ once: true }}
-                                    className="flex flex-col gap-2"
-                                    key={index}
-                                    onClick={() => {
-                                        dispatch(setContent(
-                                            <div className="flex flex-col lg:flex-row max-h-[calc(100vh-20px)] max-w-[500px] lg:max-w-[1024px] xl:max-w-[1280px] overflow-y-auto relative">
-                                                <button onClick={() => dispatch(setIsOpen(false))} className="absolute duration-200 p-2 right-4 rounded-full hover:bg-slate-50 hover:shadow-sm top-4 text-4xl">
-                                                    <IoIosClose />
-                                                </button>
-                                                <Image
-                                                    alt={c.code.toString()}
-                                                    className="lg:w-[50%]"
-                                                    width={1080}
-                                                    height={1080}
-                                                    src={`/assets/images/citizens/${c.code}.png`}
-                                                />
-                                                <div className="flex flex-col gap-2 p-8 w-full">
-                                                    <div className="text-slate-500">Citizen Name</div>
-                                                    <div className="font-bold text-3xl">No. {c.code}</div>
-                                                    <div className="flex gap-4 items-center">
-                                                        <Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/ranking.png`} />
-                                                        <div className="flex flex-col text-xs ">
-                                                            <span className="text-slate-400">RANK</span>
-                                                            <span className="font-bold">1000</span>
-                                                        </div>
-                                                    </div>
-                                                    <div id="attributes" className="gap-4 grid grid-cols-1 lg:grid-cols-2">
-                                                        {
-                                                            [
-                                                                { name: "BACKGROUND", image: "background", type: "background" as keyof citizenProps },
-                                                                { name: "BODY", image: "upper-body", type: "body" as keyof citizenProps },
-                                                                { name: "EYES", image: "eye-makeup", type: "eyes" as keyof citizenProps },
-                                                                { name: "TATTOO", image: "tattoo", type: "tattoo" as keyof citizenProps },
-                                                                { name: "CLOTHES", image: "hood", type: "clothes" as keyof citizenProps },
-                                                                { name: "HEADGEAR", image: "helmet", type: "headgear" as keyof citizenProps }
-                                                            ].map((attr, index) => (
-                                                                c[attr.type] !== null ?
-                                                                    <div key={index} className="bg-slate-100 duration-300 flex gap-2 hover:scale-105 items-center p-4 rounded-sm shadow-sm">
-                                                                        <Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/${attr.image}.png`} />
-                                                                        <div className="flex flex-col text-xs ">
-                                                                            <span className="text-slate-400">{attr.name}</span>
-                                                                            <span className="font-bold">{c[attr.type]}</span>
-                                                                        </div>
-                                                                    </div> : null
-                                                            ))
-                                                        }
+                    ))}
+                </Collapse>
+                <Collapse icon={`/assets/images/icons/upper-body.png`} text="BODY">
+                    {["M_BODY_ANGRY_2"].map((body) => (
+                        <div
+                            key={body}
+                            className="flex items-center gap-2 cursor-pointer mb-2"
+                            onClick={() => handleFilterClick("body", body)}
+                        >
+                            <div
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.body.includes(body) ? "bg-red-800" : "bg-gray-300"
+                                    }`}
+                            ></div>
+                            <span className="text-xs text-slate-800">{body}</span>
+                        </div>
+                    ))}
+                </Collapse>
+                <Collapse icon={`/assets/images/icons/eye-makeup.png`} text="EYES">
+                    {["M_GREY", "M_PURPLE", "M_RED", "M_GREEN", "M_PINK"].map((eyes) => (
+                        <div
+                            key={eyes}
+                            className="flex items-center gap-2 cursor-pointer mb-2"
+                            onClick={() => handleFilterClick("eyes", eyes)}
+                        >
+                            <div
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.eyes.includes(eyes) ? "bg-red-800" : "bg-gray-300"
+                                    }`}
+                            ></div>
+                            <span className="text-xs text-slate-800">{eyes}</span>
+                        </div>
+                    ))}
+                </Collapse>
+                <Collapse icon={`/assets/images/icons/tattoo.png`} text="TATTOO">
+                    {["TATTOO-2", "TATTOO-6", "TATTOO-10"].map((tattoo) => (
+                        <div
+                            key={tattoo}
+                            className="flex items-center gap-2 cursor-pointer mb-2"
+                            onClick={() => handleFilterClick("tattoo", tattoo)}
+                        >
+                            <div
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.tattoo.includes(tattoo) ? "bg-red-800" : "bg-gray-300"
+                                    }`}
+                            ></div>
+                            <span className="text-xs text-slate-800">{tattoo}</span>
+                        </div>
+                    ))}
+                </Collapse>
+                <Collapse icon={`/assets/images/icons/hood.png`} text="CLOTHES">
+                    {["CLOTHES-3", "CLOTHES-4-GREY", "CLOTHES-6", "CLOTHES-11", "CLOTHES-12", "CLOTHES-13", "CLOTHES-17", "CLOTHES-21", "CLOTHES-23", "CLOTHES-25", "CLOTHES-28", "CLOTHES-30"].map((clothes) => (
+                        <div
+                            key={clothes}
+                            className="flex items-center gap-2 cursor-pointer mb-2"
+                            onClick={() => handleFilterClick("clothes", clothes)}
+                        >
+                            <div
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.clothes.includes(clothes) ? "bg-red-800" : "bg-gray-300"
+                                    }`}
+                            ></div>
+                            <span className="text-xs text-slate-800">{clothes}</span>
+                        </div>
+                    ))}
+                </Collapse>
+                <Collapse icon={`/assets/images/icons/helmet.png`} text="HEADGEAR">
+                    {["HEADGEAR-3", "HEADGEAR-4", "HEADGEAR-6", "HEADGEAR-7", "HEADGEAR-8", "HEADGEAR-9", "HEADGEAR-10"].map((headgear) => (
+                        <div
+                            key={headgear}
+                            className="flex items-center gap-2 cursor-pointer mb-2"
+                            onClick={() => handleFilterClick("headgear", headgear)}
+                        >
+                            <div
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.headgear.includes(headgear) ? "bg-red-800" : "bg-gray-300"
+                                    }`}
+                            ></div>
+                            <span className="text-xs text-slate-800">{headgear}</span>
+                        </div>
+                    ))}
+                </Collapse>
+                <Collapse icon={`/assets/images/icons/balaclava.png`} text="FACEGEAR">
+                    {["FACEGEAR-1"].map((facegear) => (
+                        <div
+                            key={facegear}
+                            className="flex items-center gap-2 cursor-pointer mb-2"
+                            onClick={() => handleFilterClick("headgear", facegear)}
+                        >
+                            <div
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.facegear.includes(facegear) ? "bg-red-800" : "bg-gray-300"
+                                    }`}
+                            ></div>
+                            <span className="text-xs text-slate-800">{facegear}</span>
+                        </div>
+                    ))}
+                </Collapse>
+                <Collapse icon={`/assets/images/icons/sun-glasses.png`} text="EYES FLARE">
+                    {["EYESFLARE-1"].map((eyes_flare) => (
+                        <div
+                            key={eyes_flare}
+                            className="flex items-center gap-2 cursor-pointer mb-2"
+                            onClick={() => handleFilterClick("headgear", eyes_flare)}
+                        >
+                            <div
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.eyes_flare.includes(eyes_flare) ? "bg-red-800" : "bg-gray-300"
+                                    }`}
+                            ></div>
+                            <span className="text-xs text-slate-800">{eyes_flare}</span>
+                        </div>
+                    ))}
+                </Collapse>
+                <Collapse icon={`/assets/images/icons/long-wavy-hair-variant.png`} text="HAIR">
+                    {["HAIR-3", "HAIR-4", "HAIR-5", "HAIR-7-GREY", "HAIR-8", "HAIR-9", "HAIR-11", "HAIR-11-BLACK", "HAIR-18-GREY", "HAIR-19", "HAIR-20"].map((hair) => (
+                        <div
+                            key={hair}
+                            className="flex items-center gap-2 cursor-pointer mb-2"
+                            onClick={() => handleFilterClick("hair", hair)}
+                        >
+                            <div
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.hair.includes(hair) ? "bg-red-800" : "bg-gray-300"
+                                    }`}
+                            ></div>
+                            <span className="text-xs text-slate-800">{hair}</span>
+                        </div>
+                    ))}
+                </Collapse>
+                <Collapse icon={`/assets/images/icons/weapons.png`} text="WEAPON">
+                    {["WEAPON-1", "WEAPON-4", "WEAPON-7", "WEAPON-8", "WEAPON-9", "WEAPON-11", "WEAPON-13", "WEAPON-14", "WEAPON-15", "WEAPON-16", "WEAPON-25", "WEAPON-28", "WEAPON-30", "WEAPON-32"].map((weapon) => (
+                        <div
+                            key={weapon}
+                            className="flex items-center gap-2 cursor-pointer mb-2"
+                            onClick={() => handleFilterClick("weapon", weapon)}
+                        >
+                            <div
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.weapon.includes(weapon) ? "bg-red-800" : "bg-gray-300"
+                                    }`}
+                            ></div>
+                            <span className="text-xs text-slate-800">{weapon}</span>
+                        </div>
+                    ))}
+                </Collapse>
+            </div>
+
+            {/* Main Content */}
+            <div className={`duration-200 flex flex-col items-center w-full ${isOpenSidebar ? "lg:pl-96" : "pl-0"}`}>
+                <div className="bg-slate-50 flex justify-between p-4 shadow-sm shadow-slate-400/50 w-full">
+                    <BsArrowLeft onClick={() => setIsOpenSidebar(!isOpenSidebar)} className={`cursor-pointer duration-300 text-3xl ${!isOpenSidebar && "rotate-180"}`} />
+                </div>
+                <div className="flex flex-col gap-4 px-4 py-8 w-full">
+                    <div className="flex items-center relative w-full">
+                        <BiSearch className="absolute left-0 text-slate-800 text-2xl" />
+                        <input
+                            className="border-b-2 pl-8 py-2 text-sm focus:outline-none focus:border-slate-800 transition-colors duration-300 w-full sm:w-80"
+                            placeholder="SEARCH TOKEN"
+                        />
+                    </div>
+                    <div className="gap-6 flex flex-wrap">
+                        {filteredCitizens.map((c, index) => (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 * index, duration: 0.8 }}
+                                viewport={{ once: true }}
+                                className="flex flex-col gap-2"
+                                key={index}
+                                onClick={() => {
+                                    dispatch(setContent(
+                                        <div className="flex flex-col lg:flex-row max-h-[calc(100vh-20px)] max-w-[500px] lg:max-w-[1024px] xl:max-w-[1280px] overflow-y-auto relative">
+                                            <button onClick={() => dispatch(setIsOpen(false))} className="absolute duration-200 p-2 right-4 rounded-full hover:bg-slate-50 hover:shadow-sm top-4 text-4xl">
+                                                <IoIosClose />
+                                            </button>
+                                            <Image
+                                                alt={c.code.toString()}
+                                                className="lg:w-[50%]"
+                                                width={1080}
+                                                height={1080}
+                                                src={`/assets/images/citizens/${c.code}.png`}
+                                            />
+                                            <div className={`flex flex-col gap-2 p-8 w-full text-white`} style={{
+                                                backgroundColor: BGColors.find(e => e.background === c.background)?.bg_color
+                                            }}>
+                                                <div className="text-slate-300">TN7 NFTs Main Collection</div>
+                                                <div className={`font-bold text-3xl ${pixelify_sans.className}`}>No. {c.code}</div>
+                                                <div className="flex gap-4 items-center">
+                                                    {/*<Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/ranking.png`} />*/}
+                                                    <div className="flex flex-col">
+                                                        <div className="text-slate-300 text-xs">RANK</div>
+                                                        <div className={`font-bold text-xl ${rubik_distressed.className}`}>1000</div>
                                                     </div>
                                                 </div>
+                                                <div id="attributes" className="gap-4 grid grid-cols-1 lg:grid-cols-2">
+                                                    {
+                                                        [
+                                                            { name: "BACKGROUND", image: "background", type: "background" as keyof citizenProps },
+                                                            { name: "BODY", image: "upper-body", type: "body" as keyof citizenProps },
+                                                            { name: "EYES", image: "eye-makeup", type: "eyes" as keyof citizenProps },
+                                                            { name: "TATTOO", image: "tattoo", type: "tattoo" as keyof citizenProps },
+                                                            { name: "CLOTHES", image: "hood", type: "clothes" as keyof citizenProps },
+                                                            { name: "HEADGEAR", image: "helmet", type: "headgear" as keyof citizenProps }
+                                                        ].map((attr, index) => (
+                                                            c[attr.type] !== null ?
+                                                                <div key={index} className={`duration-300 flex gap-2 hover:scale-105 items-center p-4 rounded-md shadow-md`}
+                                                                    style={{ backgroundColor: BGColors.find(e => e.background === c.background)?.card_color }}
+                                                                >
+                                                                    <Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/${attr.image}.png`} />
+                                                                    <div className="flex flex-col text-xs ">
+                                                                        <span className="text-slate-300">{attr.name}</span>
+                                                                        <span className="font-bold">{c[attr.type]}</span>
+                                                                    </div>
+                                                                </div> : null
+                                                        ))
+                                                    }
+                                                </div>
+                                                <div>
+
+                                                </div>
                                             </div>
-                                        ));
-                                        dispatch(setIsOpen(true));
-                                    }}
-                                >
-                                    <Image
-                                        alt={c.code.toString()}
-                                        className="cursor-pointer duration-300 rounded-xl hover:scale-[1.05] sm:h-56 sm:w-56 shadow-md shadow-slate-800/50"
-                                        width={1080}
-                                        height={1080}
-                                        src={`/assets/images/citizens/${c.code}.png`}
-                                    />
-                                    <div className={`flex items-center justify-between ${pixelify_sans.className}`}>
-                                        <span className="font-bold">No. {c.code}</span>
-                                        <div className="flex gap-2 items-center text-xs">
-                                            1000
-                                            <BiLike className="" />
                                         </div>
+                                    ));
+                                    dispatch(setIsOpen(true));
+                                }}
+                            >
+                                <Image
+                                    alt={c.code.toString()}
+                                    className="cursor-pointer duration-300 rounded-xl hover:scale-[1.05] sm:h-56 sm:w-56 shadow-md shadow-slate-800/50"
+                                    width={1080}
+                                    height={1080}
+                                    src={`/assets/images/citizens/${c.code}.png`}
+                                />
+                                <div className={`flex items-center justify-between ${pixelify_sans.className}`}>
+                                    <span className="font-bold">No. {c.code}</span>
+                                    <div className="flex gap-2 items-center text-xs">
+                                        1000
+                                        <BiLike className="" />
                                     </div>
-                                </motion.div>
-                            ))}
-                        </div>
+                                </div>
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
             </div>
