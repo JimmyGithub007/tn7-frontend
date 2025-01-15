@@ -13,28 +13,29 @@ const chatContent = [
 ];
 
 const maps = [
-    {   id: 1, name: "Ocean", },
-    {   id: 2, name: "Castel", },
-    {   id: 3, name: "Forest 1", },
-    {   id: 4, name: "Mountain", },
-    {   id: 5, name: "Forest 2", }
+    { id: 1, name: "Ocean", },
+    { id: 2, name: "Castel", },
+    { id: 3, name: "Forest 1", },
+    { id: 4, name: "Mountain", },
+    { id: 5, name: "Forest 2", }
 ];
 
 const UnityMap = () => {
     const { unityProvider, isLoaded, loadingProgression, addEventListener, removeEventListener } = useUnityContext({
-        loaderUrl: "build/MapScene.loader.js",
-        dataUrl: "build/MapScene.data.unityweb",
-        frameworkUrl: "build/MapScene.framework.js.unityweb",
-        codeUrl: "build/MapScene.wasm.unityweb",
+        loaderUrl: "build/WorldMapScene.loader.js",
+        dataUrl: "build/WorldMapScene.data.unityweb",
+        frameworkUrl: "build/WorldMapScene.framework.js.unityweb",
+        codeUrl: "build/WorldMapScene.wasm.unityweb",
     });
+    const loadingPercentage = Math.round(loadingProgression * 100);
 
     const [chatId, setChatId] = useState<number>(0); // 当前聊天 ID
-    const [mapId, setMapId] = useState<number>(0); // 当前聊天 ID
+    const [buildingId, setBuildingId] = useState<number>(0); // 当前聊天 ID
     const [displayText, setDisplayText] = useState<string>(""); // 当前显示的文字
     const [isAnimating, setIsAnimating] = useState<boolean>(false); // 是否正在显示文字动画
 
     useEffect(() => {
-        if(chatId < 4) {
+        if (chatId < 4) {
             // 重置显示文字并启动逐字显示动画
             const fullText = chatContent[chatId].content;
             let currentIndex = 0;
@@ -55,17 +56,17 @@ const UnityMap = () => {
         }
     }, [chatId]); // 当 chatId 变化时触发
 
-    const handleClickMap = useCallback((mapId: any) => {
-        console.log(mapId)
-        setMapId(mapId)
+    const handleClickBuilding = useCallback((buildingId: any) => {
+        console.log(buildingId)
+        setBuildingId(buildingId)
     }, []);
 
     useEffect(() => {
-        addEventListener("ReactClickMap", handleClickMap);
+        addEventListener("ReactClickBuilding", handleClickBuilding);
         return () => {
-            removeEventListener("ReactClickMap", handleClickMap);
+            removeEventListener("ReactClickBuilding", handleClickBuilding);
         };
-    }, [addEventListener, removeEventListener, handleClickMap]);
+    }, [addEventListener, removeEventListener, handleClickBuilding]);
 
     const handleNextChat = () => {
         if (isAnimating) return; // 如果正在显示动画，不允许切换
@@ -75,24 +76,40 @@ const UnityMap = () => {
     return (
         <div className="bg-slate-100 h-screen w-full" onClick={handleNextChat}>
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
-            <div className="absolute flex justify-center h-12 overflow-hidden top-[20%] w-full">
+            {/*<div className="absolute flex justify-center h-12 overflow-hidden top-[20%] w-full">
                 <AnimatePresence>
-                    {  mapId > 0 && (
+                    {  buildingId > 0 && (
                         <motion.div
                             className="font-bold text-5xl text-white"
                             initial={{ y: "100%", rotate: 3 }}
                             animate={{ y: "0%", rotate: 0 }}
                             //exit={{ opacity: 0, y: "100%" }}
                             transition={{ duration: 0.5 }}
-                            key={mapId} // Ensure animation runs for each new ID
+                            key={buildingId} // Ensure animation runs for each new ID
                         >
                             {
-                                maps.find((e) => e.id === mapId)?.name || ""
+                                maps.find((e) => e.id === buildingId)?.name || ""
                             }
                         </motion.div>
                     )}
                 </AnimatePresence>                
-            </div>
+            </div>*/}
+            <AnimatePresence>
+                {!isLoaded && (
+                    <motion.div
+                        id="loader"
+                        className="absolute flex h-full items-center justify-center left-0 w-full top-0 bg-black z-[100]"
+                        initial={{ y: 0 }}
+                        animate={{ y: 0 }}
+                        exit={{ y: "100%" }}
+                        transition={{ duration: 1, ease: "easeInOut" }}
+                    >
+                        <span className="font-bold text-5xl text-white">
+                            {loadingPercentage}%
+                        </span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
             <AnimatePresence>
                 {
                     chatId < 4 && <div
@@ -107,12 +124,12 @@ const UnityMap = () => {
                             <div className="border-slate-50/50 border-[1px] rounded-lg h-full flex items-center justify-center p-4">
                                 {displayText}
                             </div>
-                            { !isAnimating && <motion.div 
+                            {!isAnimating && <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
                                 className="absolute bottom-0 flex gap-2 items-center text-sm">NEXT <TbPlayerTrackNextFilled />
-                            </motion.div> }
+                            </motion.div>}
                             <motion.img
                                 initial={{ right: -50, opacity: 0 }}
                                 animate={{ right: 0, opacity: 1 }}
