@@ -110,7 +110,7 @@ const UnityMap = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-            <AnimatePresence>
+            {/*<AnimatePresence>
                 {
                     chatId < 4 && <div
                         className="absolute bottom-8 z-50 flex justify-center w-full">
@@ -141,7 +141,7 @@ const UnityMap = () => {
                         </motion.div>
                     </div>
                 }
-            </AnimatePresence>
+            </AnimatePresence>*/}
         </div>
     );
 };
