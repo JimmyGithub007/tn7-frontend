@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
 import { TbPlayerTrackNextFilled } from "react-icons/tb";
+import Image from "next/image";
 
 const chatContent = [
     { content: "Greetings, I am Alice. Welcome to TN7 Universe!", img: "Alice_Default" },
@@ -18,6 +19,18 @@ const maps = [
     { id: 3, name: "Forest 1", },
     { id: 4, name: "Mountain", },
     { id: 5, name: "Forest 2", }
+];
+
+const buildings = [
+    { id: 1, name:"THE TEMPLE OF THE HILL", img: "Shin_Temple" },
+    { id: 2, name:"THE PINNACLE TOWERS", img: "Shin_HQ" },
+    { id: 3, name:"SILVERCOIN DISTRICT", img: "Shin_SilvercoinDistrict" },
+    { id: 4, name:"THE WATERING HOLE", img: "Reiko_WateringHole" },
+    { id: 5, name:"KOI AND LOTUS CLUB", img: "Reiko_KoiLotusClub" },
+    { id: 6, name:"THE CODEX", img: "Reiko_TheCodex" },
+    { id: 7, name:"THE GATEL", img: "Akio_TheGatel" },
+    { id: 8, name:"AKIO'S INDUSTRIES HQ", img: "Akio_HQ" },
+    { id: 9, name:"THE ENERGY FIELDS", img: "Akio_EneygyField" },
 ];
 
 const UnityMap = () => {
@@ -56,9 +69,12 @@ const UnityMap = () => {
         }
     }, [chatId]); // 当 chatId 变化时触发
 
+    const [imageLoaded, setImageLoaded] = useState<boolean>(false);
+
     const handleClickBuilding = useCallback((buildingId: any) => {
         console.log(buildingId)
         setBuildingId(buildingId)
+        setImageLoaded(false)
     }, []);
 
     useEffect(() => {
@@ -74,7 +90,7 @@ const UnityMap = () => {
     };
 
     return (
-        <div className="bg-slate-100 h-screen w-full" onClick={handleNextChat}>
+        <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={handleNextChat}>
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
             {/*<div className="absolute flex justify-center h-12 overflow-hidden top-[20%] w-full">
                 <AnimatePresence>
@@ -107,6 +123,38 @@ const UnityMap = () => {
                         <span className="font-bold text-5xl text-white">
                             {loadingPercentage}%
                         </span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+            {/* Building Image Display */}
+            <AnimatePresence>
+                {buildingId > 0 && (
+                    <motion.div
+                        key={buildingId}
+                        initial={{ y: "20%", opacity: 0 }}
+                        animate={{ y: 0, opacity: 0.8 }}
+                        exit={{ y: "20%", opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="absolute z-[200] w-[80%] left-[calc((100vw-80%)/2)] lg:left-[calc((100vw-1024px)/2)] lg:w-[1024px] bottom-0 right-0"
+                    >
+ 
+                            {/* Skeleton Loader */}
+                            {!imageLoaded && (
+                                <Image alt="placeholder" width={5501} height={3024} className="absolute animate-pulse grayscale" src={`/assets/images/buildings/placeholder.png`} />
+                            )}
+                            {/* Lazy Loaded Image */}
+                            <Image
+                                src={`/assets/images/buildings/${buildings.find(b => b.id === buildingId)?.img}.png`}
+                                alt={buildings.find(b => b.id === buildingId)?.name || "Building"}
+                                layout="responsive"
+                                width={5501}
+                                height={3024}
+                                className={`transition-opacity duration-300 ${imageLoaded ? "opacity-80" : "opacity-0"}`}
+                                onLoadingComplete={() => setImageLoaded(true)} // Handle loading state
+                                loading="lazy" // Enable lazy loading
+                                onError={() => console.error("Failed to load image.")}
+                            />
+
                     </motion.div>
                 )}
             </AnimatePresence>
