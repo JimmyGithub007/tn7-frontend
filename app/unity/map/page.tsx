@@ -44,6 +44,7 @@ const UnityMap = () => {
 
     const [chatId, setChatId] = useState<number>(0); // 当前聊天 ID
     const [buildingId, setBuildingId] = useState<number>(0); // 当前聊天 ID
+    const [hoverBuildingId, setHoverBuildingId] = useState<number>(0); // 当前聊天 ID
     const [displayText, setDisplayText] = useState<string>(""); // 当前显示的文字
     const [isAnimating, setIsAnimating] = useState<boolean>(false); // 是否正在显示文字动画
 
@@ -77,12 +78,24 @@ const UnityMap = () => {
         setImageLoaded(false)
     }, []);
 
+    const handleHoverBuilding = useCallback((buildingId: any) => {
+        console.log(buildingId)
+        setHoverBuildingId(buildingId)
+    }, []);
+
     useEffect(() => {
         addEventListener("ReactClickBuilding", handleClickBuilding);
         return () => {
             removeEventListener("ReactClickBuilding", handleClickBuilding);
         };
     }, [addEventListener, removeEventListener, handleClickBuilding]);
+
+    useEffect(() => {
+        addEventListener("ReactHoverBuilding", handleHoverBuilding);
+        return () => {
+            removeEventListener("ReactHoverBuilding", handleHoverBuilding);
+        };
+    }, [addEventListener, removeEventListener, handleHoverBuilding]);
 
     const handleNextChat = () => {
         if (isAnimating) return; // 如果正在显示动画，不允许切换
@@ -92,24 +105,24 @@ const UnityMap = () => {
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={handleNextChat}>
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
-            {/*<div className="absolute flex justify-center h-12 overflow-hidden top-[20%] w-full">
+            <div className="absolute flex justify-center h-12 overflow-hidden top-[20%] w-full">
                 <AnimatePresence>
-                    {  buildingId > 0 && (
+                    {   hoverBuildingId > 0 && buildingId == 0 && (
                         <motion.div
-                            className="font-bold text-5xl text-white"
+                            className="absolute font-bold text-5xl text-white"
                             initial={{ y: "100%", rotate: 3 }}
                             animate={{ y: "0%", rotate: 0 }}
-                            //exit={{ opacity: 0, y: "100%" }}
-                            transition={{ duration: 0.5 }}
-                            key={buildingId} // Ensure animation runs for each new ID
+                            exit={{ opacity: 0, y: "100%" }}
+                            transition={{ duration: 0.6 }}
+                            key={hoverBuildingId} // Ensure animation runs for each new ID
                         >
                             {
-                                maps.find((e) => e.id === buildingId)?.name || ""
+                                buildings.find((e) => e.id === hoverBuildingId)?.name || ""
                             }
                         </motion.div>
                     )}
                 </AnimatePresence>                
-            </div>*/}
+            </div>
             <AnimatePresence>
                 {!isLoaded && (
                     <motion.div
@@ -135,7 +148,12 @@ const UnityMap = () => {
                         animate={{ y: 0, opacity: 0.8 }}
                         exit={{ y: "20%", opacity: 0 }}
                         transition={{ duration: 0.5 }}
-                        className="absolute z-[200] w-[80%] left-[calc((100vw-80%)/2)] lg:left-[calc((100vw-1024px)/2)] lg:w-[1024px] bottom-0 right-0"
+                        className={`absolute z-[200] w-[80%] lg:w-[1024px] right-0
+                            ${ buildingId >= 1 && buildingId <= 6 && "bottom-0" } 
+                            ${ buildingId >= 1 && buildingId <= 3 && "right-0" } 
+                            ${ buildingId >= 4 && buildingId <= 6 && "left-0" } 
+                            ${ buildingId >= 7 && buildingId <= 9 && "top-0 left-0" }   
+                        `}
                     >
  
                             {/* Skeleton Loader */}
