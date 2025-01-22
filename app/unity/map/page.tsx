@@ -5,6 +5,10 @@ import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
 import { TbPlayerTrackNextFilled } from "react-icons/tb";
 import Image from "next/image";
+import { Lilita_One } from "next/font/google";
+import { Navbar } from "@/components";
+
+const lilita_one = Lilita_One({ subsets: ["latin"], weight: "400" });
 
 const chatContent = [
     { content: "Greetings, I am Alice. Welcome to TN7 Universe!", img: "Alice_Default" },
@@ -47,6 +51,7 @@ const UnityMap = () => {
     const [hoverBuildingId, setHoverBuildingId] = useState<number>(0); // 当前聊天 ID
     const [displayText, setDisplayText] = useState<string>(""); // 当前显示的文字
     const [isAnimating, setIsAnimating] = useState<boolean>(false); // 是否正在显示文字动画
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
         if (chatId < 4) {
@@ -104,12 +109,13 @@ const UnityMap = () => {
 
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={handleNextChat}>
+            <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} />
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
             <div className="absolute flex justify-center h-12 overflow-hidden top-[20%] w-full">
                 <AnimatePresence>
                     {   hoverBuildingId > 0 && buildingId == 0 && (
                         <motion.div
-                            className="absolute font-bold text-5xl text-white"
+                            className={`absolute font-bold text-5xl text-white ${lilita_one.className}`}
                             initial={{ y: "100%", rotate: 3 }}
                             animate={{ y: "0%", rotate: 0 }}
                             exit={{ opacity: 0, y: "100%" }}
