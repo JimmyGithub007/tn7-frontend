@@ -111,7 +111,7 @@ const UnityMap = () => {
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={handleNextChat}>
             <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} />
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
-            <div className="absolute flex justify-center h-12 overflow-hidden top-[20%] w-full">
+            <div className="absolute flex justify-center h-12 overflow-hidden top-[40%] w-full">
                 <AnimatePresence>
                     {   hoverBuildingId > 0 && buildingId == 0 && (
                         <motion.div
