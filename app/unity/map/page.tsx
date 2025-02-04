@@ -33,8 +33,8 @@ const buildings = [
     { id: 5, name:"KOI AND LOTUS CLUB", img: "Reiko_KoiLotusClub" },
     { id: 6, name:"THE CODEX", img: "Reiko_TheCodex" },
     { id: 7, name:"THE GATEL", img: "Akio_TheGatel" },
-    { id: 8, name:"AKIO'S INDUSTRIES HQ", img: "Akio_HQ" },
-    { id: 9, name:"THE ENERGY FIELDS", img: "Akio_EneygyField" },
+    { id: 8, name:"AKIO INDUSTRIES HQ", img: "Akio_HQ" },
+    { id: 9, name:"THE ENERGY FIELD", img: "Akio_EneygyField" },
 ];
 
 const UnityMap = () => {
@@ -52,6 +52,7 @@ const UnityMap = () => {
     const [displayText, setDisplayText] = useState<string>(""); // 当前显示的文字
     const [isAnimating, setIsAnimating] = useState<boolean>(false); // 是否正在显示文字动画
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [ mousePosition, setMousePosition ] = useState({ x: 0, y: 0 });
 
     useEffect(() => {
         if (chatId < 4) {
@@ -83,9 +84,10 @@ const UnityMap = () => {
         setImageLoaded(false)
     }, []);
 
-    const handleHoverBuilding = useCallback((buildingId: any) => {
-        console.log(buildingId)
-        setHoverBuildingId(buildingId)
+    const handleHoverBuilding = useCallback((buildingData: any) => {
+        const [buildingId, buildingX, buildingY] = buildingData.split(",");
+        if(buildingId > 0) setMousePosition({ x: parseInt(buildingX) - 200, y: window.innerHeight - parseInt(buildingY) - 100 });
+        setHoverBuildingId(parseInt(buildingId))
     }, []);
 
     useEffect(() => {
@@ -102,6 +104,39 @@ const UnityMap = () => {
         };
     }, [addEventListener, removeEventListener, handleHoverBuilding]);
 
+    //random text - start
+    const [buildingName, setBuildingName] = useState<string>("");
+
+    const generateRandomString = (length: number) => {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+      return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+    };
+    
+    const animateBuildingName = (finalName: string) => {
+      let currentLength = 0;
+      const interval = setInterval(() => {
+        if (currentLength <= finalName.length) {
+          const partialName = finalName.slice(0, currentLength);
+          const randomString = generateRandomString(finalName.length - currentLength);
+          setBuildingName(partialName + randomString);
+          currentLength++;
+        } else {
+          clearInterval(interval);
+          setBuildingName(finalName);
+        }
+      }, 50); // 控制每次变化的速度 (50ms)
+    };
+    
+    useEffect(() => {
+      if (hoverBuildingId > 0) {
+        const building = buildings.find((b) => b.id === hoverBuildingId);
+        if (building) {
+          animateBuildingName(building.name); // 开始动画
+        }
+      }
+    }, [hoverBuildingId]);
+    //end
+
     const handleNextChat = () => {
         if (isAnimating) return; // 如果正在显示动画，不允许切换
         setChatId((prevId) => (prevId + 1));
@@ -111,19 +146,20 @@ const UnityMap = () => {
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={handleNextChat}>
             <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} />
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
-            <div className="absolute flex justify-center h-12 overflow-hidden top-[40%] w-full">
+            <div className="absolute h-12 overflow-hidden w-full" style={{ left: mousePosition.x, top: mousePosition.y }}>
                 <AnimatePresence>
                     {   hoverBuildingId > 0 && buildingId == 0 && (
                         <motion.div
                             className={`absolute font-bold text-5xl text-white ${lilita_one.className}`}
-                            initial={{ y: "100%", rotate: 3 }}
-                            animate={{ y: "0%", rotate: 0 }}
+                            initial={{ opacity: 0, y: "100%" }}
+                            animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: "100%" }}
-                            transition={{ duration: 0.6 }}
+                            transition={{ duration: 0.3 }}
                             key={hoverBuildingId} // Ensure animation runs for each new ID
                         >
                             {
-                                buildings.find((e) => e.id === hoverBuildingId)?.name || ""
+                                //buildings.find((e) => e.id === hoverBuildingId)?.name || ""
+                                buildingName
                             }
                         </motion.div>
                     )}
@@ -164,7 +200,7 @@ const UnityMap = () => {
  
                             {/* Skeleton Loader */}
                             {!imageLoaded && (
-                                <Image alt="placeholder" width={5501} height={3024} className="absolute animate-pulse grayscale" src={`/assets/images/buildings/placeholder.png`} />
+                                <Image alt="placeholder" width={5501} height={3024} className="absolute animate-pulse grayscale" src={`/assets/images/buildings/placeholder.png`} priority />
                             )}
                             {/* Lazy Loaded Image */}
                             <Image
