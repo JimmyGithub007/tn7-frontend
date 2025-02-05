@@ -154,7 +154,7 @@ const UnityMap = () => {
                             initial={{ opacity: 0, y: "100%" }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: "100%" }}
-                            transition={{ duration: 0.3 }}
+                            transition={{ duration: 0.3, delay: 0.2 }}
                             key={hoverBuildingId} // Ensure animation runs for each new ID
                         >
                             {
@@ -204,7 +204,7 @@ const UnityMap = () => {
                             )}
                             {/* Lazy Loaded Image */}
                             <Image
-                                src={`/assets/images/buildings/${buildings.find(b => b.id === buildingId)?.img}.png`}
+                                src={`/assets/images/buildings/${buildings.find(b => b.id === buildingId)?.img}.webp`}
                                 alt={buildings.find(b => b.id === buildingId)?.name || "Building"}
                                 layout="responsive"
                                 width={5501}
