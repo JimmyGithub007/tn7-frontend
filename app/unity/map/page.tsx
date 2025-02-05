@@ -150,7 +150,7 @@ const UnityMap = () => {
                 <AnimatePresence>
                     {   hoverBuildingId > 0 && buildingId == 0 && (
                         <motion.div
-                            className={`absolute font-bold text-5xl text-white ${lilita_one.className}`}
+                            className={`absolute font-bold text-3xl text-white ${lilita_one.className}`}
                             initial={{ opacity: 0, y: "100%" }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: "100%" }}
