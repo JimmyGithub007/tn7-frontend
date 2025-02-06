@@ -86,7 +86,7 @@ const UnityMap = () => {
 
     const handleHoverBuilding = useCallback((buildingData: any) => {
         const [buildingId, buildingX, buildingY] = buildingData.split(",");
-        if(buildingId > 0) setMousePosition({ x: parseInt(buildingX) - 200, y: window.innerHeight - parseInt(buildingY) - 100 });
+        if(buildingId > 0) setMousePosition({ x: parseInt(buildingX) - 100, y: window.innerHeight - parseInt(buildingY) - 100 });
         setHoverBuildingId(parseInt(buildingId))
     }, []);
 

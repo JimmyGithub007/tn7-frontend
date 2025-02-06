@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const randomCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
 
@@ -13,7 +14,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
   useEffect(() => {
     if (!isOpenMenu) return;
 
-    const targetMenus = ["ABOUT", "TN7 UNIVERSE", "COMMUNITY"];
+    const targetMenus = ["ABOUT", "TN7 UNIVERSE", "TN7 LORE", "TN7 MAP"];
     const intervals: NodeJS.Timeout[] = [];
 
     targetMenus.forEach((menu, index) => {
@@ -94,14 +95,19 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
         >
           <div className="pt-40 px-12">
             <ul className="text-xl font-bold text-white">
-              {["ABOUT", "TN7 UNIVERSE", "COMMUNITY"].map((menu, key) => (
+              {[
+                { name: "ABOUT", url: "/" },
+                { name: "TN7 UNIVERSE", url: "/universe" },
+                { name: "TN7 WORLD LORE", url: "/lore" },
+                { name: "TN& WORLD MAP", url: "/unity/map" }
+              ].map((menu, key) => (
                 <li
                   key={key}
                   className={`border-b-2 border-slate-50/30 cursor-pointer duration-300 py-4 ${hoverState[key] ? "text-red-800" : "hover:text-red-800"
                     }`}
-                  onMouseEnter={() => handleMouseEnter(key, menu)}
+                  onMouseEnter={() => handleMouseEnter(key, menu.name)}
                 >
-                  {menuText[key] || menu}
+                  <Link href={menu.url}>{menuText[key] || menu.name}</Link>
                 </li>
               ))}
             </ul>
