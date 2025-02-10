@@ -5,12 +5,8 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Navbar } from "@/components";
 
-const lores = [
-    { id: 1, name: "Locations" }
-];
-
 const childrens = [
-    { id: 1, name: "THE TEMPLE OF THE HILL", img: "TempleontheShrine.png", categoryId: 2 },
+    { id: 1, name: "THE TEMPLE ON THE HILL", img: "TempleontheShrine.png", categoryId: 2 },
     { id: 2, name: "THE PINNACLE TOWERS", img: "Synthcity HQ.PNG", categoryId: 2 },
     { id: 4, name: "THE WATERING HOLE", img: "WateringHole.PNG", categoryId: 2 },
     { id: 5, name: "KOI AND LOTUS CLUB", img: "KoiandLotusClub.PNG", categoryId: 2 },
@@ -23,6 +19,7 @@ const childrens = [
 const Lore = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [loreId, setLoreId] = useState<number>(0);
+    const [menuId, setMenuId] = useState<number>(3);
     const [loadingPercentage, setLoadingPercentage] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -40,8 +37,7 @@ const Lore = () => {
         }, 100); // 100 ms interval for smoother progress
     }, []);
 
-    return (<div className="fixed flex justify-center items-center bg-cover bg-no-repeat h-screen top-0 w-screen" /*style={{ backgroundImage: `url(./assets/images/lore/Background.png)` }}*/>
-        <Image className="absolute" alt="" width={5760} height={3260} src={`/assets/images/lore/Background.png`} priority />
+    return (<div className="fixed flex justify-center items-center bg-cover bg-no-repeat h-screen top-0 w-screen" style={{ backgroundImage: `url(./assets/images/lore/Background.png)` }}>
         <AnimatePresence>
             {!isLoaded && (
                 <motion.div
@@ -58,32 +54,56 @@ const Lore = () => {
         </AnimatePresence>
         <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} />
         <div className="flex items-center h-full w-full">
-            <div className="h-full cursor-not-allowed w-[230px] flex items-center">
-                <Image className="z-10" alt="" height={2448} width={1384} src={`/assets/images/lore/SideBarFrame2.png`} priority />
-            </div>
-            <div className="relative gap-8 grid grid-cols-4 p-20 w-[1200px]">
-                <Image className="absolute -top-6" alt="" height={2573} width={4374} src={`/assets/images/lore/ContentFrame.png`} priority />
-                <AnimatePresence>
+            <div className="h-full hidden lg:flex w-[350px] flex-col items-center justify-center -ml-16">
+                <Image className="z-10" alt="" width={1384} height={289} src={`/assets/images/lore/SideBarFrameTop.png`} priority />
+                <div className="relative flex flex-col z-10 text-white w-full items">
+                    <Image className="absolute h-96" alt="" width={1384} height={1865} src={`/assets/images/lore/SideBarFrameBody.png`} priority />
                     {
-                        loreId > 0 &&
-                        <motion.img initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }} className="absolute -top-6 z-10" alt="" height={2573} width={4374} src={`/assets/images/lore/ContentFrame2.png`} />
-                    }
-                </AnimatePresence>
-                <AnimatePresence>
-                    {loreId === 0 ?
-                        childrens.map((value, key) => (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: key * 0.1, duration: 0.5 }} className="relative" key={key} onClick={() => setLoreId(value.id)}>
-                                <Image className="cursor-pointer duration-300 hover:scale-105 hover:saturate-200 z-10 shadow-md shadow-white/10" alt="" height={2048} width={2048} src={`/assets/images/lore/${value.img}`} priority />
-                                <div className="absolute text-white bottom-6 w-full text-center text-lg px-4">{value.name}</div>
-                            </motion.div>
-                        )) : childrens.map((value, key) => (
-                            <div className="relative opacity-0" key={key} onClick={() => setLoreId(value.id)}>
-                                <Image className="cursor-pointer duration-300 hover:scale-105 hover:saturate-200 z-10 shadow-md shadow-white/10" alt="" height={2048} width={2048} src={`/assets/images/lore/${value.img}`} priority />
-                                <div className="absolute text-white bottom-6 w-full text-center text-lg px-4">{value.name}</div>
+                        [
+                            { id: 1, title: "CHARACTERS", url: "" },
+                            { id: 2, title: "CITIES", url: "" },
+                            { id: 3, title: "LOCATIONS", url: "" },
+                            { id: 4, title: "CLAIMS", url: "" },
+                            { id: 5, title: "BADGES", url: "" },
+                            { id: 6, title: "GOVERNMENT", url: "" }
+                        ].map((menu, key) => (
+                            <div onClick={() => setMenuId(menu.id) } className="cursor-pointer h-16 z-10 flex items-center relative" key={key}>
+                                <AnimatePresence>
+                                {    menu.id === menuId && 
+                                    <motion.img initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="absolute h-[inherit]" alt="" width={1384} height={350} src={`/assets/images/lore/SideBarMenuHover.png`} />
+                                }
+                                </AnimatePresence>
+                                <span className="px-20 z-10">{menu.title}</span>
                             </div>
                         ))
                     }
-                </AnimatePresence>
+                </div>
+                <Image className="z-10" alt="" width={1384} height={289} src={`/assets/images/lore/SideBarFrameBottom.png`} priority />
+            </div>
+            <div className="h-full w-full flex items-center justify-center">
+                <div className="relative w-[80%] max-w-[1000px] h-full flex items-center">
+                    <Image className="absolute scale-[1.15]" alt="" height={2573} width={4374} src={`/assets/images/lore/ContentFrame.png`} priority />
+                    <AnimatePresence>
+                        {
+                            loreId > 0 && 
+                            <motion.div className="absolute scale-[1.15] z-20" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+                                <Image className="" alt="" height={2573} width={4374} src={`/assets/images/lore/ContentFrame2.png`} priority />        
+                            </motion.div>
+                        }                    
+                    </AnimatePresence>
+                    <div className="absolute gap-8 grid grid-cols-4 z-10">
+                        <AnimatePresence>
+                            {
+                                childrens.map((value, key) => (
+                                    <motion.div key={key} onClick={() => setLoreId(value.id)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="cursor-pointer group relative">
+                                        <Image className="duration-300 group-hover:scale-105 group-hover:saturate-200 z-10" alt="" height={2048} width={2048} src={`/assets/images/lore/${value.img}`} priority />
+                                        <div className="absolute bottom-6 font-bold px-4 text-white text-center text-xs sm:text-sm/5 md:text-md/5 lg:text-lg/5 w-full" style={{ textShadow: "black 1px 4px" }}>{value.name}</div>
+                                    </motion.div>
+                                ))
+                            }
+                        </AnimatePresence>
+                    </div>
+                </div>
             </div>
         </div>
     </div>)

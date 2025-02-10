@@ -26,7 +26,7 @@ const maps = [
 ];
 
 const buildings = [
-    { id: 1, name:"THE TEMPLE OF THE HILL", img: "Shin_Temple" },
+    { id: 1, name:"THE TEMPLE ON THE HILL", img: "Shin_Temple" },
     { id: 2, name:"THE PINNACLE TOWERS", img: "Shin_HQ" },
     { id: 3, name:"SILVERCOIN DISTRICT", img: "Shin_SilvercoinDistrict" },
     { id: 4, name:"THE WATERING HOLE", img: "Reiko_WateringHole" },
