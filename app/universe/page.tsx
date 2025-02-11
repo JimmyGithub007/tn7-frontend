@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { FreeMode } from 'swiper/modules';
+import { FreeMode, Mousewheel } from 'swiper/modules';
 import { AnimatePresence, motion } from 'framer-motion';
 import 'swiper/css';
 import 'swiper/css/free-mode';
@@ -11,10 +11,10 @@ import { Navbar } from '@/components';
 import Link from 'next/link';
 
 const universes = [
-    { id: 1, name: "TN7 WORLD LORE", image: "world_lore.png", url: "/lore" },
-    { id: 2, name: "TN7 WORLD MAP", image: "world_map.png", url: "/unity/map" },
-    { id: 3, name: "PUBLIC ENTRIES", image: "public_entries.png", url: "/publicentries" },
-    { id: 4, name: "VIDEOS", image: "videos.png", url: "/videos" }
+    { id: 1, name: "TN7 WORLD LORE", image: "u1", url: "/lore" },
+    { id: 2, name: "TN7 WORLD MAP", image: "u2", url: "/unity/map" },
+    { id: 3, name: "PUBLIC ENTRIES", image: "u3", url: "/publicentries" },
+    { id: 4, name: "VIDEOS", image: "u4", url: "/videos" }
 ];
 
 const Universe = () => {
@@ -52,8 +52,8 @@ const Universe = () => {
     }, []);
 
     return (
-        <div className="fixed flex justify-center items-center bg-cover bg-no-repeat h-screen top-0 w-full" /*style={{ backgroundImage: `url(./assets/images/universe/Background.png)` }}*/>
-            <Image className="absolute" alt="" width={5760} height={3260} src={`/assets/images/universe/Background.png`} priority />
+        <div className="flex justify-center h-screen items-center w-full">
+            <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/universe/webp/Background.webp`} priority />
             <AnimatePresence>
                 {!isLoaded && (
                     <motion.div
@@ -74,10 +74,26 @@ const Universe = () => {
                     <Swiper
                         loop={false}
                         freeMode={true}
-                        slidesPerView={4}
-                        spaceBetween={20}
-                        centeredSlides={true}
-                        modules={[FreeMode]}
+                        centeredSlides={false}
+                        slidesPerView={1}
+                        spaceBetween={10}
+                        breakpoints={{
+                            640: {
+                                slidesPerView: 1,
+                                spaceBetween: 10
+                            },
+                            768: {
+                                slidesPerView: 2,
+                                spaceBetween: 15
+                            },
+                            1024: {
+                                slidesPerView: 3,
+                                spaceBetween: 20
+                            },
+                        }}
+                        modules={[FreeMode, Mousewheel]}
+                        mousewheel={true}
+                        style={{ paddingRight: '150px' }}
                     >
                         {universes.map((value, key) => (
                             <SwiperSlide
@@ -86,23 +102,23 @@ const Universe = () => {
                                     transform: `translateX(${mousePosition.x * 0.02}px)`,
                                 }}
                             >
-                                <motion.div
-                                    className="cursor-pointer relative h-[585.5px] w-[410.5px]"
-                                    initial={{ opacity: 0, x: "50px" }}
-                                    whileInView={{ opacity: 1, x: 0 }}
+                                <motion.div 
+                                    initial={{ opacity: 0 }}
+                                    whileInView={{ opacity: 1 }}
                                     transition={{ duration: 0.5, delay: key * 0.1 }}
-                                    viewport={{ once: true }}
-                                >
+                                    //viewport={{ once: true }}
+                                    className="cursor-pointer relative h-full w-full">
                                     <Link href={value.url}>
                                         <Image
-                                            className="absolute duration-300 hover:saturate-200 h-[585.5px] w-[410.5px]"
+                                            className="w-full h-full object-cover duration-300 hover:saturate-[1.4]"
                                             alt={`universe ${value.name}`}
-                                            width={1642}
-                                            height={2342}
-                                            src={`/assets/images/universe/${value.image}`}
+                                            width={821}
+                                            height={1171}
+                                            src={`/assets/images/universe/webp/${value.image}.webp`}
                                             priority
+                                            quality={100}
                                         />
-                                        <div className="absolute bottom-16 font-bold w-full text-2xl text-center text-white">
+                                        <div className="absolute bottom-16 font-bold w-full text-md md:text-lg lg:text-xl xl:text-2xl text-center text-white">
                                             {value.name}
                                         </div>
                                     </Link>
@@ -110,6 +126,12 @@ const Universe = () => {
                             </SwiperSlide>
                         ))}
                     </Swiper>
+                    <div className="absolute bottom-4 flex flex-col gap-1 items-center p-1 rounded-3xl text-white">
+                        <div className="border-white border-2 flex h-8 items-center justify-center rounded-3xl w-6 z-10">
+                            <div className="animate-scroll bg-white h-1 rounded-full w-1"></div>
+                        </div>
+                        <div>Scroll the mouse/ Drag the box</div>
+                    </div>
                 </>
             )}
         </div>
