@@ -8,15 +8,15 @@ import { TbArrowBackUp } from "react-icons/tb";
 import { transition } from "three/examples/jsm/tsl/display/TransitionNode.js";
 
 const childrens = [
-    { id: 1, name: "THE TEMPLE ON THE HILL", img: "b1.png", categoryId: 2 },
-    { id: 2, name: "THE PINNACLE TOWERS", img: "b2.png", categoryId: 2 },
-    { id: 3, name: "SILVERCOIN DISTRICT", img: "b3.png", categoryId: 2 },
-    { id: 4, name: "THE WATERING HOLE", img: "b4.png", categoryId: 2 },
-    { id: 5, name: "KOI AND LOTUS CLUB", img: "b5.png", categoryId: 2 },
-    { id: 6, name: "THE CODEX", img: "b6.png", categoryId: 2 },
-    { id: 7, name: "THE GATEL", img: "b7.png", categoryId: 2 },
-    { id: 8, name: "AKIO INDUSTRIES HQ", img: "b8.png", categoryId: 2 },
-    { id: 9, name: "THE ENERGY FIELD", img: "b9.png", categoryId: 2 },
+    { id: 1, name: "THE TEMPLE ON THE HILL", img: "b1", categoryId: 2 },
+    { id: 2, name: "THE PINNACLE TOWERS", img: "b2", categoryId: 2 },
+    { id: 3, name: "SILVERCOIN DISTRICT", img: "b3", categoryId: 2 },
+    { id: 4, name: "THE WATERING HOLE", img: "b4", categoryId: 2 },
+    { id: 5, name: "KOI AND LOTUS CLUB", img: "b5", categoryId: 2 },
+    { id: 6, name: "THE CODEX", img: "b6", categoryId: 2 },
+    { id: 7, name: "THE GATEL", img: "b7", categoryId: 2 },
+    { id: 8, name: "AKIO INDUSTRIES HQ", img: "b8", categoryId: 2 },
+    { id: 9, name: "THE ENERGY FIELD", img: "b9", categoryId: 2 },
 ];
 
 const Lore = () => {
@@ -121,14 +121,13 @@ const Lore = () => {
                     <AnimatePresence>
                         {
                             loreId > 0 ?
-                                <motion.div className={`absolute z-20`} 
-                                    style={{ scale: isMobile ? "1.25" : "1.15" }}
+                                <motion.div className={`absolute z-20 ${isMobile ? "scale-[1.25]" : "scale-[1.15]"}`}
                                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
                                 >
                                     <div className="relative">
-                                        <Image className="" alt="" height={2573} width={4374} src={`/assets/images/lore/b${loreId}${isMobile ? "Vertical" : "Horizontal"}.png`} priority />
-                                        <motion.div className={`absolute ${ !isMobile ? "right-[6%] top-[18%]" : "top-[48%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-10 text-white`} 
-                                            style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 70 / 100, width: isMobile ? "90%" : "45%" }}
+                                        <Image className="" alt="" width={1094} height={643} src={`/assets/images/lore/tiny/b${loreId}${isMobile ? "Vertical" : "Horizontal"}.png`} priority quality={100} />
+                                        <motion.div className={`absolute ${ isMobile ? "top-[48%] w-[90%]" : "right-[6%] top-[18%] w-[45%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-10 text-white`} 
+                                            style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 70 / 100 }}
                                             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
                                         >
                                             <div className="font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">{childrens.find(e => e.id === loreId)?.name}</div>
@@ -139,11 +138,11 @@ const Lore = () => {
                                         <TbArrowBackUp onClick={() => setLoreId(0)} className={`absolute cursor-pointer duration-200 hover:opacity-50 ${isMobile ? "right-[12%]" : "right-[6%]"} text-white text-4xl top-[10%] z-20`} />
                                     </div>
                                 </motion.div> :
-                                <div className="absolute filter-bar gap-6 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 z-10 overflow-x-hidden overflow-y-auto p-4" style={{ height: imgHeight * 80 / 100 }}>
+                                <div className="absolute filter-bar gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 z-10 overflow-x-hidden overflow-y-auto p-4" style={{ height: imgHeight * 80 / 100 }}>
                                     {
                                         childrens.map((value, key) => (
                                             <motion.div key={key} onClick={() => setLoreId(value.id)} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 * key }} className="cursor-pointer group relative">
-                                                <Image className="duration-300 group-hover:scale-105 group-hover:saturate-200 z-10" alt="" height={2048} width={2048} src={`/assets/images/lore/${value.img}`} priority />
+                                                <Image className="duration-300 group-hover:scale-105 group-hover:saturate-200 z-10" alt="" height={2048} width={2048} src={`/assets/images/lore/tiny/${value.img}.webp`} priority />
                                                 <div className="absolute bottom-6 font-bold px-4 text-white text-center text-xs sm:text-sm/5 md:text-md/5 lg:text-lg/5 w-full" style={{ textShadow: "black 1px 4px" }}>{value.name}</div>
                                             </motion.div>
                                         ))
