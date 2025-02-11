@@ -21,7 +21,7 @@
 }
 
 .filter-bar::-webkit-scrollbar-thumb {
-  background-color: #888; /* 滚动条的颜色 */
+  background-color: #626262; /* 滚动条的颜色 */
   border-radius: 10px; /* 圆角效果 */
 }
 
@@ -31,4 +31,5 @@
 
 .filter-bar::-webkit-scrollbar-track {
   background: #f1f1f1; /* 滚动条背景 */
+  border-radius: 10px;
 }
