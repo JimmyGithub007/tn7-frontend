@@ -52,7 +52,7 @@ const Universe = () => {
     }, []);
 
     return (
-        <div className="flex justify-center h-screen items-center w-full">
+        <div className="fixed flex justify-center h-screen items-center w-full">
             <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/universe/webp/Background.webp`} priority />
             <AnimatePresence>
                 {!isLoaded && (
@@ -93,7 +93,7 @@ const Universe = () => {
                         }}
                         modules={[FreeMode, Mousewheel]}
                         mousewheel={true}
-                        style={{ paddingRight: '150px' }}
+                        style={{ paddingRight: "150px" }}
                     >
                         {universes.map((value, key) => (
                             <SwiperSlide

@@ -3,12 +3,15 @@
 import { useState, useEffect, useCallback } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
-import { TbPlayerTrackNextFilled } from "react-icons/tb";
-import Image from "next/image";
-import { Lilita_One } from "next/font/google";
+//import { Lilita_One } from "next/font/google";
 import { Navbar } from "@/components";
 
-const lilita_one = Lilita_One({ subsets: ["latin"], weight: "400" });
+import Image from "next/image";
+import { CgClose } from "react-icons/cg";
+import { IoIosArrowRoundForward } from "react-icons/io";
+import Link from "next/link";
+
+//const lilita_one = Lilita_One({ subsets: ["latin"], weight: "400" });
 
 const chatContent = [
     { content: "Greetings, I am Alice. Welcome to TN7 Universe!", img: "Alice_Default" },
@@ -38,7 +41,7 @@ const buildings = [
 ];
 
 const UnityMap = () => {
-    const { unityProvider, isLoaded, loadingProgression, addEventListener, removeEventListener } = useUnityContext({
+    const { unityProvider, isLoaded, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
         loaderUrl: "build/WorldMapScene.loader.js",
         dataUrl: "build/WorldMapScene.data.unityweb",
         frameworkUrl: "build/WorldMapScene.framework.js.unityweb",
@@ -79,7 +82,6 @@ const UnityMap = () => {
     const [imageLoaded, setImageLoaded] = useState<boolean>(false);
 
     const handleClickBuilding = useCallback((buildingId: any) => {
-        console.log(buildingId)
         setBuildingId(buildingId)
         setImageLoaded(false)
     }, []);
@@ -146,26 +148,7 @@ const UnityMap = () => {
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={handleNextChat}>
             <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} />
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
-            <div className="absolute h-12 overflow-hidden w-full" style={{ left: mousePosition.x, top: mousePosition.y }}>
-                <AnimatePresence>
-                    {   hoverBuildingId > 0 && buildingId == 0 && (
-                        <motion.div
-                            className={`absolute font-bold text-3xl text-white ${lilita_one.className}`}
-                            initial={{ opacity: 0, y: "100%" }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: "100%" }}
-                            transition={{ duration: 0.3, delay: 0.2 }}
-                            key={hoverBuildingId} // Ensure animation runs for each new ID
-                        >
-                            {
-                                //buildings.find((e) => e.id === hoverBuildingId)?.name || ""
-                                buildingName
-                            }
-                        </motion.div>
-                    )}
-                </AnimatePresence>                
-            </div>
-            <AnimatePresence>
+            <AnimatePresence>{/*Loading Percentage For Unity*/}
                 {!isLoaded && (
                     <motion.div
                         id="loader"
@@ -181,6 +164,25 @@ const UnityMap = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+            <div className="absolute h-12 overflow-hidden w-full" style={{ left: mousePosition.x, top: mousePosition.y }}>
+                <AnimatePresence>
+                    {   hoverBuildingId > 0 && buildingId == 0 && (
+                        <motion.div
+                            className={`absolute font-bold text-3xl text-white`}
+                            initial={{ opacity: 0, y: "100%" }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: "100%" }}
+                            transition={{ duration: 0.3, delay: 0.2 }}
+                            key={hoverBuildingId} // Ensure animation runs for each new ID
+                        >
+                            {
+                                //buildings.find((e) => e.id === hoverBuildingId)?.name || ""
+                                buildingName
+                            }
+                        </motion.div>
+                    )}
+                </AnimatePresence>                
+            </div>
             {/* Building Image Display */}
             <AnimatePresence>
                 {buildingId > 0 && (
@@ -191,30 +193,46 @@ const UnityMap = () => {
                         exit={{ y: "20%", opacity: 0 }}
                         transition={{ duration: 0.5 }}
                         className={`absolute z-[200] w-[80%] lg:w-[1024px] right-0
-                            ${ buildingId >= 1 && buildingId <= 6 && "bottom-0" } 
-                            ${ buildingId >= 1 && buildingId <= 3 && "right-0" } 
-                            ${ buildingId >= 4 && buildingId <= 6 && "left-0" } 
-                            ${ buildingId >= 7 && buildingId <= 9 && "top-0 left-0" }   
+                            ${buildingId >= 1 && buildingId <= 6 && "bottom-0"} 
+                            ${buildingId >= 1 && buildingId <= 3 && "right-0"} 
+                            ${buildingId >= 4 && buildingId <= 6 && "left-0"} 
+                            ${buildingId >= 7 && buildingId <= 9 && "top-0 left-0"}   
                         `}
                     >
- 
-                            {/* Skeleton Loader */}
-                            {!imageLoaded && (
-                                <Image alt="placeholder" width={5501} height={3024} className="absolute animate-pulse grayscale" src={`/assets/images/buildings/placeholder.png`} priority />
-                            )}
-                            {/* Lazy Loaded Image */}
-                            <Image
-                                src={`/assets/images/buildings/${buildings.find(b => b.id === buildingId)?.img}.webp`}
-                                alt={buildings.find(b => b.id === buildingId)?.name || "Building"}
-                                layout="responsive"
-                                width={5501}
-                                height={3024}
-                                className={`transition-opacity duration-300 ${imageLoaded ? "opacity-80" : "opacity-0"}`}
-                                onLoadingComplete={() => setImageLoaded(true)} // Handle loading state
-                                loading="lazy" // Enable lazy loading
-                                onError={() => console.error("Failed to load image.")}
-                            />
 
+                        {/* Skeleton Loader */}
+                        {!imageLoaded && (
+                            <Image alt="placeholder" width={1375} height={756}
+                                className="absolute animate-pulse grayscale" src={`/assets/images/worldmap/webp/placeholder.webp`}
+                                priority
+                            />
+                        )}
+                        {/* Lazy Loaded Image */}
+                        <Image
+                            src={`/assets/images/worldmap/webp/${buildings.find(b => b.id === buildingId)?.img}.webp`}
+                            alt={buildings.find(b => b.id === buildingId)?.name || "Building"}
+                            layout="responsive"
+                            width={1833}
+                            height={1008}
+                            className={`transition-opacity duration-300 ${imageLoaded ? "opacity-90" : "opacity-0"}`}
+                            onLoadingComplete={() => setImageLoaded(true)} // Handle loading state
+                            loading="lazy" // Enable lazy loading
+                            onError={() => console.error("Failed to load image.")}
+                        />
+                        <Link href={{ pathname: "/lore", query: { category: "locations", id: buildingId } }}>
+                            <button
+                                className="absolute bottom-[20%] duration-200 flex group items-center justify-center left-60 text-white underline z-20 hover:opacity-60">
+                                READ MORE
+                                <IoIosArrowRoundForward className="duration-200 -rotate-45 group-hover:rotate-0 text-4xl" />
+                            </button>
+                        </Link>
+                        <button
+                            onClick={() => {
+                                sendMessage(`b${buildingId}_0`, "UnClickBuilding");
+                            }}
+                            className="absolute bg-white duration-300 p-2 right-2 rounded-full shadow-xl shadow-black/50 text-3xl top-4 z-20 hover:bg-black hover:text-white">
+                            <CgClose />
+                        </button>
                     </motion.div>
                 )}
             </AnimatePresence>

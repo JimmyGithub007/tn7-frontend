@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Audiowide, Inter, Staatliches } from "next/font/google";
+import { Audiowide, Inter, Lilita_One, Staatliches } from "next/font/google";
 import "./globals.css";
 
 import { StoreProvider } from "@/store/StoreProvider";
 import { Dialog } from "@/components";
 
-const audiowide = Audiowide({ subsets: ["latin"], weight: "400" });
+const lilita_one = Lilita_One({ subsets: ["latin"], weight: "400" });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (<StoreProvider>
     <html lang="en">
-      <body className={audiowide.className}>
+      <body className={lilita_one.className}>
           {children}
           <Dialog />
         </body>

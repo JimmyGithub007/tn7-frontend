@@ -14,7 +14,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
   useEffect(() => {
     if (!isOpenMenu) return;
 
-    const targetMenus = ["ABOUT", "TN7 UNIVERSE", "TN7 LORE", "TN7 MAP"];
+    const targetMenus = ["ABOUT", "TN7 UNIVERSE", "TN7 LORE", "TN7 WORLD MAP"];
     const intervals: NodeJS.Timeout[] = [];
 
     targetMenus.forEach((menu, index) => {
@@ -99,7 +99,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                 { name: "ABOUT", url: "/" },
                 { name: "TN7 UNIVERSE", url: "/universe" },
                 { name: "TN7 WORLD LORE", url: "/lore" },
-                { name: "TN& WORLD MAP", url: "/unity/map" }
+                { name: "TN7 WORLD MAP", url: "/unity/map" }
               ].map((menu, key) => (
                 <li
                   key={key}
