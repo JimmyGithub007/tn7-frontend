@@ -100,7 +100,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
               {[
                 { name: "TN7 UNIVERSE", url: "/universe" },
                 { name: "TN7 WORLD LORE", url: "/lore" },
-                { name: "TN7 WORLD MAP", url: "/unity/map" },
+                { name: "TN7 WORLD MAP", url: "/worldmap" },
                 { name: "FAQS", url: "/faqs" }
               ].map((menu, key) => (
                 <Link key={key} href={menu.url}>

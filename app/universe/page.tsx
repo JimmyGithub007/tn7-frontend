@@ -12,7 +12,7 @@ import Link from 'next/link';
 
 const universes = [
     { id: 1, name: "TN7 WORLD LORE", image: "u1", url: "/lore" },
-    { id: 2, name: "TN7 WORLD MAP", image: "u2", url: "/unity/map" },
+    { id: 2, name: "TN7 WORLD MAP", image: "u2", url: "/worldmap" },
     { id: 3, name: "PUBLIC ENTRIES", image: "u3", url: "/publicentries" },
     { id: 4, name: "VIDEOS", image: "u4", url: "/videos" }
 ];

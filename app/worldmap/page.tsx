@@ -11,7 +11,6 @@ import { TbPlayerTrackNextFilled } from "react-icons/tb";
 
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 //const lilita_one = Lilita_One({ subsets: ["latin"], weight: "400" });
 
@@ -36,12 +35,12 @@ const buildings = [
     { id: 9, name:"THE ENERGY FIELD", img: "Akio_EneygyField" },
 ];
 
-const UnityMap = () => {
+const WorldMap = () => {
     const { unityProvider, isLoaded, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
-        loaderUrl: "build/WorldMapScene.loader.js",
-        dataUrl: "build/WorldMapScene.data.unityweb",
-        frameworkUrl: "build/WorldMapScene.framework.js.unityweb",
-        codeUrl: "build/WorldMapScene.wasm.unityweb",
+        loaderUrl: "unity/build/WorldMapScene.loader.js",
+        dataUrl: "unity/build/WorldMapScene.data.unityweb",
+        frameworkUrl: "unity/build/WorldMapScene.framework.js.unityweb",
+        codeUrl: "unity/build/WorldMapScene.wasm.unityweb",
     });
     const loadingPercentage = Math.round(loadingProgression * 100);
 
@@ -148,8 +147,6 @@ const UnityMap = () => {
     useEffect(() => {
         if(loadingPercentage === 100) setChatId(0);
     }, [loadingPercentage])
-
-    return redirect('/worldmap');
 
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={() => {
@@ -273,4 +270,4 @@ const UnityMap = () => {
     );
 };
 
-export default UnityMap;
+export default WorldMap;
