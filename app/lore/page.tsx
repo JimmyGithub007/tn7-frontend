@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Navbar } from "@/components";
 import { TbArrowBackUp } from "react-icons/tb";
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 import Image from "next/image";
 import Link from "next/link";
@@ -51,18 +51,15 @@ const contents = [
     { id: "10", name: "REIKO CLAN", img: "b10", category: "badges" },
     { id: "11", name: "AKIO CLAN", img: "b11", category: "badges" },
     { id: "12", name: "PKCHUE", img: "b12", category: "badges" },
-
+    
     { id: "1", name: "DRAGON", img: "g1", category: "government" },
 ];
 
-const Lore = () => {
+const Content = () => {
     const searchParams = useSearchParams()
     
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [loreId, setLoreId] = useState<string>("0");
     const [category, setCategory] = useState<string>("locations");
-    const [loadingPercentage, setLoadingPercentage] = useState(0);
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [loreId, setLoreId] = useState<string>("0");
     const [imgHeight, setImgHeight] = useState<number>(0);
     const [isMobile, setIsMobile] = useState<boolean>(false);
 
@@ -72,20 +69,6 @@ const Lore = () => {
             if(searchParams.has("id")) setLoreId(searchParams.get("id") as string);
         }
     }, [searchParams]);
-
-    useEffect(() => {
-        // Simulate loading process
-        const interval = setInterval(() => {
-            setLoadingPercentage((prev) => {
-                if (prev >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => setIsLoaded(true), 500); // Delay after reaching 100%
-                    return 100;
-                }
-                return prev + 5; // Increase percentage every interval
-            });
-        }, 100); // 100 ms interval for smoother progress
-    }, []);
 
     const calculateImgHeight = () => {
         // 使用图片的比例或任何逻辑动态计算高度
@@ -116,10 +99,104 @@ const Lore = () => {
         };
     }, []);
 
+    return (    <div className="flex items-center h-full w-full">
+        <div className="h-full hidden lg:flex w-[350px] flex-col items-center justify-center -ml-16">
+            <Image className="z-10" alt="" width={1384} height={289} src={`/assets/images/lore/SideBarFrameTop.png`} priority />
+            <div className="relative flex flex-col z-10 w-full items">
+                <Image className="absolute h-[448px]" alt="" width={1384} height={1865} src={`/assets/images/lore/SideBarFrameBody.png`} priority />
+                {
+                    [
+                        { id: "characters", title: "CHARACTERS", url: "" },
+                        { id: "cities", title: "CITIES", url: "" },
+                        { id: "locations", title: "LOCATIONS", url: "" },
+                        { id: "clans", title: "CLANS", url: "" },
+                        { id: "currency", title: "CURRENCY", url: "" },
+                        { id: "badges", title: "BADGES", url: "" },
+                        { id: "government", title: "GOVERNMENT", url: "" }
+                    ].map((menu, key) => (
+                        <Link 
+                            href={{ pathname: '/lore', query: { category: menu.id, id: "0" } }}
+                            className={`cursor-pointer duration-300 flex h-16 items-center relative text-white z-10 ${menu.id != category && "hover:text-yellow-400"}`} key={key}>
+                            <AnimatePresence>
+                                {   menu.id === category &&
+                                    <motion.img initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="absolute h-[inherit]" alt="" width={1384} height={350} src={`/assets/images/lore/SideBarMenuHover.png`} />
+                                }
+                            </AnimatePresence>
+                            <span className="px-20 z-10">{menu.title}</span>
+                        </Link>
+                    ))
+                }
+            </div>
+            <Image className="z-10" alt="" width={1384} height={289} src={`/assets/images/lore/SideBarFrameBottom.png`} priority />
+        </div>
+        <div className="h-full w-full flex items-center justify-center">
+            <div className="relative w-[80%] max-w-[1000px] h-full flex items-center">
+                <Image className="invisible sm:visible absolute scale-[1.15]" alt="contentFrameHorizontal" height={2573} width={4374} src={`/assets/images/lore/ContentFrameHorizontal.png`} priority />
+                <Image className="sm:invisible absolute scale-[1.25]" alt="contentFrameVertical" height={2573} width={4374} src={`/assets/images/lore/ContentFrameVertical.png`} priority />
+                <AnimatePresence>
+                    {
+                        loreId != "0" ?
+                            <motion.div className={`absolute z-20 ${isMobile ? "scale-[1.25]" : "scale-[1.15]"}`}
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
+                            >
+                                <div className="relative">
+                                    <Image className="" alt="" width={1094} height={643} src={`/assets/images/lore/${category}/webp/b${loreId}${isMobile ? "Vertical" : "Horizontal"}.png`} priority quality={100} />
+                                    <motion.div className={`absolute ${ isMobile ? "top-[48%] w-[90%]" : "right-[6%] top-[18%] w-[45%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-10 text-white`} 
+                                        style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 70 / 100 }}
+                                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
+                                    >
+                                        <div className="font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">{contents.find(e => e.category === category && e.id === loreId)?.name}</div>
+                                        <div className="text-xs md:text-sm lg:text-md xl:text-lg">
+                                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+                                        </div>
+                                    </motion.div>
+                                    <Link href={{ pathname: '/lore', query: { category: category, id: "0" } }}>
+                                        <TbArrowBackUp className={`absolute cursor-pointer duration-200 hover:opacity-50 ${isMobile ? "right-[12%]" : "right-[6%]"} text-white text-4xl top-[10%] z-20`} />
+                                    </Link>
+                                </div>
+                            </motion.div> :
+                            <div className="absolute filter-bar gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 z-10 overflow-x-hidden overflow-y-auto p-4" style={{ height: imgHeight * 80 / 100 }}>
+                                {
+                                    contents.filter(e => e.category === category).map((value, key) => (
+                                        <motion.div key={key} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, delay: 0.1 * key }} className="cursor-pointer group relative">
+                                            <Link href={{ pathname: '/lore', query: { category: category, id: value.id } }}>
+                                                <Image className="duration-300 group-hover:scale-105 group-hover:saturate-200 z-10" alt="" height={532} width={532} src={`/assets/images/lore/${category}/webp/${value.img}.webp`} priority />
+                                                <div className="absolute bottom-6 font-bold px-4 text-white text-center text-sm sm:text-md/5 md:text-lg/5 lg:text-xl/5 w-full" style={{ textShadow: "black 1px 4px" }}>{value.name}</div>
+                                            </Link>
+                                        </motion.div>
+                                    ))
+                                }
+                            </div>
+                    }
+                </AnimatePresence>
+            </div>
+        </div>
+    </div>)
+}
+
+const Lore = () => {
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [loadingPercentage, setLoadingPercentage] = useState(0);
+
+    useEffect(() => {
+        // Simulate loading process
+        const interval = setInterval(() => {
+            setLoadingPercentage((prev) => {
+                if (prev >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => setIsLoaded(true), 500); // Delay after reaching 100%
+                    return 100;
+                }
+                return prev + 5; // Increase percentage every interval
+            });
+        }, 100); // 100 ms interval for smoother progress
+    }, []);
+
     return (<div className="fixed h-screen w-full">
         <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/lore/Background.png`} priority />
         <AnimatePresence>
-            {!isLoaded && (
+            {   !isLoaded && (
                 <motion.div
                     id="loader"
                     className="absolute flex h-full items-center justify-center left-0 w-full top-0 bg-black z-[100]"
@@ -133,79 +210,13 @@ const Lore = () => {
             )}
         </AnimatePresence>
         <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} />
-        <div className="flex items-center h-full w-full">
-            <div className="h-full hidden lg:flex w-[350px] flex-col items-center justify-center -ml-16">
-                <Image className="z-10" alt="" width={1384} height={289} src={`/assets/images/lore/SideBarFrameTop.png`} priority />
-                <div className="relative flex flex-col z-10 w-full items">
-                    <Image className="absolute h-[448px]" alt="" width={1384} height={1865} src={`/assets/images/lore/SideBarFrameBody.png`} priority />
-                    {
-                        [
-                            { id: "characters", title: "CHARACTERS", url: "" },
-                            { id: "cities", title: "CITIES", url: "" },
-                            { id: "locations", title: "LOCATIONS", url: "" },
-                            { id: "clans", title: "CLANS", url: "" },
-                            { id: "currency", title: "CURRENCY", url: "" },
-                            { id: "badges", title: "BADGES", url: "" },
-                            { id: "government", title: "GOVERNMENT", url: "" }
-                        ].map((menu, key) => (
-                            <Link 
-                                href={{ pathname: '/lore', query: { category: menu.id, id: "0" } }}
-                                className={`cursor-pointer duration-300 flex h-16 items-center relative text-white z-10 ${menu.id != category && "hover:text-yellow-400"}`} key={key}>
-                                <AnimatePresence>
-                                    {   menu.id === category &&
-                                        <motion.img initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="absolute h-[inherit]" alt="" width={1384} height={350} src={`/assets/images/lore/SideBarMenuHover.png`} />
-                                    }
-                                </AnimatePresence>
-                                <span className="px-20 z-10">{menu.title}</span>
-                            </Link>
-                        ))
-                    }
-                </div>
-                <Image className="z-10" alt="" width={1384} height={289} src={`/assets/images/lore/SideBarFrameBottom.png`} priority />
+        <Suspense fallback={
+            <div className="absolute flex h-full items-center justify-center left-0 w-full top-0 bg-black z-[100]">
+                <span className="font-bold text-5xl text-white">0%</span>
             </div>
-            <div className="h-full w-full flex items-center justify-center">
-                <div className="relative w-[80%] max-w-[1000px] h-full flex items-center">
-                    <Image className="invisible sm:visible absolute scale-[1.15]" alt="contentFrameHorizontal" height={2573} width={4374} src={`/assets/images/lore/ContentFrameHorizontal.png`} priority />
-                    <Image className="sm:invisible absolute scale-[1.25]" alt="contentFrameVertical" height={2573} width={4374} src={`/assets/images/lore/ContentFrameVertical.png`} priority />
-                    <AnimatePresence>
-                        {
-                            loreId != "0" ?
-                                <motion.div className={`absolute z-20 ${isMobile ? "scale-[1.25]" : "scale-[1.15]"}`}
-                                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
-                                >
-                                    <div className="relative">
-                                        <Image className="" alt="" width={1094} height={643} src={`/assets/images/lore/${category}/webp/b${loreId}${isMobile ? "Vertical" : "Horizontal"}.png`} priority quality={100} />
-                                        <motion.div className={`absolute ${ isMobile ? "top-[48%] w-[90%]" : "right-[6%] top-[18%] w-[45%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-10 text-white`} 
-                                            style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 70 / 100 }}
-                                            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
-                                        >
-                                            <div className="font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">{contents.find(e => e.category === category && e.id === loreId)?.name}</div>
-                                            <div className="text-xs md:text-sm lg:text-md xl:text-lg">
-                                                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                                            </div>
-                                        </motion.div>
-                                        <Link href={{ pathname: '/lore', query: { category: category, id: "0" } }}>
-                                            <TbArrowBackUp className={`absolute cursor-pointer duration-200 hover:opacity-50 ${isMobile ? "right-[12%]" : "right-[6%]"} text-white text-4xl top-[10%] z-20`} />
-                                        </Link>
-                                    </div>
-                                </motion.div> :
-                                <div className="absolute filter-bar gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 z-10 overflow-x-hidden overflow-y-auto p-4" style={{ height: imgHeight * 80 / 100 }}>
-                                    {
-                                        contents.filter(e => e.category === category).map((value, key) => (
-                                            <motion.div key={key} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, delay: 0.1 * key }} className="cursor-pointer group relative">
-                                                <Link href={{ pathname: '/lore', query: { category: category, id: value.id } }}>
-                                                    <Image className="duration-300 group-hover:scale-105 group-hover:saturate-200 z-10" alt="" height={532} width={532} src={`/assets/images/lore/${category}/webp/${value.img}.webp`} priority />
-                                                    <div className="absolute bottom-6 font-bold px-4 text-white text-center text-sm sm:text-md/5 md:text-lg/5 lg:text-xl/5 w-full" style={{ textShadow: "black 1px 4px" }}>{value.name}</div>
-                                                </Link>
-                                            </motion.div>
-                                        ))
-                                    }
-                                </div>
-                        }
-                    </AnimatePresence>
-                </div>
-            </div>
-        </div>
+        }>
+            <Content />
+        </Suspense>
     </div>)
 }
 
