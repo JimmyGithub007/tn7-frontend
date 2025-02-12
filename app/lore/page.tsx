@@ -9,16 +9,50 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Image from "next/image";
 import Link from "next/link";
 
-const childrens = [
-    { id: "1", name: "THE TEMPLE ON THE HILL", img: "b1", categoryId: 2 },
-    { id: "2", name: "THE PINNACLE TOWERS", img: "b2", categoryId: 2 },
-    { id: "3", name: "SILVERCOIN DISTRICT", img: "b3", categoryId: 2 },
-    { id: "4", name: "THE WATERING HOLE", img: "b4", categoryId: 2 },
-    { id: "5", name: "KOI AND LOTUS CLUB", img: "b5", categoryId: 2 },
-    { id: "6", name: "THE CODEX", img: "b6", categoryId: 2 },
-    { id: "7", name: "THE GATEL", img: "b7", categoryId: 2 },
-    { id: "8", name: "AKIO INDUSTRIES HQ", img: "b8", categoryId: 2 },
-    { id: "9", name: "THE ENERGY FIELD", img: "b9", categoryId: 2 },
+const contents = [
+    { id: "1", name: "SHIN", img: "c1", category: "characters" },
+    { id: "2", name: "GAMA", img: "c2", category: "characters" },
+    { id: "3", name: "EDWARD", img: "c3", category: "characters" },
+    { id: "4", name: "HARU", img: "c4", category: "characters" },
+    { id: "5", name: "BARTENDER", img: "c5", category: "characters" },
+    { id: "6", name: "GANGSTER", img: "c6", category: "characters" },
+    { id: "7", name: "GANGSTER", img: "c7", category: "characters" },
+    { id: "8", name: "GANGSTER", img: "c8", category: "characters" },
+
+    { id: "1", name: "THE TEMPLE ON THE HILL", img: "b1", category: "locations" },
+    { id: "2", name: "THE PINNACLE TOWERS", img: "b2", category: "locations" },
+    { id: "3", name: "SILVERCOIN DISTRICT", img: "b3", category: "locations" },
+    { id: "4", name: "THE WATERING HOLE", img: "b4", category: "locations" },
+    { id: "5", name: "KOI AND LOTUS CLUB", img: "b5", category: "locations" },
+    { id: "6", name: "THE CODEX", img: "b6", category: "locations" },
+    { id: "7", name: "THE GATEL", img: "b7", category: "locations" },
+    { id: "8", name: "AKIO INDUSTRIES HQ", img: "b8", category: "locations" },
+    { id: "9", name: "THE ENERGY FIELD", img: "b9", category: "locations" },
+
+    { id: "1", name: "THE WHITE LILY", img: "c1", category: "clans" },
+    { id: "2", name: "THE REAPER'S HAND", img: "c2", category: "clans" },
+    { id: "3", name: "AKIO'S INDUSTRIES", img: "c3", category: "clans" },
+    { id: "4", name: "THE MISFITS", img: "c4", category: "clans" },
+
+    { id: "1", name: "LUNEX (LX)", img: "c1", category: "currency" },
+    { id: "2", name: "LUNEX (LX)", img: "c2", category: "currency" },
+    { id: "3", name: "LUNEX (LX)", img: "c3", category: "currency" },
+    { id: "4", name: "LUNEX (LX)", img: "c4", category: "currency" },
+
+    { id: "1", name: "CANE", img: "b1", category: "badges" },
+    { id: "2", name: "LILY", img: "b2", category: "badges" },
+    { id: "3", name: "BLADE", img: "b3", category: "badges" },
+    { id: "4", name: "GONG", img: "b4", category: "badges" },
+    { id: "5", name: "BAT", img: "b5", category: "badges" },
+    { id: "6", name: "HARU HAT", img: "b6", category: "badges" },
+    { id: "7", name: "AKIO ARM", img: "b7", category: "badges" },
+    { id: "8", name: "ASSASSIN", img: "b8", category: "badges" },
+    { id: "9", name: "SHIN CLAN", img: "b9", category: "badges" },
+    { id: "10", name: "REIKO CLAN", img: "b10", category: "badges" },
+    { id: "11", name: "AKIO CLAN", img: "b11", category: "badges" },
+    { id: "12", name: "PKCHUE", img: "b12", category: "badges" },
+
+    { id: "1", name: "DRAGON", img: "g1", category: "government" },
 ];
 
 const Lore = () => {
@@ -103,13 +137,14 @@ const Lore = () => {
             <div className="h-full hidden lg:flex w-[350px] flex-col items-center justify-center -ml-16">
                 <Image className="z-10" alt="" width={1384} height={289} src={`/assets/images/lore/SideBarFrameTop.png`} priority />
                 <div className="relative flex flex-col z-10 w-full items">
-                    <Image className="absolute h-96" alt="" width={1384} height={1865} src={`/assets/images/lore/SideBarFrameBody.png`} priority />
+                    <Image className="absolute h-[448px]" alt="" width={1384} height={1865} src={`/assets/images/lore/SideBarFrameBody.png`} priority />
                     {
                         [
                             { id: "characters", title: "CHARACTERS", url: "" },
                             { id: "cities", title: "CITIES", url: "" },
                             { id: "locations", title: "LOCATIONS", url: "" },
                             { id: "clans", title: "CLANS", url: "" },
+                            { id: "currency", title: "CURRENCY", url: "" },
                             { id: "badges", title: "BADGES", url: "" },
                             { id: "government", title: "GOVERNMENT", url: "" }
                         ].map((menu, key) => (
@@ -139,12 +174,12 @@ const Lore = () => {
                                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
                                 >
                                     <div className="relative">
-                                        <Image className="" alt="" width={1094} height={643} src={`/assets/images/lore/webp/b${loreId}${isMobile ? "Vertical" : "Horizontal"}.png`} priority quality={100} />
+                                        <Image className="" alt="" width={1094} height={643} src={`/assets/images/lore/${category}/webp/b${loreId}${isMobile ? "Vertical" : "Horizontal"}.png`} priority quality={100} />
                                         <motion.div className={`absolute ${ isMobile ? "top-[48%] w-[90%]" : "right-[6%] top-[18%] w-[45%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-10 text-white`} 
                                             style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 70 / 100 }}
                                             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
                                         >
-                                            <div className="font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">{childrens.find(e => e.id === loreId)?.name}</div>
+                                            <div className="font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">{contents.find(e => e.category === category && e.id === loreId)?.name}</div>
                                             <div className="text-xs md:text-sm lg:text-md xl:text-lg">
                                                 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
                                             </div>
@@ -156,10 +191,10 @@ const Lore = () => {
                                 </motion.div> :
                                 <div className="absolute filter-bar gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 z-10 overflow-x-hidden overflow-y-auto p-4" style={{ height: imgHeight * 80 / 100 }}>
                                     {
-                                        childrens.map((value, key) => (
-                                            <motion.div key={key} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 * key }} className="cursor-pointer group relative">
+                                        contents.filter(e => e.category === category).map((value, key) => (
+                                            <motion.div key={key} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, delay: 0.1 * key }} className="cursor-pointer group relative">
                                                 <Link href={{ pathname: '/lore', query: { category: category, id: value.id } }}>
-                                                    <Image className="duration-300 group-hover:scale-105 group-hover:saturate-200 z-10" alt="" height={2048} width={2048} src={`/assets/images/lore/webp/${value.img}.webp`} priority />
+                                                    <Image className="duration-300 group-hover:scale-105 group-hover:saturate-200 z-10" alt="" height={532} width={532} src={`/assets/images/lore/${category}/webp/${value.img}.webp`} priority />
                                                     <div className="absolute bottom-6 font-bold px-4 text-white text-center text-sm sm:text-md/5 md:text-lg/5 lg:text-xl/5 w-full" style={{ textShadow: "black 1px 4px" }}>{value.name}</div>
                                                 </Link>
                                             </motion.div>
