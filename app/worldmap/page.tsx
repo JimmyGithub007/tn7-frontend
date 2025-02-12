@@ -152,7 +152,7 @@ const WorldMap = () => {
                 setChatId(0);         
             } else {
                 const timeout = setTimeout(() => {
-                    sendMessage(`World Map`, "StartWorldMap");
+                    setChatId(6);
                 }, 1000);
         
                 return () => clearTimeout(timeout);
