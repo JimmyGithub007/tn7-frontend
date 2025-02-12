@@ -81,6 +81,7 @@ const WorldMap = () => {
             return () => clearInterval(interval); // 清理定时器
         } else if (chatId === 6) {
             sendMessage(`World Map`, "StartWorldMap");
+            localStorage.setItem("isCompletedGuide", "true");
         }
     }, [chatId]); // 当 chatId 变化时触发
 
@@ -145,8 +146,19 @@ const WorldMap = () => {
     //end
 
     useEffect(() => {
-        if(loadingPercentage === 100) setChatId(0);
-    }, [loadingPercentage])
+        const completed = localStorage.getItem("isCompletedGuide");
+        if (loadingPercentage === 100) {
+            if(!completed) {
+                setChatId(0);         
+            } else {
+                const timeout = setTimeout(() => {
+                    sendMessage(`World Map`, "StartWorldMap");
+                }, 1000);
+        
+                return () => clearTimeout(timeout);
+            }
+        }
+    }, [loadingPercentage]);
 
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={() => {
@@ -226,20 +238,24 @@ const WorldMap = () => {
                             loading="lazy" // Enable lazy loading
                             onError={() => console.error("Failed to load image.")}
                         />
-                        <Link href={{ pathname: "/lore", query: { category: "locations", id: buildingId } }}>
+                        {   imageLoaded &&
+                            <Link href={{ pathname: "/lore", query: { category: "locations", id: buildingId } }}>
+                                <button
+                                    className="absolute bottom-[20%] duration-200 flex group items-center justify-center left-60 text-white underline z-20 hover:opacity-60">
+                                    READ MORE
+                                    <IoIosArrowRoundForward className="duration-200 -rotate-45 group-hover:rotate-0 text-4xl" />
+                                </button>
+                            </Link>
+                        }
+                        {   imageLoaded &&
                             <button
-                                className="absolute bottom-[20%] duration-200 flex group items-center justify-center left-60 text-white underline z-20 hover:opacity-60">
-                                READ MORE
-                                <IoIosArrowRoundForward className="duration-200 -rotate-45 group-hover:rotate-0 text-4xl" />
+                                onClick={() => {
+                                    sendMessage(`b${buildingId}_0`, "UnClickBuilding");
+                                }}
+                                className="absolute bg-white duration-300 p-2 right-2 rounded-full shadow-xl shadow-black/50 text-3xl top-4 z-20 hover:bg-black hover:text-white">
+                                <CgClose />
                             </button>
-                        </Link>
-                        <button
-                            onClick={() => {
-                                sendMessage(`b${buildingId}_0`, "UnClickBuilding");
-                            }}
-                            className="absolute bg-white duration-300 p-2 right-2 rounded-full shadow-xl shadow-black/50 text-3xl top-4 z-20 hover:bg-black hover:text-white">
-                            <CgClose />
-                        </button>
+                        }
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -247,10 +263,10 @@ const WorldMap = () => {
                 {
                     chatId > -1 && chatId < 6 && <div className="absolute bottom-0 z-50 flex justify-center text-white w-full">
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1, transition: { delay: 1 } }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.5 }}
+                            initial={{ opacity: 0, y: 100 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 100 }}
+                            transition={{ duration: 0.5, delay: 1 }}
                             className="w-full lg:w-[1080px] relative">
                             <Image alt="character" width={1494} height={688} src={`/assets/images/worldmap/webp/character.webp`} />
                             <div className="absolute flex h-full items-center justify-center p-4 left-[10%] text-lg md:text-xl lg:text-2xl xl:text-3xl top-[8%] w-[50%]">
