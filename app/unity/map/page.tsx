@@ -5,27 +5,22 @@ import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
 //import { Lilita_One } from "next/font/google";
 import { Navbar } from "@/components";
-
-import Image from "next/image";
 import { CgClose } from "react-icons/cg";
 import { IoIosArrowRoundForward } from "react-icons/io";
+import { TbPlayerTrackNextFilled } from "react-icons/tb";
+
+import Image from "next/image";
 import Link from "next/link";
 
 //const lilita_one = Lilita_One({ subsets: ["latin"], weight: "400" });
 
 const chatContent = [
-    { content: "Greetings, I am Alice. Welcome to TN7 Universe!", img: "Alice_Default" },
-    { content: "Your arrival has been expected. Please follow me.", img: "Alice_Blush" },
-    { content: "Let me introduce you to the TN7 Universe!", img: "Alice_Embarrassed" },
-    { content: "TN7 is VIU's first orginal digital comic series, a gripping 10 episode saga.", img: "Alice_Happy" },
-];
-
-const maps = [
-    { id: 1, name: "Ocean", },
-    { id: 2, name: "Castel", },
-    { id: 3, name: "Forest 1", },
-    { id: 4, name: "Mountain", },
-    { id: 5, name: "Forest 2", }
+    { content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry." },
+    { content: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s." },
+    { content: "When an unknown printer took a galley of type and scrambled it to make a type specimen book." },
+    { content: "It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged." },
+    { content: "It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages." },
+    { content: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout." },
 ];
 
 const buildings = [
@@ -49,16 +44,24 @@ const UnityMap = () => {
     });
     const loadingPercentage = Math.round(loadingProgression * 100);
 
-    const [chatId, setChatId] = useState<number>(0); // 当前聊天 ID
-    const [buildingId, setBuildingId] = useState<number>(0); // 当前聊天 ID
-    const [hoverBuildingId, setHoverBuildingId] = useState<number>(0); // 当前聊天 ID
-    const [displayText, setDisplayText] = useState<string>(""); // 当前显示的文字
-    const [isAnimating, setIsAnimating] = useState<boolean>(false); // 是否正在显示文字动画
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [ chatId, setChatId ] = useState<number>(-1); // 当前聊天 ID
+    const [ buildingId, setBuildingId ] = useState<number>(0); // 当前聊天 ID
+    const [ hoverBuildingId, setHoverBuildingId ] = useState<number>(0); // 当前聊天 ID
+    const [ displayText, setDisplayText ] = useState<string>(""); // 当前显示的文字
+    const [ isAnimating, setIsAnimating ] = useState<boolean>(false); // 是否正在显示文字动画
+    const [ isMenuOpen, setIsMenuOpen ] = useState(false);
     const [ mousePosition, setMousePosition ] = useState({ x: 0, y: 0 });
 
     useEffect(() => {
-        if (chatId < 4) {
+        if(isMenuOpen) {
+            sendMessage(`World Map`, "StopWorldMap");
+        } else {
+            sendMessage(`World Map`, "StartWorldMap");
+        }
+    }, [isMenuOpen])
+
+    useEffect(() => {
+        if (chatId > -1 && chatId < 6) {
             // 重置显示文字并启动逐字显示动画
             const fullText = chatContent[chatId].content;
             let currentIndex = 0;
@@ -73,9 +76,11 @@ const UnityMap = () => {
                     clearInterval(interval);
                     setIsAnimating(false); // 动画完成
                 }
-            }, 30); // 每个字显示的时间间隔 (50ms)
+            }, 20); // 每个字显示的时间间隔 (50ms)
 
             return () => clearInterval(interval); // 清理定时器
+        } else if (chatId === 6) {
+            sendMessage(`World Map`, "StartWorldMap");
         }
     }, [chatId]); // 当 chatId 变化时触发
 
@@ -110,8 +115,8 @@ const UnityMap = () => {
     const [buildingName, setBuildingName] = useState<string>("");
 
     const generateRandomString = (length: number) => {
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
-      return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+        return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
     };
     
     const animateBuildingName = (finalName: string) => {
@@ -139,14 +144,16 @@ const UnityMap = () => {
     }, [hoverBuildingId]);
     //end
 
-    const handleNextChat = () => {
-        if (isAnimating) return; // 如果正在显示动画，不允许切换
-        setChatId((prevId) => (prevId + 1));
-    };
+    useEffect(() => {
+        if(loadingPercentage === 100) setChatId(0);
+    }, [loadingPercentage])
 
     return (
-        <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={handleNextChat}>
-            <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} />
+        <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={() => {
+            if (chatId === 6 || chatId < 0 || isAnimating) return; // 如果正在显示动画，不允许切换
+            setChatId((prevId) => (prevId + 1));
+        }}>
+            { buildingId === 0 && chatId === 6 && <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} /> }
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
             <AnimatePresence>{/*Loading Percentage For Unity*/}
                 {!isLoaded && (
@@ -236,38 +243,29 @@ const UnityMap = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-            {/*<AnimatePresence>
+            <AnimatePresence>
                 {
-                    chatId < 4 && <div
-                        className="absolute bottom-8 z-50 flex justify-center w-full">
+                    chatId > -1 && chatId < 6 && <div className="absolute bottom-0 z-50 flex justify-center text-white w-full">
                         <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "192px" }}
-                            exit={{ opacity: 0, height: 0 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1, transition: { delay: 1 } }}
+                            exit={{ opacity: 0 }}
                             transition={{ duration: 0.5 }}
-                            className="bg-blue-800 rounded-lg text-white py-8 px-12 w-full lg:w-[1280px] shadow-md relative">
-                            <div className="absolute top-0 text-2xl">Alice</div>
-                            <div className="border-slate-50/50 border-[1px] rounded-lg h-full flex items-center justify-center p-4">
+                            className="w-full lg:w-[1080px] relative">
+                            <Image alt="character" width={1494} height={688} src={`/assets/images/worldmap/webp/character.webp`} />
+                            <div className="absolute flex h-full items-center justify-center p-4 left-[10%] text-lg md:text-xl lg:text-2xl xl:text-3xl top-[8%] w-[50%]">
                                 {displayText}
                             </div>
                             {!isAnimating && <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="absolute bottom-0 flex gap-2 items-center text-sm">NEXT <TbPlayerTrackNextFilled />
+                                className="absolute bottom-[10%] flex gap-2 items-center left-[10%] text-xl">NEXT <TbPlayerTrackNextFilled />
                             </motion.div>}
-                            <motion.img
-                                initial={{ right: -50, opacity: 0 }}
-                                animate={{ right: 0, opacity: 1 }}
-                                transition={{ delay: 0.2, duration: 0.5 }}
-                                className="absolute bottom-0 w-60 right-0"
-                                alt="Alice"
-                                src={`/assets/images/Alice_VNSpriteSet/${chatContent[chatId]?.img}.png`}
-                            />
                         </motion.div>
                     </div>
                 }
-            </AnimatePresence>*/}
+            </AnimatePresence>
         </div>
     );
 };

@@ -2,19 +2,21 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
 const randomCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
 
 const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
+  const pathname = usePathname()
   const [menuText, setMenuText] = useState<string[]>(["", "", ""]);
   const [hoverState, setHoverState] = useState<boolean[]>([false, false, false]);
 
   useEffect(() => {
     if (!isOpenMenu) return;
 
-    const targetMenus = ["ABOUT", "TN7 UNIVERSE", "TN7 LORE", "TN7 WORLD MAP"];
+    const targetMenus = ["TN7 UNIVERSE", "TN7 LORE", "TN7 WORLD MAP", "FAQS"];
     const intervals: NodeJS.Timeout[] = [];
 
     targetMenus.forEach((menu, index) => {
@@ -93,24 +95,28 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
           exit={{ translateX: "100%" }}
           transition={{ type: "spring", stiffness: 80, damping: 20 }}
         >
-          <div className="pt-40 px-12">
+          <div className="flex flex-col gap-8 pt-40 px-12">
             <ul className="text-xl font-bold text-white">
               {[
-                { name: "ABOUT", url: "/" },
                 { name: "TN7 UNIVERSE", url: "/universe" },
                 { name: "TN7 WORLD LORE", url: "/lore" },
-                { name: "TN7 WORLD MAP", url: "/unity/map" }
+                { name: "TN7 WORLD MAP", url: "/unity/map" },
+                { name: "FAQS", url: "/faqs" }
               ].map((menu, key) => (
-                <li
-                  key={key}
-                  className={`border-b-2 border-slate-50/30 cursor-pointer duration-300 py-4 ${hoverState[key] ? "text-red-800" : "hover:text-red-800"
-                    }`}
-                  onMouseEnter={() => handleMouseEnter(key, menu.name)}
-                >
-                  <Link href={menu.url}>{menuText[key] || menu.name}</Link>
-                </li>
+                <Link key={key} href={menu.url}>
+                  <li
+                    className={`border-b-2 border-slate-50/30 duration-300 py-4 ${pathname.includes(menu.url) || hoverState[key] ? "text-red-800" : "hover:text-red-800" }`}
+                    onMouseEnter={() => handleMouseEnter(key, menu.name)}
+                  >
+                    {menuText[key] || menu.name}
+                  </li>                  
+                </Link>
               ))}
             </ul>
+            <div className="flex flex-col text-xs font-light text-slate-900">
+              <div>TERMS & CONDITIONS</div>
+              <div>PRIVACY POLICY</div>
+            </div>
           </div>
         </motion.div>
       )}
