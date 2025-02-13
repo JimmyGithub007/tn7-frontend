@@ -42,8 +42,8 @@ const WorldMap = () => {
         frameworkUrl: "unity/build/WorldMapScene.framework.js.unityweb",
         codeUrl: "unity/build/WorldMapScene.wasm.unityweb",
     });
-    const loadingPercentage = Math.round(loadingProgression * 100);
-
+    //const loadingPercentage = Math.round(loadingProgression * 100);
+    const [ loadingPercentage, setLoadingPercentage ] = useState<number>(0);
     const [ chatId, setChatId ] = useState<number>(-1); // 当前聊天 ID
     const [ buildingId, setBuildingId ] = useState<number>(0); // 当前聊天 ID
     const [ hoverBuildingId, setHoverBuildingId ] = useState<number>(0); // 当前聊天 ID
@@ -81,8 +81,11 @@ const WorldMap = () => {
 
             return () => clearInterval(interval); // 清理定时器
         } else if (chatId === 6) {
-            sendMessage(`World Map`, "StartWorldMap");
             localStorage.setItem("isCompletedGuide", "true");
+            const timeout = setTimeout(() => {
+                sendMessage(`World Map`, "StartWorldMap");
+            }, 1000);
+            return () => clearTimeout(timeout);
         }
     }, [chatId]); // 当 chatId 变化时触发
 
@@ -148,7 +151,8 @@ const WorldMap = () => {
 
     useEffect(() => {
         const completed = localStorage.getItem("isCompletedGuide");
-        if (loadingPercentage === 100) {
+        if (loadingProgression === 1) {
+            setLoadingPercentage(100);
             if(!completed) {
                 setChatId(0);         
             } else {
@@ -158,13 +162,26 @@ const WorldMap = () => {
         
                 return () => clearTimeout(timeout);
             }
+        } else if (loadingProgression >= 0.9) {
+            const interval = setInterval(() => {
+                setLoadingPercentage((prev) => {
+                    if (prev >= 99) {
+                        clearInterval(interval);
+                        return 100;
+                    }
+                    return prev + 1; // 模拟平滑增加
+                });
+            }, 200); // 每 200ms 增加 1%
+            return () => clearInterval(interval);
+        } else if (loadingProgression < 0.9) {
+            setLoadingPercentage(Math.round(loadingProgression * 100));
         }
-    }, [loadingPercentage]);
+    }, [loadingProgression]);
 
     useEffect(() => {
         if (isLoaded) {
-          const timer = setTimeout(() => setLoaderHidden(true), 100); // 确保动画有时间完成
-          return () => clearTimeout(timer);
+          const timeout = setTimeout(() => setLoaderHidden(true), 100); // 确保动画有时间完成
+          return () => clearTimeout(timeout);
         }
     }, [isLoaded]);
 
