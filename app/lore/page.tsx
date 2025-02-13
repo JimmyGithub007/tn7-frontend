@@ -131,8 +131,8 @@ const Content = () => {
         </div>
         <div className="h-full w-full flex items-center justify-center">
             <div className="relative w-[80%] max-w-[1000px] h-full flex items-center">
-                <Image className="invisible sm:visible absolute scale-[1.15]" alt="contentFrameHorizontal" height={2573} width={4374} src={`/assets/images/lore/ContentFrameHorizontal.png`} priority />
-                <Image className="sm:invisible absolute scale-[1.25]" alt="contentFrameVertical" height={2573} width={4374} src={`/assets/images/lore/ContentFrameVertical.png`} priority />
+                <Image className="invisible sm:visible absolute scale-[1.15]" alt="contentFrameHorizontal" height={1287} width={2187} src={`/assets/images/lore/webp/ContentFrameHorizontal.webp`} priority />
+                <Image className="sm:invisible absolute scale-[1.25]" alt="contentFrameVertical" height={2187} width={1287} src={`/assets/images/lore/webp/ContentFrameVertical.webp`} priority />
                 <AnimatePresence>
                     {
                         loreId != "0" ?
