@@ -170,7 +170,7 @@ const WorldMap = () => {
         if (loadingProgression === 1) {
             // 如果加载进度直接到 1，且 loadingPercentage 小于 90，则平滑增加到 100
             if (loadingPercentage < 90) {
-                smoothIncrease(loadingPercentage, 100, 50); // 50ms 更新一次，平滑增加
+                smoothIncrease(loadingPercentage, 100, 100); // 50ms 更新一次，平滑增加
             } else {
                 setLoadingPercentage(100);
             }
@@ -196,7 +196,8 @@ const WorldMap = () => {
                     intervalRef.current = null;
                     return end;
                 }
-                return prev + step;
+                let ps = prev + step;
+                return ps <= 100 ? ps : 100;
             });
         }, interval);
     };    
