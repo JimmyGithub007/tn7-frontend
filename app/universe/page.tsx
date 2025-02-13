@@ -115,8 +115,8 @@ const Universe = () => {
                                             width={821}
                                             height={1171}
                                             src={`/assets/images/universe/webp/${value.image}.webp`}
-                                            priority
-                                            quality={100}
+                                            placeholder="blur"
+                                            blurDataURL={`/assets/images/universe/webp/tiny/${value.image}.webp`}
                                         />
                                         <div className="absolute bottom-16 font-bold w-full text-md md:text-lg lg:text-xl xl:text-2xl text-center text-white">
                                             {value.name}
