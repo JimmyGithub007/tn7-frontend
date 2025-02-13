@@ -52,6 +52,25 @@ const WorldMap = () => {
     const [ isMenuOpen, setIsMenuOpen ] = useState(false);
     const [ mousePosition, setMousePosition ] = useState({ x: 0, y: 0 });
     const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
+    const [ showRotateWarning, setRotateShowWarning ] = useState(false);
+
+    useEffect(() => {
+        const checkOrientation = () => {
+            const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+            const isSmallScreen = window.innerWidth < 480;
+            setRotateShowWarning(isSmallScreen && isPortrait);
+        };
+
+        checkOrientation(); // 初始检测
+
+        window.addEventListener("resize", checkOrientation);
+        window.addEventListener("orientationchange", checkOrientation);
+
+        return () => {
+            window.removeEventListener("resize", checkOrientation);
+            window.removeEventListener("orientationchange", checkOrientation);
+        };
+    }, []);
 
     useEffect(() => {
         if(isMenuOpen) {
@@ -180,9 +199,9 @@ const WorldMap = () => {
                             clearInterval(interval);
                             return 100;
                         }
-                        return prev + 1; // 模拟平滑增加
+                        return prev + 1;
                     });
-                }, 50); // 每 200ms 增加 1%
+                }, 50);
                 return () => clearInterval(interval);
             } else {
                 setLoadingPercentage(100);
@@ -222,6 +241,23 @@ const WorldMap = () => {
                     >
                         <span className="font-bold text-5xl text-white">
                             {loadingPercentage}%
+                        </span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+            <AnimatePresence>
+                {   showRotateWarning && (
+                    <motion.div
+                        id="loader"
+                        className="absolute bg-white flex flex-col gap-4 h-full items-center justify-center left-0 w-full top-0 z-[100]"
+                        initial={{ y: 0 }}
+                        animate={{ y: 0 }}
+                        exit={{ y: "100%" }}
+                        transition={{ duration: 1, ease: "easeInOut" }}
+                    >
+                        <Image alt="rotatePhone" width={100} height={100} src={`/assets/images/worldmap/phone-rotate.gif`} />
+                        <span className="font-bold text-4xl text-center">
+                            Please rotate your device for better experience
                         </span>
                     </motion.div>
                 )}
