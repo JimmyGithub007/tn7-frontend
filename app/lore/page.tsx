@@ -140,7 +140,7 @@ const Content = () => {
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
                             >
                                 <div className="relative">
-                                    <Image className="" alt="" width={1094} height={643} src={`/assets/images/lore/${category}/webp/b${loreId}${isMobile ? "Vertical" : "Horizontal"}.png`} priority quality={100} />
+                                    <Image className="" alt="" width={2187} height={1287} src={`/assets/images/lore/${category}/webp/b${loreId}${isMobile ? "Vertical" : "Horizontal"}.webp`} priority quality={100} />
                                     <motion.div className={`absolute ${ isMobile ? "top-[48%] w-[90%]" : "right-[6%] top-[18%] w-[45%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-10 text-white`} 
                                         style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 70 / 100 }}
                                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
