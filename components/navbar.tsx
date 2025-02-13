@@ -128,7 +128,11 @@ const Navbar = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
   const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
 
   return (<>
-    <div className="flex fixed items-center justify-between navbar px-12 top-0 w-full z-50">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="flex fixed items-center justify-between navbar px-12 top-0 w-full z-50">
       <Image alt="logo" className="w-32" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} />
       <button onClick={() => {
         setIsOpenMenu(!isOpenMenu);
@@ -137,7 +141,7 @@ const Navbar = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
         <div className={`absolute bg-white duration-300 h-[4px] w-[36px] left-0 ${isOpenMenu ? "rotate-45 top-[16px]" : "rotate-0 top-[8px]"}`}></div>
         <div className={`absolute bg-white duration-300 h-[4px] left-0 ${isOpenMenu ? "rotate-[135deg] top-[16px] w-[36px] border-2" : "rotate-0 top-[24px] w-[28px]"}`}></div>
       </button>
-    </div>
+    </motion.div>
     <Sidebar isOpenMenu={isOpenMenu} />
   </>)
 }
