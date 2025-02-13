@@ -150,9 +150,8 @@ const WorldMap = () => {
     //end
 
     useEffect(() => {
-        const completed = localStorage.getItem("isCompletedGuide");
-        if (loadingProgression === 1) {
-            setLoadingPercentage(100);
+        if(loadingPercentage === 100) {
+            const completed = localStorage.getItem("isCompletedGuide");
             if(!completed) {
                 setChatId(0);         
             } else {
@@ -161,6 +160,25 @@ const WorldMap = () => {
                 }, 1000);
         
                 return () => clearTimeout(timeout);
+            }
+        }
+    }, [loadingPercentage]);
+
+    useEffect(() => {
+        if (loadingProgression === 1) {
+            if(loadingPercentage < 90) {
+                const interval = setInterval(() => {
+                    setLoadingPercentage((prev) => {
+                        if (prev >= 99) {
+                            clearInterval(interval);
+                            return 100;
+                        }
+                        return prev + 1; // 模拟平滑增加
+                    });
+                }, 50); // 每 200ms 增加 1%
+                return () => clearInterval(interval);
+            } else {
+                setLoadingPercentage(100);
             }
         } else if (loadingProgression >= 0.9) {
             const interval = setInterval(() => {
