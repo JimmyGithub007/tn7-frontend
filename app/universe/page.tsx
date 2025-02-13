@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import Image from 'next/image';
-import { Navbar } from '@/components';
+import { Navbar, ProgressiveImage } from '@/components';
 import Link from 'next/link';
 
 const universes = [
@@ -34,7 +34,7 @@ const Universe = () => {
                 }
                 return prev + 5; // Increase percentage every interval
             });
-        }, 100); // 100 ms interval for smoother progress
+        }, 50); // 100 ms interval for smoother progress
 
         // Mouse movement tracking for the parallax effect
         const handleMouseMove = (e: MouseEvent) => {
@@ -109,16 +109,15 @@ const Universe = () => {
                                     //viewport={{ once: true }}
                                     className="cursor-pointer relative h-full w-full">
                                     <Link href={value.url}>
-                                        <Image
-                                            className="w-full h-full object-cover duration-300 hover:saturate-[1.4]"
+                                        <ProgressiveImage
+                                            className="duration-300 hover:saturate-[1.4]"
+                                            lowQualitySrc={`/assets/images/universe/webp/tiny/${value.image}.webp`}
+                                            highQualitySrc={`/assets/images/universe/webp/${value.image}.webp`}
                                             alt={`universe ${value.name}`}
                                             width={821}
                                             height={1171}
-                                            src={`/assets/images/universe/webp/${value.image}.webp`}
-                                            placeholder="blur"
-                                            blurDataURL={`/assets/images/universe/webp/tiny/${value.image}.webp`}
                                         />
-                                        <div className="absolute bottom-16 font-bold w-full text-md md:text-lg lg:text-xl xl:text-2xl text-center text-white">
+                                        <div className="absolute bottom-[10%] font-bold w-full text-md md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-center text-white z-10">
                                             {value.name}
                                         </div>
                                     </Link>
