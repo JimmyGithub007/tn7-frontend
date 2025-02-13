@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
 //import { Lilita_One } from "next/font/google";
@@ -150,57 +150,58 @@ const WorldMap = () => {
     //end
 
     useEffect(() => {
-        if (loadingPercentage === 100) {
+        if(loadingPercentage === 100) {
             const completed = localStorage.getItem("isCompletedGuide");
-            const timeout = setTimeout(() => {
-                setChatId(completed ? 6 : 0);
-            }, 1000);
-            return () => clearTimeout(timeout);
+            if(!completed) {
+                setChatId(0);         
+            } else {
+                const timeout = setTimeout(() => {
+                    setChatId(6);
+                }, 1000);
+        
+                return () => clearTimeout(timeout);
+            }
         }
     }, [loadingPercentage]);
 
     useEffect(() => {
         if (loadingPercentage === 100) {
-            const timeout = setTimeout(() => setLoaderHidden(true), 500); // 确保动画有时间完成
+            const timeout = setTimeout(() => setLoaderHidden(true), 100); // 确保动画有时间完成
             return () => clearTimeout(timeout);
         }
     }, [loadingPercentage]);
 
     useEffect(() => {
         if (loadingProgression === 1) {
-            // 如果加载进度直接到 1，且 loadingPercentage 小于 90，则平滑增加到 100
-            if (loadingPercentage < 90) {
-                smoothIncrease(loadingPercentage, 100, 100); // 50ms 更新一次，平滑增加
+            if(loadingPercentage < 90) {
+                const interval = setInterval(() => {
+                    setLoadingPercentage((prev) => {
+                        if (prev >= 99) {
+                            clearInterval(interval);
+                            return 100;
+                        }
+                        return prev + 1; // 模拟平滑增加
+                    });
+                }, 50); // 每 200ms 增加 1%
+                return () => clearInterval(interval);
             } else {
                 setLoadingPercentage(100);
             }
         } else if (loadingProgression >= 0.9) {
-            smoothIncrease(loadingPercentage, 100, 200); // 200ms 更新一次，模拟到 100%
-        } else {
+            const interval = setInterval(() => {
+                setLoadingPercentage((prev) => {
+                    if (prev >= 99) {
+                        clearInterval(interval);
+                        return 100;
+                    }
+                    return prev + 1; // 模拟平滑增加
+                });
+            }, 200); // 每 200ms 增加 1%
+            return () => clearInterval(interval);
+        } else if (loadingProgression < 0.9) {
             setLoadingPercentage(Math.round(loadingProgression * 100));
         }
     }, [loadingProgression]);
-
-    const intervalRef = useRef<NodeJS.Timeout | null>(null);//useRef 跟踪 intervalId，防止多次触发 smoothIncrease 时创建重复的计时器。
-    // 平滑增加函数
-    const smoothIncrease = (start: number, end: number, interval: number) => {
-        if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-        }
-
-        const step = Math.max(1, Math.round((end - start) / 10));
-        intervalRef.current = setInterval(() => {
-            setLoadingPercentage((prev) => {
-                if (prev >= end) {
-                    clearInterval(intervalRef.current!);
-                    intervalRef.current = null;
-                    return end;
-                }
-                let ps = prev + step;
-                return ps <= 100 ? ps : 100;
-            });
-        }, interval);
-    };    
 
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={() => {
