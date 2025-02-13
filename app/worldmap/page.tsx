@@ -42,7 +42,6 @@ const WorldMap = () => {
         frameworkUrl: "unity/build/WorldMapScene.framework.js.unityweb",
         codeUrl: "unity/build/WorldMapScene.wasm.unityweb",
     });
-    const loadingPercentage = Math.round(loadingProgression * 100);
 
     const [ chatId, setChatId ] = useState<number>(-1); // 当前聊天 ID
     const [ buildingId, setBuildingId ] = useState<number>(0); // 当前聊天 ID
@@ -51,6 +50,9 @@ const WorldMap = () => {
     const [ isAnimating, setIsAnimating ] = useState<boolean>(false); // 是否正在显示文字动画
     const [ isMenuOpen, setIsMenuOpen ] = useState(false);
     const [ mousePosition, setMousePosition ] = useState({ x: 0, y: 0 });
+    const [ loadingPercentage, setLoadingPercentage ] = useState<number>(0);
+    const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
+
 
     useEffect(() => {
         if(isMenuOpen) {
@@ -146,19 +148,44 @@ const WorldMap = () => {
     //end
 
     useEffect(() => {
+        let interval: NodeJS.Timeout;
         const completed = localStorage.getItem("isCompletedGuide");
-        if (loadingPercentage === 100) {
-            if(!completed) {
-                setChatId(0);         
-            } else {
-                const timeout = setTimeout(() => {
-                    setChatId(6);
-                }, 1000);
-        
-                return () => clearTimeout(timeout);
-            }
+      
+        if (loadingPercentage < 100) {
+          if (loadingProgression < 0.9) {
+            setLoadingPercentage(Math.round(loadingProgression * 100));
+          } else if (loadingProgression >= 0.9 && loadingPercentage < 100) {
+            interval = setInterval(() => {
+              setLoadingPercentage((prev) => {
+                if (prev >= 99) {
+                  clearInterval(interval);
+                  return 100;
+                }
+                return prev + 1; // 模拟平滑增加
+              });
+            }, 200); // 每 200ms 增加 1%
+          }
+        } else {
+          // loadingPercentage 已达 100，执行后续操作
+          if (!completed) {
+            setChatId(0);
+          } else {
+            const timeout = setTimeout(() => {
+              setChatId(6);
+            }, 1000); // 等待 1 秒后切换到 chatId 6
+            return () => clearTimeout(timeout);
+          }
         }
-    }, [loadingPercentage]);
+        return () => clearInterval(interval);
+    }, [loadingProgression, loadingPercentage]);
+      
+
+    useEffect(() => {
+        if (isLoaded) {
+          const timer = setTimeout(() => setLoaderHidden(true), 100); // 确保动画有时间完成
+          return () => clearTimeout(timer);
+        }
+    }, [isLoaded]);
 
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={() => {
@@ -168,10 +195,10 @@ const WorldMap = () => {
             { buildingId === 0 && chatId === 6 && <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} /> }
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
             <AnimatePresence>{/*Loading Percentage For Unity*/}
-                {!isLoaded && (
+                {   !loaderHidden && (
                     <motion.div
                         id="loader"
-                        className="absolute flex h-full items-center justify-center left-0 w-full top-0 bg-black z-[100]"
+                        className="absolute bg-black flex h-full items-center justify-center left-0 w-full top-0 z-[100]"
                         initial={{ y: 0 }}
                         animate={{ y: 0 }}
                         exit={{ y: "100%" }}
@@ -261,12 +288,12 @@ const WorldMap = () => {
             </AnimatePresence>
             <AnimatePresence>
                 {
-                    chatId > -1 && chatId < 6 && <div className="absolute bottom-0 z-50 flex justify-center text-white w-full">
+                    loaderHidden && chatId > -1 && chatId < 6 && <div className="absolute bottom-0 z-50 flex justify-center text-white w-full">
                         <motion.div
                             initial={{ opacity: 0, y: 100 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 100 }}
-                            transition={{ duration: 0.5, delay: 1 }}
+                            transition={{ duration: 1.2, delay: 0.2 }}
                             className="w-full lg:w-[1080px] relative">
                             <Image alt="character" width={1494} height={688} src={`/assets/images/worldmap/webp/character.webp`} />
                             <div className="absolute flex h-full items-center justify-center p-4 left-[10%] text-lg md:text-xl lg:text-2xl xl:text-3xl top-[8%] w-[50%]">
