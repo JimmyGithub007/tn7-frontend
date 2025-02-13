@@ -165,6 +165,13 @@ const WorldMap = () => {
     }, [loadingPercentage]);
 
     useEffect(() => {
+        if (loadingPercentage === 100) {
+          const timeout = setTimeout(() => setLoaderHidden(true), 100); // 确保动画有时间完成
+          return () => clearTimeout(timeout);
+        }
+    }, [loadingPercentage]);
+
+    useEffect(() => {
         if (loadingProgression === 1) {
             if(loadingPercentage < 90) {
                 const interval = setInterval(() => {
@@ -195,13 +202,6 @@ const WorldMap = () => {
             setLoadingPercentage(Math.round(loadingProgression * 100));
         }
     }, [loadingProgression]);
-
-    useEffect(() => {
-        if (isLoaded) {
-          const timeout = setTimeout(() => setLoaderHidden(true), 100); // 确保动画有时间完成
-          return () => clearTimeout(timeout);
-        }
-    }, [isLoaded]);
 
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={() => {
