@@ -14,7 +14,9 @@ const Collapse = ({ children, title }: { children: ReactNode, title: string }) =
     }, [isOpen]);
 
     return <div ref={contentRef} className="border-2 border-white duration-300 flex flex-col gap-4 overflow-hidden p-4" style={{ height: height }}>
-        <div className={`${isOpen ? "text-red-800" : "text-white"} cursor-pointer duration-300 flex font-bold justify-between text-2xl`} onClick={() => setIsOpen(!isOpen)}>{title} <IoIosArrowDown className={`transform transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} /></div>
+        <div className={`${isOpen ? "text-red-800" : "text-white"} cursor-pointer duration-300 flex font-bold justify-between text-2xl`} onClick={() => setIsOpen(!isOpen)}>
+            <MaskText>{title}</MaskText> <IoIosArrowDown className={`transform transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+        </div>
         <div className={`flex flex-col gap-8 text-lg`}>
             {children}
         </div>
@@ -27,6 +29,7 @@ const Faqs = () => {
     return (<div className="bg-black flex justify-center min-h-screen relative overflow-x-hidden w-full">
         <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} />
         <div className="flex flex-col gap-8 px-12 py-36 2xl:w-[1280px] 2xl:px-0 text-white">
+            <div className="font-bold text-6xl text-center">FAQs</div>
             <div className="flex flex-col gap-4">
                 <MaskText className="font-bold text-4xl">Digital Comic Series</MaskText>
                 <div className="border-t-4">
