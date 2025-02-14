@@ -31,7 +31,7 @@ const Faqs = () => {
                 <MaskText className="font-bold text-4xl">Digital Comic Series</MaskText>
                 <div className="border-t-4">
                     <Collapse title="Q: What is the digital comic series?">
-                        <MaskText>A: The digital comic series is the first edition to the TN7 universe - the Genesis Arc is Viu's first-ever digital comic series. This series when launched will be available on our website, providing a rich, visual narrative for fans to enjoy.</MaskText>
+                        <MaskText>A: The digital comic series is the first edition to the TN7 universe - the Genesis Arc is Viu&apos;s first-ever digital comic series. This series when launched will be available on our website, providing a rich, visual narrative for fans to enjoy.</MaskText>
                     </Collapse>
                 </div>
             </div>
@@ -52,7 +52,7 @@ const Faqs = () => {
                         <MaskText>Joining the whitelist gives you priority access and special privileges, making sure you are among the first to enjoy these unique benefits. You can join our whitelist [here].</MaskText>
                     </Collapse>
                     <Collapse title="Q: What are NFTs and how do they work?">
-                        <MaskText>A: NFTs (Non-Fungible Tokens) are unique digital assets that grant you certain rights within the TN7 universe. We will guide you through the process, making it easy even if you're new to NFTs.</MaskText>
+                        <MaskText>A: NFTs (Non-Fungible Tokens) are unique digital assets that grant you certain rights within the TN7 universe. We will guide you through the process, making it easy even if you&apos;re new to NFTs.</MaskText>
                     </Collapse>
                     <Collapse title="Q: Which blockchain will the NFTs live on?">
                         <MaskText>A: It will be on the Ethereum blockchain.</MaskText>
@@ -66,7 +66,7 @@ const Faqs = () => {
                         <MaskText>A: In the near future, you will have the opportunity to contribute and vote on stories, participate in content creation initiatives, and collaborate with other members to shape the TN7 universe. Your involvement will be crucial in driving the evolution and expansion of our world. Stay tuned for exciting updates and new ways to engage!</MaskText>
                     </Collapse>
                     <Collapse title="Q: What are creator points, and how can you benefit from them?">
-                        <MaskText>A: Creator points are rewards earned by contributing to the TN7 universe. While they will come into play at a later time, these points can eventually be exchanged for exclusive rewards, event tickets, and more. It's an exciting way to be recognised and rewarded for your contributions.</MaskText>
+                        <MaskText>A: Creator points are rewards earned by contributing to the TN7 universe. While they will come into play at a later time, these points can eventually be exchanged for exclusive rewards, event tickets, and more. It&apos;s an exciting way to be recognised and rewarded for your contributions.</MaskText>
                     </Collapse>
                     <Collapse title="Q: How can I stay updated on TN7 news and events?">
                         <MaskText>A: Follow us on our social media channels and subscribe to our newsletter to stay updated on the latest news, events, and content drops in the TN7 universe.</MaskText>
