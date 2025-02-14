@@ -50,6 +50,18 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
     };
   }, [isOpenMenu]);
 
+  useEffect(() => {
+    if (isOpenMenu) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpenMenu]);
+
   const handleMouseEnter = (index: number, targetText: string) => {
     setHoverState((prev) => {
       const updated = [...prev];
@@ -89,7 +101,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
     <AnimatePresence>
       {isOpenMenu && (
         <motion.div
-          className="absolute bg-white/20 right-0 h-screen backdrop-blur-md overflow-y-auto w-full md:w-[500px] z-[40]"
+          className="fixed bg-white/20 right-0 h-screen backdrop-blur-md overflow-y-auto w-full md:w-[500px] z-[40]"
           initial={{ translateX: "100%" }}
           animate={{ translateX: "0%" }}
           exit={{ translateX: "100%" }}
@@ -105,11 +117,11 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
               ].map((menu, key) => (
                 <Link key={key} href={menu.url}>
                   <li
-                    className={`border-b-2 border-slate-50/30 duration-300 py-4 ${pathname.includes(menu.url) || hoverState[key] ? "text-red-800" : "hover:text-red-800" }`}
+                    className={`border-b-2 border-slate-50/30 duration-300 py-4 ${pathname.includes(menu.url) || hoverState[key] ? "text-red-800" : "hover:text-red-800"}`}
                     onMouseEnter={() => handleMouseEnter(key, menu.name)}
                   >
                     {menuText[key] || menu.name}
-                  </li>                  
+                  </li>
                 </Link>
               ))}
             </ul>
@@ -124,11 +136,11 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
   );
 };
 
-const Navbar = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent?: (state: boolean) => void, isOpenMenuParent?:boolean }) => {
+const Navbar = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent?: (state: boolean) => void, isOpenMenuParent?: boolean }) => {
   const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
 
   return (<>
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -136,7 +148,7 @@ const Navbar = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
       <Image alt="logo" className="w-32" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} />
       <button onClick={() => {
         setIsOpenMenu(!isOpenMenu);
-        if(setIsOpenMenuParent) setIsOpenMenuParent(!isOpenMenuParent);
+        if (setIsOpenMenuParent) setIsOpenMenuParent(!isOpenMenuParent);
       }} className="duration-300 relative h-[36px] w-[36px] hover:opacity-80">
         <div className={`absolute bg-white duration-300 h-[4px] w-[36px] left-0 ${isOpenMenu ? "rotate-45 top-[16px]" : "rotate-0 top-[8px]"}`}></div>
         <div className={`absolute bg-white duration-300 h-[4px] left-0 ${isOpenMenu ? "rotate-[135deg] top-[16px] w-[36px] border-2" : "rotate-0 top-[24px] w-[28px]"}`}></div>

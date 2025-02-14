@@ -185,7 +185,7 @@ const WorldMap = () => {
 
     useEffect(() => {
         if (loadingPercentage === 100) {
-            const timeout = setTimeout(() => setLoaderHidden(true), 100); // 确保动画有时间完成
+            const timeout = setTimeout(() => setLoaderHidden(true), 200); // 确保动画有时间完成
             return () => clearTimeout(timeout);
         }
     }, [loadingPercentage]);
@@ -245,7 +245,7 @@ const WorldMap = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-            <AnimatePresence>
+            {/*<AnimatePresence>
                 {   showRotateWarning && (
                     <motion.div
                         id="loader"
@@ -261,7 +261,7 @@ const WorldMap = () => {
                         </span>
                     </motion.div>
                 )}
-            </AnimatePresence>
+            </AnimatePresence>*/}
             <div className="absolute h-12 overflow-hidden w-full" style={{ left: mousePosition.x, top: mousePosition.y }}>
                 <AnimatePresence>
                     {   hoverBuildingId > 0 && buildingId == 0 && (
