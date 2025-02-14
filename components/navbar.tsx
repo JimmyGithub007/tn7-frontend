@@ -111,7 +111,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
             <ul className="text-xl font-bold text-white">
               {[
                 { name: "TN7 UNIVERSE", url: "/universe" },
-                { name: "TN7 WORLD LORE", url: "/lore" },
+                { name: "TN7 LORE", url: "/lore" },
                 { name: "TN7 WORLD MAP", url: "/worldmap" },
                 { name: "FAQS", url: "/faqs" }
               ].map((menu, key) => (

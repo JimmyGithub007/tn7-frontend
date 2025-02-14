@@ -30,8 +30,8 @@ const buildings = [
     { id: 4, name:"THE WATERING HOLE", img: "Reiko_WateringHole" },
     { id: 5, name:"KOI AND LOTUS CLUB", img: "Reiko_KoiLotusClub" },
     { id: 6, name:"THE CODEX", img: "Reiko_TheCodex" },
-    { id: 7, name:"THE GATEL", img: "Akio_TheGatel" },
-    { id: 8, name:"AKIO INDUSTRIES HQ", img: "Akio_HQ" },
+    { id: 7, name:"THE Fort", img: "Akio_TheGatel" },
+    { id: 8, name:"AKIO INDUSTRIES", img: "Akio_HQ" },
     { id: 9, name:"THE ENERGY FIELD", img: "Akio_EneygyField" },
 ];
 
