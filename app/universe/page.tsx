@@ -9,15 +9,17 @@ import 'swiper/css/free-mode';
 import Image from 'next/image';
 import { Navbar, ProgressiveImage } from '@/components';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const universes = [
-    { id: 1, name: "TN7 WORLD LORE", image: "u1", url: "/lore" },
-    { id: 2, name: "TN7 WORLD MAP", image: "u2", url: "/worldmap" },
-    { id: 3, name: "PUBLIC ENTRIES", image: "u3", url: "/publicentries" },
-    { id: 4, name: "VIDEOS", image: "u4", url: "/videos" }
+    { id: 1, name: "COMICS", image: "u1", url: "/comics", available: true },
+    { id: 2, name: "TN7 LORE", image: "u2", url: "/lore", available: true },
+    { id: 3, name: "PUBLIC ENTRIES", image: "u3", url: "/publicentries", available: false },
+    { id: 4, name: "VIDEOS", image: "u4", url: "/videos", available: false }
 ];
 
 const Universe = () => {
+    const router = useRouter();
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [loadingPercentage, setLoadingPercentage] = useState(0);
@@ -102,25 +104,30 @@ const Universe = () => {
                                     transform: `translateX(${mousePosition.x * 0.02}px)`,
                                 }}
                             >
-                                <motion.div 
+                                <motion.div
                                     initial={{ opacity: 0 }}
                                     whileInView={{ opacity: 1 }}
                                     transition={{ duration: 0.5, delay: key * 0.1 }}
                                     //viewport={{ once: true }}
-                                    className="cursor-pointer relative h-full w-full">
-                                    <Link href={value.url}>
-                                        <ProgressiveImage
-                                            className="duration-300 hover:saturate-[1.4]"
-                                            lowQualitySrc={`/assets/images/universe/webp/tiny/${value.image}.webp`}
-                                            highQualitySrc={`/assets/images/universe/webp/${value.image}.webp`}
-                                            alt={`universe ${value.name}`}
-                                            width={821}
-                                            height={1171}
-                                        />
-                                        <div className="absolute bottom-[10%] font-bold w-full text-md md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-center text-white z-10">
-                                            {value.name}
+                                    onClick={() => value.available && router.push(value.url)}
+                                    className={`${value.available ? "cursor-pointer" : "cursor-not-allowed"} relative h-full w-full`}>
+                                    <ProgressiveImage
+                                        className=""
+                                        lowQualitySrc={`/assets/images/universe/webp/tiny/${value.image}.webp`}
+                                        highQualitySrc={`/assets/images/universe/webp/${value.image}.webp`}
+                                        alt={`universe ${value.name}`}
+                                        width={821}
+                                        height={1171}
+                                    />
+                                    {!value.available && <Image className="absolute opacity-90 top-0 z-[30]" alt="without frame" width={1642} height={2342} src={`/assets/images/universe/webp/Frame.webp`} />}
+                                    {!value.available &&
+                                        <div className="absolute flex font-bold h-full items-center justify-center text-md md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-center text-white top-0 w-full z-[30]">
+                                            COMING SOON
                                         </div>
-                                    </Link>
+                                    }
+                                    <div className="absolute bottom-[10%] font-bold text-md md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-center text-white w-full z-10">
+                                        {value.name}
+                                    </div>
                                 </motion.div>
                             </SwiperSlide>
                         ))}
