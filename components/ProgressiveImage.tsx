@@ -26,8 +26,8 @@ const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
         <Image 
             alt=""
             className="blur-sm"
-            height={1000}
-            width={1000}
+            height={5000}
+            width={5000}
             src={lowQualitySrc}
             priority
         />

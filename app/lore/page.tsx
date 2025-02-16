@@ -144,8 +144,15 @@ const Content = () => {
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
                             >
                                 <div className="relative">
-                                    <Image className="" alt="" width={2187} height={1287} src={`/assets/images/lore/${category}/webp/b${loreId}${isMobile ? "Vertical" : "Horizontal"}.webp`} priority quality={100} />
-                                    <motion.div className={`absolute ${ isMobile ? "top-[47%] w-[90%]" : "right-[6%] top-[18%] w-[45%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-10 text-white`} 
+                                    <ProgressiveImage
+                                        className="duration-300 group-hover:scale-105 group-hover:saturate-200"
+                                        lowQualitySrc={`/assets/images/lore/${category}/webp/tiny/b${loreId}${isMobile ? "Vertical" : "Horizontal"}.webp`}
+                                        highQualitySrc={`/assets/images/lore/${category}/webp/b${loreId}${isMobile ? "Vertical" : "Horizontal"}.webp`}
+                                        alt={``}
+                                        width={2187}
+                                        height={1287}
+                                    />
+                                    <motion.div className={`absolute ${ isMobile ? "top-[47%] w-[90%]" : "right-[6%] top-[18%] w-[45%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-10 text-white z-20`} 
                                         style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 70 / 100 }}
                                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
                                     >
