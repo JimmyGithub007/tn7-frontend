@@ -154,16 +154,20 @@ const Content = () => {
                                     />
                                     <motion.div className={`absolute ${ isMobile ? "top-[47%] w-[90%]" : "right-[6%] top-[18%] w-[45%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-10 text-white z-20`} 
                                         style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 70 / 100 }}
-                                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
+                                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.7 }}
                                     >
                                         <div className="font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">{contents.find(e => e.category === category && e.id === loreId)?.name}</div>
                                         <div className="text-xs md:text-sm lg:text-md xl:text-lg">
                                             Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
                                         </div>
                                     </motion.div>
-                                    <Link href={{ pathname: '/lore', query: { category: category, id: "0" } }}>
-                                        <TbArrowBackUp className={`absolute cursor-pointer duration-200 hover:opacity-50 ${isMobile ? "left-[12%] top-[5%]" : "right-[6%] top-[10%]"} text-white text-4xl z-20`} />
-                                    </Link>
+                                    <motion.div 
+                                        initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2, delay: 0.7 }}
+                                        className={`absolute cursor-pointer duration-200 hover:opacity-50 ${isMobile ? "left-[12%] top-[5%]" : "right-[6%] top-[10%]"} text-white text-4xl z-20`}>
+                                        <Link href={{ pathname: '/lore', query: { category: category, id: "0" } }}>
+                                            <TbArrowBackUp />
+                                        </Link>
+                                    </motion.div>
                                 </div>
                             </motion.div> :
                             (
