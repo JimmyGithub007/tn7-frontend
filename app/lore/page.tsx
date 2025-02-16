@@ -19,6 +19,10 @@ const contents = [
     { id: "7", name: "GANGSTER", img: "c7", category: "characters" },
     { id: "8", name: "GANGSTER", img: "c8", category: "characters" },
 
+    { id: "1", name: "SYNTHCITY", img: "city1", category: "cities" },
+    { id: "2", name: "CYBERVALLEY", img: "city2", category: "cities" },
+    { id: "3", name: "NEW HELM", img: "city3", category: "cities" },
+
     { id: "1", name: "THE TEMPLE ON THE HILL", img: "b1", category: "locations" },
     { id: "2", name: "THE PINNACLE TOWERS", img: "b2", category: "locations" },
     { id: "3", name: "SILVERCOIN DISTRICT", img: "b3", category: "locations" },
@@ -58,7 +62,7 @@ const contents = [
 const Content = () => {
     const searchParams = useSearchParams()
     
-    const [category, setCategory] = useState<string>("locations");
+    const [category, setCategory] = useState<string>("cities");
     const [loreId, setLoreId] = useState<string>("0");
     const [imgHeight, setImgHeight] = useState<number>(0);
     const [isMobile, setIsMobile] = useState<boolean>(false);
@@ -156,10 +160,17 @@ const Content = () => {
                                 </div>
                             </motion.div> :
                             (
-                                category === "locations" ? <div className="absolute filter-bar gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 z-10 overflow-x-hidden overflow-y-auto px-4" style={{ height: imgHeight * 80 / 100 }}>
+                                category === "locations" || category === "cities" ? 
+                                    <div className={`absolute filter-bar gap-6 grid grid-cols-1 ${category === "locations" ? "md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "lg:grid-cols-2"} z-10 overflow-x-hidden overflow-y-auto px-4`}
+                                    style={{ height: imgHeight * 80 / 100 }}>
                                     {
-                                        contents.filter(e => e.category === category).map((value, key) => (
-                                            <motion.div key={key} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, delay: 0.1 * key }} className="cursor-pointer group relative">
+                                        contents.map((value, key) => {
+                                            if(value.category === category) return <motion.div key={key} 
+                                                initial={{ opacity: 0, y: 10 }} 
+                                                animate={{ opacity: 1, y: 0 }} 
+                                                exit={{ opacity: 0 }} 
+                                                transition={{ duration: 0.8, delay: 0.1 * parseInt(value.id) }} 
+                                                className="cursor-pointer group relative">
                                                 <Link href={{ pathname: '/lore', query: { category: category, id: value.id } }}>
                                                     <ProgressiveImage
                                                         className="duration-300 group-hover:scale-105 group-hover:saturate-200"
@@ -169,11 +180,10 @@ const Content = () => {
                                                         width={532}
                                                         height={532}
                                                     />
-                                                    {/*<Image className="duration-300 group-hover:scale-105 group-hover:saturate-200 z-10" alt="" height={532} width={532} src={`/assets/images/lore/${category}/webp/${value.img}.webp`} priority />*/}
                                                     <div className="absolute bottom-6 font-bold px-4 text-white text-center text-sm sm:text-md/5 md:text-lg/5 lg:text-xl/5 w-full z-10" style={{ textShadow: "black 1px 4px" }}>{value.name}</div>
                                                 </Link>
                                             </motion.div>
-                                        ))
+                                        })
                                     }
                                 </div> : <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} 
                                     className="font-bold flex justify-center items-center text-5xl text-white w-full z-10"
