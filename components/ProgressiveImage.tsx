@@ -22,29 +22,27 @@ const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
 }) => {
     const [isLoaded, setIsLoaded] = useState(false);
 
-    return (
-        <div
-            className={`relative overflow-hidden ${className}`}
-        >
-            <Image
-                src={lowQualitySrc}
-                alt={alt}
-                width={50}
-                height={50}
-                className="blur-sm h-full w-full"
-            />
-            <Image
-                src={highQualitySrc}
-                alt={alt}
-                width={width}
-                height={height}
-                quality={100}
-                onLoadingComplete={() => setIsLoaded(true)}
-                    className={`absolute duration-700 ease-in-out h-full inset-0 transition-opacity w-full z-10 ${isLoaded ? "opacity-100" : "opacity-0"
-                }`}
-            />
-        </div>
-    );
+    return (<div className={`relative ${className}`}>
+        <Image 
+            alt=""
+            className="blur-sm"
+            height={1000}
+            width={1000}
+            src={lowQualitySrc}
+            priority
+        />
+        <Image
+            alt={alt}
+            src={highQualitySrc}
+            width={width}
+            height={height}
+            quality={100}
+            onLoadingComplete={() => setIsLoaded(true)}
+            className={`absolute duration-700 ease-in-out h-full inset-0 transition-opacity w-full z-10 
+                ${isLoaded ? "opacity-100" : "opacity-0"
+            }`}
+        />
+    </div>);
 };
 
 export default ProgressiveImage;

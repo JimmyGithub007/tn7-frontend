@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Navbar } from "@/components";
+import { Navbar, ProgressiveImage } from "@/components";
 import { TbArrowBackUp } from "react-icons/tb";
 import { useSearchParams } from 'next/navigation';
 
@@ -130,18 +130,18 @@ const Content = () => {
             <Image className="z-10" alt="" width={1384} height={289} src={`/assets/images/lore/SideBarFrameBottom.png`} priority />
         </div>
         <div className="h-full w-full flex items-center justify-center">
-            <div className="relative w-[80%] max-w-[1000px] h-full flex items-center">
-                <Image className="invisible sm:visible absolute scale-[1.15]" alt="contentFrameHorizontal" height={1287} width={2187} src={`/assets/images/lore/webp/ContentFrameHorizontal.webp`} priority />
+            <div className="relative w-[80%] max-w-[1200px] h-full flex items-center">
+                <Image className="invisible sm:visible absolute scale-[1.2]" alt="contentFrameHorizontal" height={1287} width={2187} src={`/assets/images/lore/webp/ContentFrameHorizontal.webp`} priority />
                 <Image className="sm:invisible absolute scale-[1.25]" alt="contentFrameVertical" height={2187} width={1287} src={`/assets/images/lore/webp/ContentFrameVertical.webp`} priority />
                 <AnimatePresence>
                     {
                         loreId != "0" ?
-                            <motion.div className={`absolute z-20 ${isMobile ? "scale-[1.25]" : "scale-[1.15]"}`}
+                            <motion.div className={`absolute z-20 ${isMobile ? "scale-[1.25]" : "scale-[1.2]"}`}
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
                             >
                                 <div className="relative">
                                     <Image className="" alt="" width={2187} height={1287} src={`/assets/images/lore/${category}/webp/b${loreId}${isMobile ? "Vertical" : "Horizontal"}.webp`} priority quality={100} />
-                                    <motion.div className={`absolute ${ isMobile ? "top-[48%] w-[90%]" : "right-[6%] top-[18%] w-[45%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-10 text-white`} 
+                                    <motion.div className={`absolute ${ isMobile ? "top-[47%] w-[90%]" : "right-[6%] top-[18%] w-[45%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-10 text-white`} 
                                         style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 70 / 100 }}
                                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
                                     >
@@ -151,22 +151,36 @@ const Content = () => {
                                         </div>
                                     </motion.div>
                                     <Link href={{ pathname: '/lore', query: { category: category, id: "0" } }}>
-                                        <TbArrowBackUp className={`absolute cursor-pointer duration-200 hover:opacity-50 ${isMobile ? "right-[12%]" : "right-[6%]"} text-white text-4xl top-[10%] z-20`} />
+                                        <TbArrowBackUp className={`absolute cursor-pointer duration-200 hover:opacity-50 ${isMobile ? "left-[12%] top-[5%]" : "right-[6%] top-[10%]"} text-white text-4xl z-20`} />
                                     </Link>
                                 </div>
                             </motion.div> :
-                            <div className="absolute filter-bar gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 z-10 overflow-x-hidden overflow-y-auto p-4" style={{ height: imgHeight * 80 / 100 }}>
-                                {
-                                    contents.filter(e => e.category === category).map((value, key) => (
-                                        <motion.div key={key} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, delay: 0.1 * key }} className="cursor-pointer group relative">
-                                            <Link href={{ pathname: '/lore', query: { category: category, id: value.id } }}>
-                                                <Image className="duration-300 group-hover:scale-105 group-hover:saturate-200 z-10" alt="" height={532} width={532} src={`/assets/images/lore/${category}/webp/${value.img}.webp`} priority />
-                                                <div className="absolute bottom-6 font-bold px-4 text-white text-center text-sm sm:text-md/5 md:text-lg/5 lg:text-xl/5 w-full" style={{ textShadow: "black 1px 4px" }}>{value.name}</div>
-                                            </Link>
-                                        </motion.div>
-                                    ))
-                                }
-                            </div>
+                            (
+                                category === "locations" ? <div className="absolute filter-bar gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 z-10 overflow-x-hidden overflow-y-auto px-4" style={{ height: imgHeight * 80 / 100 }}>
+                                    {
+                                        contents.filter(e => e.category === category).map((value, key) => (
+                                            <motion.div key={key} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, delay: 0.1 * key }} className="cursor-pointer group relative">
+                                                <Link href={{ pathname: '/lore', query: { category: category, id: value.id } }}>
+                                                    <ProgressiveImage
+                                                        className="duration-300 group-hover:scale-105 group-hover:saturate-200"
+                                                        lowQualitySrc={`/assets/images/lore/${category}/webp/tiny/${value.img}.webp`}
+                                                        highQualitySrc={`/assets/images/lore/${category}/webp/${value.img}.webp`}
+                                                        alt={`lore ${value.name}`}
+                                                        width={532}
+                                                        height={532}
+                                                    />
+                                                    {/*<Image className="duration-300 group-hover:scale-105 group-hover:saturate-200 z-10" alt="" height={532} width={532} src={`/assets/images/lore/${category}/webp/${value.img}.webp`} priority />*/}
+                                                    <div className="absolute bottom-6 font-bold px-4 text-white text-center text-sm sm:text-md/5 md:text-lg/5 lg:text-xl/5 w-full z-10" style={{ textShadow: "black 1px 4px" }}>{value.name}</div>
+                                                </Link>
+                                            </motion.div>
+                                        ))
+                                    }
+                                </div> : <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} 
+                                    className="font-bold flex justify-center items-center text-5xl text-white w-full z-10"
+                                    style={{ height: imgHeight * 80 / 100 }}>
+                                    COMING SOON
+                                </motion.div>
+                            )
                     }
                 </AnimatePresence>
             </div>

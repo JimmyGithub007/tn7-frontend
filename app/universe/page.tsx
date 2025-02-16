@@ -92,6 +92,14 @@ const Universe = () => {
                                 slidesPerView: 3,
                                 spaceBetween: 20
                             },
+                            1920: {
+                                slidesPerView: 4,
+                                spaceBetween: 25
+                            },
+                            2560: {
+                                slidesPerView: 4,
+                                spaceBetween: 200
+                            },
                         }}
                         modules={[FreeMode, Mousewheel]}
                         mousewheel={true}
