@@ -1,11 +1,22 @@
 import type { Metadata } from "next";
-import { Audiowide, Inter, Lilita_One, Staatliches } from "next/font/google";
-import "./globals.css";
+//import { Archivo_Black, Audiowide, Inter, Lilita_One, Staatliches } from "next/font/google";
 
 import { StoreProvider } from "@/store/StoreProvider";
 import { Dialog } from "@/components";
 
-const lilita_one = Lilita_One({ subsets: ["latin"], weight: "400" });
+import localFont from 'next/font/local';
+import "./globals.css";
+
+const impact = localFont({
+  src: [
+    { path: '../public/fonts/impact.ttf', weight: '400', style: 'normal' },
+    { path: '../public/fonts/impacted.ttf', weight: '700', style: 'normal' },
+    { path: '../public/fonts/unicode.impact.ttf', weight: '400', style: 'italic' }
+  ],
+  variable: '--font-impact' // 可选，定义 CSS 变量
+});
+
+//const archivo_black = Archivo_Black({ subsets: ["latin"], weight: "400" });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,10 +30,10 @@ export default function RootLayout({
 }>) {
   return (<StoreProvider>
     <html lang="en">
-      <body className={lilita_one.className}>
-          {children}
-          <Dialog />
-        </body>
+      <body className={impact.className}>
+        {children}
+        <Dialog />
+      </body>
     </html>
   </StoreProvider>);
 }
