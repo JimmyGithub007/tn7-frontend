@@ -10,7 +10,7 @@ import "./globals.css";
 const impact = localFont({
   src: [
     { path: '../public/fonts/impact.ttf', weight: '400', style: 'normal' },
-    { path: '../public/fonts/impacted.ttf', weight: '700', style: 'normal' },
+    { path: '../public/fonts/Impacted.ttf', weight: '700', style: 'normal' },
     { path: '../public/fonts/unicode.impact.ttf', weight: '400', style: 'italic' }
   ],
   variable: '--font-impact' // 可选，定义 CSS 变量
