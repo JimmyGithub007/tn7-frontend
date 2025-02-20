@@ -24,15 +24,15 @@ const chatContent = [
 ];
 
 const buildings = [
-    { id: 1, name:"THE TEMPLE ON THE HILL", img: "Shin_Temple" },
-    { id: 2, name:"THE PINNACLE TOWERS", img: "Shin_HQ" },
-    { id: 3, name:"SILVERCOIN DISTRICT", img: "Shin_SilvercoinDistrict" },
-    { id: 4, name:"THE WATERING HOLE", img: "Reiko_WateringHole" },
-    { id: 5, name:"KOI AND LOTUS CLUB", img: "Reiko_KoiLotusClub" },
-    { id: 6, name:"THE CODEX", img: "Reiko_TheCodex" },
-    { id: 7, name:"THE Fort", img: "Akio_TheGatel" },
-    { id: 8, name:"AKIO INDUSTRIES", img: "Akio_HQ" },
-    { id: 9, name:"THE ENERGY FIELD", img: "Akio_EneygyField" },
+    { id: 1, name:"THE TEMPLE ON THE HILL", img: "b1", content: "<p>The Temple rises majestically over the city, accessible only by a long, steep staircase flanked by lush greenery. Each weathered step carries centuries of devotion, guiding visitors to a serene retreat above the hustle and bustle of the city.</p>" },
+    { id: 2, name:"THE PINNACLE TOWERS", img: "b2", content: "<p>HQ of the most powerful clan in SynthCity, The White Lily. <br/>A towering fortress of glass and steel that looms over the surrounding buildings. It represents power, honor, influence and unwavering loyalty.</p>" },
+    { id: 3, name:"SILVERCOIN DISTRICT", img: "b3", content: "<p>The Silver Coin District is located in the lower part of SynthCity, a place where hope is scarce and survival is the only priority. The district is home to smaller clans, each vying for control and influence</p>" },
+    { id: 4, name:"THE WATERING HOLE", img: "b4", content: "<p>At the heart of Cyber Valley lies The Watering Hole, a bustling marketplace where merchants gather to promote their latest technological innovations and services. Deals are made in the open, but for those who know where to look, even the rarest, most illicit tech can be acquired for a right price.</p>" },
+    { id: 5, name:"KOI AND LOTUS CLUB", img: "b5", content: "<p>The Koi and Lotus Club is Cyber Valley’s premier hotspot, a hub for power play and secret deals. Beneath its lavish exterior, the club serves as the legitimate front for The Misfits' operations, seamlessly straddling both legal and underground tech ventures—primarily hacking and information brokering.</p>" },
+    { id: 6, name:"THE CODEX", img: "b6", content: "<p>The Codex is a sanctuary of knowledge, housing ancient wisdom with cutting-edge breakthroughs. It serves as a pivotal center for scholars, technologists, and seekers of knowledge. Within its walls,lies a profound repository of intellectual discovery and exploration.</p>" },
+    { id: 7, name:"THE FORT", img: "b7", content: "<p>A massive concrete fortress dominates the city's skyline, serving as the Akio Family's business headquarters. Guards patrol its perimeter vigilantly, a constant reminder of Akio's iron grip over the city.</p>" },
+    { id: 8, name:"AKIO INDUSTRIES", img: "b8", content: "<p>The city's only access point is a massive mechanized gate reinforced with red titanium bars. When it opens, a deep, resonant rumble echoes through the surrounding area, a stark reminder of the city's impenetrable defenses.</p>" },
+    { id: 9, name:"THE ENERGY FIELD", img: "b9", content: "<p>The Energy Field, built by Akio Industries, extracts geothermal energy using massive drills that operate continuously. Rumors of a shrinking reservoir and declining output have led to heightened security around this vital resource.</p>" },
 ];
 
 const WorldMap = () => {
@@ -245,7 +245,7 @@ const WorldMap = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-            {/*<AnimatePresence>
+            <AnimatePresence>
                 {   showRotateWarning && (
                     <motion.div
                         id="loader"
@@ -255,13 +255,13 @@ const WorldMap = () => {
                         exit={{ y: "100%" }}
                         transition={{ duration: 1, ease: "easeInOut" }}
                     >
-                        <Image alt="rotatePhone" width={100} height={100} src={`/assets/images/worldmap/phone-rotate.gif`} />
-                        <span className="font-bold text-4xl text-center">
-                            Please rotate your device for better experience
+                        <Image alt="rotatePhone" width={100} height={100} src={`/assets/images/worldmap/phone-rotate.gif`} quality={50} priority />
+                        <span className="font-bold text-2xl text-center">
+                            PLEASE ROTATE YOUR DEVICE FOR BETTER EXPERIENCE
                         </span>
                     </motion.div>
                 )}
-            </AnimatePresence>*/}
+            </AnimatePresence>
             <div className="absolute h-12 overflow-hidden w-full" style={{ left: mousePosition.x, top: mousePosition.y }}>
                 <AnimatePresence>
                     {   hoverBuildingId > 0 && buildingId == 0 && (
@@ -270,7 +270,7 @@ const WorldMap = () => {
                             initial={{ opacity: 0, y: "100%" }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: "100%" }}
-                            transition={{ duration: 0.3, delay: 0.2 }}
+                            transition={{ duration: 0.5 }}
                             key={hoverBuildingId} // Ensure animation runs for each new ID
                         >
                             {
@@ -291,17 +291,17 @@ const WorldMap = () => {
                         exit={{ y: "20%", opacity: 0 }}
                         transition={{ duration: 0.5 }}
                         className={`absolute z-[200] w-[80%] lg:w-[1024px] right-0
-                            ${buildingId >= 1 && buildingId <= 6 && "bottom-0"} 
-                            ${buildingId >= 1 && buildingId <= 3 && "right-0"} 
-                            ${buildingId >= 4 && buildingId <= 6 && "left-0"} 
-                            ${buildingId >= 7 && buildingId <= 9 && "top-0 left-0"}   
+                            ${buildingId >= 1 && buildingId <= 6 && "bottom-4"} 
+                            ${buildingId >= 1 && buildingId <= 3 && "right-4"} 
+                            ${buildingId >= 4 && buildingId <= 6 && "left-4"} 
+                            ${buildingId >= 7 && buildingId <= 9 && "top-4 left-4"}   
                         `}
                     >
 
                         {/* Skeleton Loader */}
                         {!imageLoaded && (
-                            <Image alt="placeholder" width={1375} height={756}
-                                className="absolute animate-pulse grayscale" src={`/assets/images/worldmap/webp/placeholder.webp`}
+                            <Image alt="placeholder" width={1808} height={971}
+                                className="absolute animate-pulse grayscale" src={`/assets/images/worldmap/webp/loadingFrame.webp`}
                                 priority
                             />
                         )}
@@ -310,28 +310,31 @@ const WorldMap = () => {
                             src={`/assets/images/worldmap/webp/${buildings.find(b => b.id === buildingId)?.img}.webp`}
                             alt={buildings.find(b => b.id === buildingId)?.name || "Building"}
                             layout="responsive"
-                            width={1833}
-                            height={1008}
+                            width={1808}
+                            height={971}
                             className={`transition-opacity duration-300 ${imageLoaded ? "opacity-90" : "opacity-0"}`}
                             onLoadingComplete={() => setImageLoaded(true)} // Handle loading state
                             loading="lazy" // Enable lazy loading
                             onError={() => console.error("Failed to load image.")}
                         />
-                        {   imageLoaded &&
-                            <Link href={{ pathname: "/lore", query: { category: "locations", id: buildingId } }}>
-                                <button
-                                    className="absolute bottom-[20%] duration-200 flex group items-center justify-center left-60 text-white underline z-20 hover:opacity-60">
-                                    READ MORE
-                                    <IoIosArrowRoundForward className="duration-200 -rotate-45 group-hover:rotate-0 text-4xl" />
-                                </button>
-                            </Link>
+                        {   imageLoaded && <div className="absolute flex flex-col gap-2 left-[8%] top-[30%] text-white w-[45%]">
+                                <div className="text-xl sm:text-2xl md:text-3xl lg:text-6xl">{buildings.find(b => b.id === buildingId)?.name}</div>
+                                <div className="text-sm md:text-md lg:text-lg" dangerouslySetInnerHTML={{ __html: buildings.find(b => b.id === buildingId)?.content || "<p></p>" }} />
+                                <Link href={{ pathname: "/lore", query: { category: "locations", id: buildingId } }}>
+                                    <button
+                                        className="duration-300 flex group hover:opacity-50 items-center text-md sm:text-lg md:text-xl lg:text-2xl underline">
+                                        READ MORE
+                                        <IoIosArrowRoundForward className="duration-200 -rotate-45 group-hover:rotate-0 text-4xl" />
+                                    </button>
+                                </Link>
+                            </div>  
                         }
                         {   imageLoaded &&
                             <button
                                 onClick={() => {
                                     sendMessage(`b${buildingId}_0`, "UnClickBuilding");
                                 }}
-                                className="absolute bg-white duration-300 p-2 right-2 rounded-full shadow-xl shadow-black/50 text-3xl top-4 z-20 hover:bg-black hover:text-white">
+                                className="absolute bg-white duration-300 p-2 right-2 rounded-full shadow-xl shadow-black/50 text-3xl top-12 z-20 hover:bg-black hover:text-white">
                                 <CgClose />
                             </button>
                         }
