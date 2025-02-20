@@ -2,6 +2,7 @@
 
 import { Navbar } from "@/components";
 import { AnimatePresence, motion } from "framer-motion";
+import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const Home = () => {
@@ -21,6 +22,8 @@ const Home = () => {
       window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
+
+  return redirect('/home');
 
   return (<div className="h-screen w-full relative overflow-hidden">
     <Navbar />

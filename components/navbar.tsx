@@ -145,7 +145,7 @@ const Navbar = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
       className="flex fixed items-center justify-between navbar px-12 top-0 w-full z-50">
-      <Image alt="logo" className="w-32" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} />
+      <Link href={`/home`}><Image alt="logo" className="w-32" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} /></Link>
       <button onClick={() => {
         setIsOpenMenu(!isOpenMenu);
         if (setIsOpenMenuParent) setIsOpenMenuParent(!isOpenMenuParent);
