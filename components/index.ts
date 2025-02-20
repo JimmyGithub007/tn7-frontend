@@ -3,11 +3,13 @@ import Navbar from "./navbar";
 import Dialog from "./Dialog";
 import ProgressiveImage from "./ProgressiveImage";
 import MaskText from "./MaskText";
+import Loader from "./Loader";
 
 export {
     WebGL,
     Navbar,
     Dialog,
     ProgressiveImage,
-    MaskText
+    MaskText,
+    Loader
 }

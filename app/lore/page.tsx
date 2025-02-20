@@ -58,7 +58,7 @@ const contents = [
     { id: "8", name: "GANGSTER", img: "c8", category: "characters" },
 
     { id: "1", name: "SYNTHCITY", img: "city1", category: "cities" },
-    { id: "2", name: "CYBERVALLEY", img: "city2", category: "cities" },
+    { id: "2", name: "CYBER VALLEY", img: "city2", category: "cities" },
     { id: "3", name: "NEW HELM", img: "city3", category: "cities" },
 
     { id: "1", name: "TEMPLE ON THE HILL", img: "b1", category: "locations" },
