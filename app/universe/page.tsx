@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import Image from 'next/image';
-import { Navbar, ProgressiveImage } from '@/components';
+import { Header, ProgressiveImage } from '@/components';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -21,7 +21,6 @@ const universes = [
 const Universe = () => {
     const router = useRouter();
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [loadingPercentage, setLoadingPercentage] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -72,7 +71,7 @@ const Universe = () => {
             </AnimatePresence>
             {isLoaded && (
                 <>
-                    <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} />
+                    <Header />
                     <Swiper
                         loop={false}
                         freeMode={true}

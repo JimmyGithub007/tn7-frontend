@@ -1,5 +1,5 @@
 import WebGL from "./webgl";
-import Navbar from "./navbar";
+import Header from "./Header";
 import Dialog from "./Dialog";
 import ProgressiveImage from "./ProgressiveImage";
 import MaskText from "./MaskText";
@@ -7,7 +7,7 @@ import Loader from "./Loader";
 
 export {
     WebGL,
-    Navbar,
+    Header,
     Dialog,
     ProgressiveImage,
     MaskText,

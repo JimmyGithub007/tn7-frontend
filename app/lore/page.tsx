@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Navbar, ProgressiveImage } from "@/components";
+import { Header, ProgressiveImage } from "@/components";
 import { TbArrowBackUp } from "react-icons/tb";
 import { useSearchParams } from 'next/navigation';
 
@@ -154,6 +154,16 @@ const contents = [
     { id: "1", name: "DRAGON", img: "g1", category: "government" },
 ];
 
+const menus = [
+    { id: "characters", title: "CHARACTERS", url: "" },
+    { id: "cities", title: "CITIES", url: "" },
+    { id: "locations", title: "LOCATIONS", url: "" },
+    { id: "clans", title: "CLANS", url: "" },
+    { id: "currency", title: "CURRENCY", url: "" },
+    { id: "badges", title: "BADGES", url: "" },
+    { id: "government", title: "GOVERNMENT", url: "" }
+];
+
 const Content = () => {
     const searchParams = useSearchParams()
     
@@ -198,21 +208,13 @@ const Content = () => {
         };
     }, []);
 
-    return (    <div className="flex items-center h-full w-full">
+    return (<div className="flex items-center h-full w-full">
         <div className="h-full hidden lg:flex w-[350px] flex-col items-center justify-center -ml-16">
             <Image className="z-10" alt="" width={1384} height={289} src={`/assets/images/lore/SideBarFrameTop.png`} priority />
             <div className="relative flex flex-col z-10 w-full items">
                 <Image className="absolute h-[448px]" alt="" width={1384} height={1865} src={`/assets/images/lore/SideBarFrameBody.png`} priority />
                 {
-                    [
-                        { id: "characters", title: "CHARACTERS", url: "" },
-                        { id: "cities", title: "CITIES", url: "" },
-                        { id: "locations", title: "LOCATIONS", url: "" },
-                        { id: "clans", title: "CLANS", url: "" },
-                        { id: "currency", title: "CURRENCY", url: "" },
-                        { id: "badges", title: "BADGES", url: "" },
-                        { id: "government", title: "GOVERNMENT", url: "" }
-                    ].map((menu, key) => (
+                    menus.map((menu, key) => (
                         <Link 
                             href={{ pathname: '/lore', query: { category: menu.id, id: "0" } }}
                             className={`cursor-pointer duration-300 flex h-16 items-center relative text-white z-10 ${menu.id != category && "hover:text-yellow-400"}`} key={key}>
@@ -304,7 +306,6 @@ const Content = () => {
 
 const Lore = () => {
     const [isLoaded, setIsLoaded] = useState(false);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [loadingPercentage, setLoadingPercentage] = useState(0);
 
     useEffect(() => {
@@ -337,7 +338,7 @@ const Lore = () => {
                 </motion.div>
             )}
         </AnimatePresence>
-        <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} />
+        <Header />
         <Suspense fallback={
             <div className="absolute flex h-full items-center justify-center left-0 w-full top-0 bg-black z-[100]">
                 <span className="font-bold text-5xl text-white">0%</span>

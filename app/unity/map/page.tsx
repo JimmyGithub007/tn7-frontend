@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
 //import { Lilita_One } from "next/font/google";
-import { Navbar } from "@/components";
+import { Header } from "@/components";
 import { CgClose } from "react-icons/cg";
 import { IoIosArrowRoundForward } from "react-icons/io";
 import { TbPlayerTrackNextFilled } from "react-icons/tb";
@@ -156,7 +156,7 @@ const UnityMap = () => {
             if (chatId === 6 || chatId < 0 || isAnimating) return; // 如果正在显示动画，不允许切换
             setChatId((prevId) => (prevId + 1));
         }}>
-            { buildingId === 0 && chatId === 6 && <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} /> }
+            { buildingId === 0 && chatId === 6 && <Header setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} /> }
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
             <AnimatePresence>{/*Loading Percentage For Unity*/}
                 {!isLoaded && (

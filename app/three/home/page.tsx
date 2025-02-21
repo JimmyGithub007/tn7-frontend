@@ -4,7 +4,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import { PerspectiveCamera, TextureLoader } from "three";
 import { useLoader } from "@react-three/fiber";
-import { Navbar } from "@/components";
+import { Header } from "@/components";
 
 const Plane = ({ texturePath, depthFactor }: { texturePath: string; depthFactor: number }) => {
   const ref = useRef<any>();
@@ -57,7 +57,7 @@ const HeroParallax = () => {
 
 const Home = () => {
     return (<div className="h-screen overflow-hidden w-full ">
-        <Navbar />
+        <Header />
         <HeroParallax />
     </div>)
 }

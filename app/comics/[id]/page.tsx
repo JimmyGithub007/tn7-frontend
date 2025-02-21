@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader, Navbar } from "@/components";
+import { Loader, Header } from "@/components";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -21,8 +21,6 @@ const comics = [
 const ComicsId = () => {
     const params = useParams();
     const id = params.id;
-
-    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
     const [imgHeight, setImgHeight] = useState<number>(0);
     const [isMobile, setIsMobile] = useState<boolean>(false);
@@ -57,7 +55,7 @@ const ComicsId = () => {
     }, []);
 
     return (<div className="fixed flex justify-center h-screen items-center w-full">
-        <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} />
+        <Header />
         <Loader />
         <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/universe/webp/Background.webp`} priority />
         <div className="relative max-w-[1200px] h-full flex items-center justify-center">

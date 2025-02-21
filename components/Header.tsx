@@ -136,27 +136,23 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
   );
 };
 
-const Navbar = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent?: (state: boolean) => void, isOpenMenuParent?: boolean }) => {
+const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent?: (state: boolean) => void, isOpenMenuParent?: boolean }) => {
   const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
 
   return (<>
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="flex fixed items-center justify-between navbar px-12 top-0 w-full z-50">
-      <Link href={`/home`}><Image alt="logo" className="w-32" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} /></Link>
-      <button onClick={() => {
-        setIsOpenMenu(!isOpenMenu);
-        if (setIsOpenMenuParent) setIsOpenMenuParent(!isOpenMenuParent);
-      }} className="duration-300 relative h-[36px] w-[36px] hover:opacity-80">
+    <Link href={`/home`}><Image alt="logo" className="fixed left-8 top-0 w-32 z-[100]" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} priority quality={50} /></Link>
+    <button onClick={() => {
+      setIsOpenMenu(!isOpenMenu);
+      if (setIsOpenMenuParent) setIsOpenMenuParent(!isOpenMenuParent);
+    }} className="fixed duration-300 h-[36px] right-8 hover:opacity-80 top-8 w-[36px] z-[100]">
+      <div className="relative h-full w-full">
         <div className={`absolute bg-white duration-300 h-[4px] w-[36px] left-0 ${isOpenMenu ? "rotate-45 top-[16px]" : "rotate-0 top-[8px]"}`}></div>
         <div className={`absolute bg-white duration-300 h-[4px] left-0 ${isOpenMenu ? "rotate-[135deg] top-[16px] w-[36px] border-2" : "rotate-0 top-[24px] w-[28px]"}`}></div>
-      </button>
-    </motion.div>
+      </div>
+    </button>
     <Sidebar isOpenMenu={isOpenMenu} />
   </>)
 }
 
-export default Navbar;
+export default Header;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Navbar } from "@/components";
+import { Header } from "@/components";
 import { AnimatePresence, motion } from "framer-motion";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -26,7 +26,7 @@ const Home = () => {
   return redirect('/home');
 
   return (<div className="h-screen w-full relative overflow-hidden">
-    <Navbar />
+    <Header />
     <motion.img
       style={{
         transform: `translateX(${mousePosition.x * 0.01}px) scale(1.05)`,

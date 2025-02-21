@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader } from "@/components";
+import { Header, Loader } from "@/components";
 import { useRouter } from "next/navigation";
 
 import Image from "next/image";
@@ -11,6 +11,7 @@ const Comics = () => {
 
     return (
         <div className="bg-black h-screen w-full text-white flex flex-col justify-center items-center text-nowrap overflow-y-hidden">
+            <Header />
             <Loader />
             <div className="flex gap-16">
                 <div className="flex flex-col items-center justify-end">

@@ -1,6 +1,6 @@
 "use client";
 
-import { MaskText, Navbar } from "@/components";
+import { MaskText, Header } from "@/components";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 
@@ -60,10 +60,8 @@ const Collapse = ({ children, title }: { children: ReactNode, title: string }) =
 }
 
 const Faqs = () => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-
     return (<div className="bg-black flex justify-center min-h-screen relative overflow-x-hidden w-full">
-        <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} />
+        <Header />
         <div className="flex flex-col gap-8 px-12 py-36 2xl:w-[1280px] 2xl:px-0 text-white">
             <div className="font-bold text-4xl sm:text-6xl text-center">FAQs</div>
             {

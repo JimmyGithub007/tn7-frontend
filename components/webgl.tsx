@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { motion, AnimatePresence } from "framer-motion";
-import Navbar from "./navbar";
+import Header from "./Header";
 
 const heroes = [
     { id: 1, name: "GIRL" },
@@ -82,7 +82,7 @@ const WebGL = () => {
                     )}
                 </AnimatePresence>                
             </div>
-            <Navbar setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} />
+            <Header setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} />
             <Unity className={`h-full w-full ${isMenuOpen ? "pointer-events-none" : ""}`} unityProvider={unityProvider} />
         </div>
     );
