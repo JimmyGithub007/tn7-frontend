@@ -9,6 +9,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { Loader } from "@/components";
 import Image from "next/image";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 // 示例 Webtoon 图片列表（模拟后端数据）
 const content = [
@@ -20,7 +21,16 @@ const content = [
     "/assets/images/comics/chapter1/text_06.png",
 ];
 
+const comics = [
+    { id: "azuki", name: "AZUKI" },
+    { id: "pk", name: "PK OON: ORIGINS" },
+    { id: "thepathofvengeance", name: "THE PATH OF VENGEANCE" }
+];
+
 const ComicsChapter = () => {
+    const params = useParams();
+    const id = params.id;
+
     const [ isTop, setIsTop ] = useState<boolean>(true);
     const [ isOpenDropDown, setIsOpenDropDown ] = useState<boolean>(true);
 
@@ -52,7 +62,7 @@ const ComicsChapter = () => {
             {   isTop && <motion.div  
                 initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -50 }} transition={{ duration: 0.5, delay: 0.2 }}
                 className="bg-black fixed gap-2 grid grid-cols-1 md:grid-cols-3 h-28 md:h-16 items-center px-8 shadow-md shadow-slate-700/10 text-xl top-0 w-full relative z-[20]" id="comicsHeader">
-                <div className="flex items-center gap-2 text-white"><Link href={`/comics/1`}>SECRET OF THE VALLEY</Link> <IoIosArrowForward /> Episode 1</div>
+                <div className="flex items-center gap-2 text-white"><Link href={`/comics/${id}`}>{comics.find(e => e.id === id)?.name || ""}</Link> <IoIosArrowForward /> Episode 1</div>
                 <div className="flex gap-4 justify-center">
                     <button className="bg-white duration-300 hover:opacity-50 rounded-sm text-4xl"><IoIosArrowBack /></button>
                     <button onClick={() => { setIsOpenDropDown(!isOpenDropDown); }} className="text-white">#1</button>

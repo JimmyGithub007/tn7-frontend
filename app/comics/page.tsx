@@ -14,40 +14,30 @@ const Comics = () => {
             <Loader />
             <div className="flex gap-16">
                 <div className="flex flex-col items-center justify-end">
-                <div className="cursor-pointer duration-300 hover:saturate-200 flex flex-col items-center" onClick={() => { router.push(`/comics/1`) }}>
-                        <Image alt="" className="h-28 overflow-hidden object-cover object-top" width={200} height={200} src={`/assets/images/comics/webp/comicsBGVertical.webp`} />
-                        <div className="text-2xl">SECRET OF THE VALLEY 1</div>
+                    <div className="cursor-pointer duration-300 hover:saturate-200 flex flex-col items-center" onClick={() => { router.push(`/comics/azuki`) }}>
+                        <Image alt="" className="h-36 opacity-80 overflow-hidden object-cover object-top" width={200} height={200} src={`/assets/images/comics/azuki/webp/profile.webp`} />
+                        <div className="text-2xl">AZUKI</div>
                     </div>
                     <div className="rounded-full h-20 w-[2px] bg-white"></div>
                     <div>17 JAN 2025</div>
                 </div>
                 <div className="flex flex-col items-center justify-end">
-                <div className="cursor-pointer duration-300 hover:saturate-200 flex flex-col items-center" onClick={() => { router.push(`/comics/1`) }}>
-                        <Image alt="" className="h-28 overflow-hidden object-cover object-top" width={200} height={200} src={`/assets/images/comics/webp/comicsBGVertical.webp`} />
-                        <div className="text-2xl">SECRET OF THE VALLEY 3</div>
+                    <div className="cursor-pointer duration-300 hover:saturate-200 flex flex-col items-center" onClick={() => { router.push(`/comics/pk`) }}>
+                        <Image alt="" className="h-48 overflow-hidden object-cover object-top" width={200} height={200} src={`/assets/images/comics/pk/webp/profile.webp`} />
+                        <div className="text-2xl">PK OON: ORIGINS</div>
                     </div>
                     <div className="rounded-full h-8 w-[2px] bg-white"></div>
-                    <div>22 FEB 2025</div>
+                    <div>05 MAR 2025</div>
                 </div>
             </div>
-
             <div className="border-y-2 text-center text-4xl font-bold tracking-[50px] min-w-full">TN7 PHASE ONE</div>
-
             <div className="flex gap-16">
                 <div className="flex flex-col items-center justify-start">
-                    <div>21 JUNE 2025</div>
+                    <div>22 FEB 2025</div>
                     <div className="rounded-full h-8 w-[2px] bg-white"></div>
-                    <div className="cursor-pointer duration-300 hover:saturate-200 flex flex-col items-center" onClick={() => { router.push(`/comics/1`) }}>
-                        <Image alt="" className="h-28 overflow-hidden object-cover object-top" width={200} height={200} src={`/assets/images/comics/webp/comicsBGVertical.webp`} />
-                        <div className="text-2xl">SECRET OF THE VALLEY 2</div>
-                    </div>
-                </div>
-                <div className="flex flex-col items-center justify-start">
-                    <div>30 JULY 2025</div>
-                    <div className="rounded-full h-20 w-[2px] bg-white"></div>
-                    <div className="cursor-pointer duration-300 hover:saturate-200 flex flex-col items-center" onClick={() => { router.push(`/comics/1`) }}>
-                        <Image alt="" className="h-28 overflow-hidden object-cover object-top" width={200} height={200} src={`/assets/images/comics/webp/comicsBGVertical.webp`} />
-                        <div className="text-2xl">SECRET OF THE VALLEY 4</div>
+                    <div className="cursor-pointer duration-300 hover:saturate-200 flex flex-col items-center" onClick={() => { router.push(`/comics/thepathofvengeance`) }}>
+                        <Image alt="" className="h-48 overflow-hidden object-cover object-top" width={200} height={200} src={`/assets/images/comics/thepathofvengeance/webp/profile.webp`} />
+                        <div className="text-2xl">THE PATH OF VENGEANCE</div>
                     </div>
                 </div>
             </div>
