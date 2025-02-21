@@ -12,24 +12,22 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 
 // 示例 Webtoon 图片列表（模拟后端数据）
-const content = [
-    "/assets/images/comics/chapter1/text_01.png",
-    "/assets/images/comics/chapter1/text_02.png",
-    "/assets/images/comics/chapter1/text_03.png",
-    "/assets/images/comics/chapter1/text_04.png",
-    "/assets/images/comics/chapter1/text_05.png",
-    "/assets/images/comics/chapter1/text_06.png",
-];
-
 const comics = [
     { id: "azuki", name: "AZUKI" },
     { id: "pk", name: "PK OON: ORIGINS" },
     { id: "thepathofvengeance", name: "THE PATH OF VENGEANCE" }
 ];
 
+const content = [
+    { id: "1", title: "PRELUDE" },
+    { id: "2", title: "EPISODE 1" },
+    { id: "3", title: "EPISODE 2" }
+];
+
 const ComicsChapter = () => {
     const params = useParams();
     const id = params.id;
+    const chapter = params.chapter;
 
     const [ isTop, setIsTop ] = useState<boolean>(true);
     const [ isOpenDropDown, setIsOpenDropDown ] = useState<boolean>(true);
@@ -62,11 +60,11 @@ const ComicsChapter = () => {
             {   isTop && <motion.div  
                 initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -50 }} transition={{ duration: 0.5, delay: 0.2 }}
                 className="bg-black fixed gap-2 grid grid-cols-1 md:grid-cols-3 h-28 md:h-16 items-center px-8 shadow-md shadow-slate-700/10 text-xl top-0 w-full relative z-[20]" id="comicsHeader">
-                <div className="flex items-center gap-2 text-white"><Link href={`/comics/${id}`}>{comics.find(e => e.id === id)?.name || ""}</Link> <IoIosArrowForward /> Episode 1</div>
+                <div className="flex items-center gap-2 text-white"><Link className="underline" href={`/comics/${id}`}>{comics.find(e => e.id === id)?.name || ""}</Link> <IoIosArrowForward /> {content.find(e => e.id === chapter)?.title}</div>
                 <div className="flex gap-4 justify-center">
-                    <button className="bg-white duration-300 hover:opacity-50 rounded-sm text-4xl"><IoIosArrowBack /></button>
-                    <button onClick={() => { setIsOpenDropDown(!isOpenDropDown); }} className="text-white">#1</button>
-                    <button className="bg-white duration-300 hover:opacity-50 rounded-sm text-4xl"><IoIosArrowForward /></button>
+                    <Link href={`/comics/${id}/${Number(chapter) > 1 ? Number(chapter) - 1 : chapter}`} className={`${Number(chapter) === 1 ? "opacity-20 cursor-not-allowed" : "hover:opacity-50" } bg-white duration-300 rounded-sm text-4xl`}><IoIosArrowBack /></Link>
+                    <button className="text-white underline" onClick={() => { setIsOpenDropDown(!isOpenDropDown); }}>#{chapter}</button>
+                    <Link href={`/comics/${id}/${Number(chapter) < 3 ? Number(chapter) + 1 : chapter}`} className={`${Number(chapter) === 3 ? "opacity-20 cursor-not-allowed" : "hover:opacity-50" } bg-white duration-300 rounded-sm text-4xl`}><IoIosArrowForward /></Link>
                 </div>
                 <div className="hidden md:flex gap-4 items-center justify-end text-white">
                     <FaFacebookF className="cursor-pointer duration-300 hover:opacity-50" />
@@ -76,33 +74,29 @@ const ComicsChapter = () => {
                 <AnimatePresence>
                 {
                     isOpenDropDown && <motion.div
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
                     className="absolute bg-black flex gap-8 h-36 items-center justify-center w-full top-28 md:top-16 text-white">
-                        <div className="cursor-pointer flex flex-col gap-2 group items-center opacity-30">
-                            <Image className="duration-300 group-hover:saturate-150 w-20" alt="prelude" height={315} width={315} src={`/assets/images/comics/prelude.png`} priority />
-                            <div>Prelude</div>
-                        </div>
-                        <div className="cursor-pointer flex flex-col gap-2 group items-center">
-                            <Image className="border-4 border-green-400 duration-300 group-hover:saturate-150 w-20" alt="prelude" height={315} width={315} src={`/assets/images/comics/prelude.png`} priority />
-                            <div className="text-green-400">Espisode 1</div>
-                        </div>
-                        <div className="cursor-pointer flex flex-col gap-2 group items-center opacity-30">
-                            <Image className="duration-300 group-hover:saturate-150 w-20" alt="prelude" height={315} width={315} src={`/assets/images/comics/prelude.png`} priority />
-                            <div>Espisode 2</div>
-                        </div>
+                        {
+                            content.map((value, key) => (
+                                <Link key={key} href={`/comics/${id}/${value.id}`} className={`${value.id === chapter ? "opacity-30 cursor-not-allowed" : ""} flex flex-col gap-2 group items-center`}>
+                                    <Image className={`${value.id === chapter ? "border-4 border-green-400" : "group-hover:saturate-150 group-hover:scale-105"} duration-300 w-20`} alt="prelude" height={315} width={315} src={`/assets/images/comics/prelude.png`} priority />
+                                    <div className={`${value.id === chapter ? "text-green-400" : ""}`}>{value.title}</div>
+                                </Link>
+                            ))
+                        }
                     </motion.div>
                 }
                 </AnimatePresence>
             </motion.div> }                
             </AnimatePresence>
             <div className="max-w-[800px]">
-                {content.map((src, index) => (
+                {[1, 2, 3, 4, 5, 6].map((value, index) => (
                     <Image
                         key={index}
-                        src={src}
+                        src={`/assets/images/comics/chapter${chapter}/0${value}.png`}
                         width={1876}
                         height={1900}
-                        alt={`Webtoon Page ${index + 1}`}
+                        alt={`${index + 1}`}
                         className="object-contain"
                     />
                 ))}
