@@ -318,11 +318,11 @@ const WorldMap = () => {
                             onError={() => console.error("Failed to load image.")}
                         />
                         {   imageLoaded && <div className="absolute flex flex-col gap-2 left-[8%] top-[30%] text-white w-[45%]">
-                                <div className="text-xl sm:text-2xl md:text-3xl lg:text-6xl">{buildings.find(b => b.id === buildingId)?.name}</div>
+                                <div className="text-xl sm:text-2xl md:text-3xl lg:text-5xl">{buildings.find(b => b.id === buildingId)?.name}</div>
                                 <div className="text-sm md:text-md lg:text-lg" dangerouslySetInnerHTML={{ __html: buildings.find(b => b.id === buildingId)?.content || "<p></p>" }} />
                                 <Link href={{ pathname: "/lore", query: { category: "locations", id: buildingId } }}>
                                     <button
-                                        className="duration-300 flex group hover:opacity-50 items-center text-md sm:text-lg md:text-xl lg:text-2xl underline">
+                                        className="duration-300 flex group hover:opacity-50 items-center text-md md:text-lg lg:text-xl underline">
                                         READ MORE
                                         <IoIosArrowRoundForward className="duration-200 -rotate-45 group-hover:rotate-0 text-4xl" />
                                     </button>
