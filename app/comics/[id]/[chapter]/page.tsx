@@ -51,14 +51,14 @@ const ComicsChapter = () => {
             <AnimatePresence>
             {   isTop && <motion.div  
                 initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -50 }} transition={{ duration: 0.5, delay: 0.2 }}
-                className="bg-black fixed grid grid-cols-3 h-16 items-center px-8 shadow-md shadow-slate-700/10 text-xl top-0 w-full relative z-[20]" id="comicsHeader">
+                className="bg-black fixed gap-2 grid grid-cols-1 md:grid-cols-3 h-28 md:h-16 items-center px-8 shadow-md shadow-slate-700/10 text-xl top-0 w-full relative z-[20]" id="comicsHeader">
                 <div className="flex items-center gap-2 text-white"><Link href={`/comics/1`}>SECRET OF THE VALLEY</Link> <IoIosArrowForward /> Episode 1</div>
                 <div className="flex gap-4 justify-center">
                     <button className="bg-white duration-300 hover:opacity-50 rounded-sm text-4xl"><IoIosArrowBack /></button>
                     <button onClick={() => { setIsOpenDropDown(!isOpenDropDown); }} className="text-white">#1</button>
                     <button className="bg-white duration-300 hover:opacity-50 rounded-sm text-4xl"><IoIosArrowForward /></button>
                 </div>
-                <div className="flex gap-4 items-center justify-end text-white">
+                <div className="hidden md:flex gap-4 items-center justify-end text-white">
                     <FaFacebookF className="cursor-pointer duration-300 hover:opacity-50" />
                     <FaXTwitter className="cursor-pointer duration-300 hover:opacity-50" />
                     <FaCopy className="cursor-pointer duration-300 hover:opacity-50" />
@@ -67,7 +67,7 @@ const ComicsChapter = () => {
                 {
                     isOpenDropDown && <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}
-                    className="absolute bg-black flex gap-8 h-36 items-center justify-center w-full top-16 text-white">
+                    className="absolute bg-black flex gap-8 h-36 items-center justify-center w-full top-28 md:top-16 text-white">
                         <div className="cursor-pointer flex flex-col gap-2 group items-center opacity-30">
                             <Image className="duration-300 group-hover:saturate-150 w-20" alt="prelude" height={315} width={315} src={`/assets/images/comics/prelude.png`} priority />
                             <div>Prelude</div>
