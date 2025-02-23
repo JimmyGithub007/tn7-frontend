@@ -25,7 +25,7 @@ const chatContent = [
 
 const buildings = [
     { id: 1, name:"THE TEMPLE ON THE HILL", img: "b1", content: "<p>The Temple rises majestically over the city, accessible only by a long, steep staircase flanked by lush greenery. Each weathered step carries centuries of devotion, guiding visitors to a serene retreat above the hustle and bustle of the city.</p>" },
-    { id: 2, name:"THE PINNACLE TOWERS", img: "b2", content: "<p>HQ of the most powerful clan in SynthCity, The White Lily. <br/>A towering fortress of glass and steel that looms over the surrounding buildings. It represents power, honor, influence and unwavering loyalty.</p>" },
+    { id: 2, name:"THE PINNACLE TOWERS", img: "b2", content: "<p>HQ of the most powerful clan in SynthCity, The White Lily. A towering fortress of glass and steel that looms over the surrounding buildings. It represents power, honor, influence and unwavering loyalty.</p>" },
     { id: 3, name:"SILVERCOIN DISTRICT", img: "b3", content: "<p>The Silver Coin District is located in the lower part of SynthCity, a place where hope is scarce and survival is the only priority. The district is home to smaller clans, each vying for control and influence</p>" },
     { id: 4, name:"THE WATERING HOLE", img: "b4", content: "<p>At the heart of Cyber Valley lies The Watering Hole, a bustling marketplace where merchants gather to promote their latest technological innovations and services. Deals are made in the open, but for those who know where to look, even the rarest, most illicit tech can be acquired for a right price.</p>" },
     { id: 5, name:"KOI AND LOTUS CLUB", img: "b5", content: "<p>The Koi and Lotus Club is Cyber Valley’s premier hotspot, a hub for power play and secret deals. Beneath its lavish exterior, the club serves as the legitimate front for The Misfits' operations, seamlessly straddling both legal and underground tech ventures—primarily hacking and information brokering.</p>" },
@@ -52,9 +52,10 @@ const WorldMap = () => {
     const [ isMenuOpen, setIsMenuOpen ] = useState(false);
     const [ mousePosition, setMousePosition ] = useState({ x: 0, y: 0 });
     const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
-    const [ showRotateWarning, setRotateShowWarning ] = useState(false);
+    //const [ showRotateWarning, setRotateShowWarning ] = useState(false);
+    const [ showHandScroll, setShowHandScroll ] = useState<boolean>(false);
 
-    useEffect(() => {
+    /*useEffect(() => {
         const checkOrientation = () => {
             const isPortrait = window.matchMedia("(orientation: portrait)").matches;
             const isSmallScreen = window.innerWidth < 480;
@@ -69,6 +70,21 @@ const WorldMap = () => {
         return () => {
             window.removeEventListener("resize", checkOrientation);
             window.removeEventListener("orientationchange", checkOrientation);
+        };
+    }, []);*/
+
+    useEffect(() => {
+        const checkRatio = () => {
+            if(window.innerWidth/window.innerHeight <= 1.333) {
+                setShowHandScroll(true);
+            }
+        };
+
+        checkRatio(); // 初始检测
+
+        window.addEventListener("resize", checkRatio);
+        return () => {
+            window.removeEventListener("resize", checkRatio);
         };
     }, []);
 
@@ -246,7 +262,7 @@ const WorldMap = () => {
                 )}
             </AnimatePresence>
             <AnimatePresence>
-                {   showRotateWarning && (
+                {   /*showRotateWarning && (
                     <motion.div
                         id="loader"
                         className="absolute bg-white flex flex-col gap-4 h-full items-center justify-center left-0 w-full top-0 z-[100]"
@@ -260,7 +276,17 @@ const WorldMap = () => {
                             PLEASE ROTATE YOUR DEVICE FOR BETTER EXPERIENCE
                         </span>
                     </motion.div>
-                )}
+                )*/
+                    showHandScroll &&
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 0.2 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute bottom-4 flex flex-col gap-2 items-center left-[calc(50%-50px)] text-white text-center w-[120px] z-[10]">
+                        <Image className="w-[50px]" alt="" width={512} height={512} src={`/assets/images/icons/hand-scroll.png`} />
+                        <div>Scroll left/right to view full map</div>
+                    </motion.div>
+                }
             </AnimatePresence>
             <div className="absolute h-12 overflow-hidden w-full" style={{ left: mousePosition.x, top: mousePosition.y }}>
                 <AnimatePresence>
@@ -290,11 +316,11 @@ const WorldMap = () => {
                         animate={{ y: 0, opacity: 0.8 }}
                         exit={{ y: "20%", opacity: 0 }}
                         transition={{ duration: 0.5 }}
-                        className={`absolute z-[200] w-[80%] lg:w-[1024px] right-0
-                            ${buildingId >= 1 && buildingId <= 6 && "bottom-4"} 
-                            ${buildingId >= 1 && buildingId <= 3 && "right-4"} 
-                            ${buildingId >= 4 && buildingId <= 6 && "left-4"} 
-                            ${buildingId >= 7 && buildingId <= 9 && "top-4 left-4"}   
+                        className={`absolute z-[200] w-[100%] lg:w-[80%] lg:w-[900px] xl:[1024px] left-0 right-0
+                            ${buildingId >= 1 && buildingId <= 6 && "bottom-36 lg:bottom-4"} 
+                            ${buildingId >= 1 && buildingId <= 3 && "bottom-36 lg:right-4"} 
+                            ${buildingId >= 4 && buildingId <= 6 && "bottom-36 lg:left-4"} 
+                            ${buildingId >= 7 && buildingId <= 9 && "top-36 lg:top-4 lg:left-4"}   
                         `}
                     >
 
@@ -317,14 +343,14 @@ const WorldMap = () => {
                             loading="lazy" // Enable lazy loading
                             onError={() => console.error("Failed to load image.")}
                         />
-                        {   imageLoaded && <div className="absolute flex flex-col gap-2 left-[8%] top-[30%] text-white w-[45%]">
-                                <div className="text-xl sm:text-2xl md:text-3xl lg:text-5xl">{buildings.find(b => b.id === buildingId)?.name}</div>
-                                <div className="text-sm md:text-md lg:text-lg" dangerouslySetInnerHTML={{ __html: buildings.find(b => b.id === buildingId)?.content || "<p></p>" }} />
+                        {   imageLoaded && <div className="absolute flex flex-col sm:gap-2 left-[8%] top-[25%] lg:top-[30%] text-white w-[80%] sm:w-[45%]">
+                                <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl">{buildings.find(b => b.id === buildingId)?.name}</div>
+                                <div className="text-xs sm:text-sm md:text-md lg:text-lg" dangerouslySetInnerHTML={{ __html: buildings.find(b => b.id === buildingId)?.content || "<p></p>" }} />
                                 <Link href={{ pathname: "/lore", query: { category: "locations", id: buildingId } }}>
                                     <button
-                                        className="duration-300 flex group hover:opacity-50 items-center text-md md:text-lg lg:text-xl underline">
+                                        className="duration-300 flex group hover:opacity-50 items-center text-sm sm:text-md md:text-lg lg:text-xl underline">
                                         READ MORE
-                                        <IoIosArrowRoundForward className="duration-200 -rotate-45 group-hover:rotate-0 text-4xl" />
+                                        <IoIosArrowRoundForward className="duration-200 -rotate-45 group-hover:rotate-0 text-3xl sm:text-4xl" />
                                     </button>
                                 </Link>
                             </div>  
@@ -334,7 +360,7 @@ const WorldMap = () => {
                                 onClick={() => {
                                     sendMessage(`b${buildingId}_0`, "UnClickBuilding");
                                 }}
-                                className="absolute bg-white duration-300 p-2 right-2 rounded-full shadow-xl shadow-black/50 text-3xl top-12 z-20 hover:bg-black hover:text-white">
+                                className="absolute bg-white duration-300 p-2 right-4 rounded-full shadow-xl shadow-black/50 text-3xl top-4 sm:top-12 z-20 hover:bg-black hover:text-white">
                                 <CgClose />
                             </button>
                         }
