@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const Home = () => {
     const router = useRouter();
@@ -15,14 +16,15 @@ const Home = () => {
         codeUrl: "unity/build/HomeScene.wasm.unityweb",
     });
 
-    const [ loadingPercentage, setLoadingPercentage ] = useState<number>(0);
-    const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
-    const [ tvId, setTvId ] = useState<number>(0); // 当前聊天 ID
+    const [loadingPercentage, setLoadingPercentage] = useState<number>(0);
+    const [loaderHidden, setLoaderHidden] = useState<boolean>(false);
+    //const [tvId, setTvId] = useState<number>(0); // 当前聊天 ID
+    const [ showHandScroll, setShowHandScroll ] = useState<boolean>(false);
 
     const handleClickTV = useCallback((tvId: any) => {
         //setTvId(tvId)
         let url = "";
-        switch(tvId) {
+        switch (tvId) {
             case 1:
                 url = "/universe";
                 break;
@@ -55,7 +57,7 @@ const Home = () => {
 
     useEffect(() => {
         if (loadingProgression === 1) {
-            if(loadingPercentage < 90) {
+            if (loadingPercentage < 90) {
                 const interval = setInterval(() => {
                     setLoadingPercentage((prev) => {
                         if (prev >= 99) {
@@ -85,9 +87,34 @@ const Home = () => {
         }
     }, [loadingProgression]);
 
+    useEffect(() => {
+        const checkRatio = () => {
+            if(window.innerWidth/window.innerHeight <= 1.333) {
+                setShowHandScroll(true);
+            }
+        };
+
+        checkRatio(); // 初始检测
+
+        window.addEventListener("resize", checkRatio);
+        return () => {
+            window.removeEventListener("resize", checkRatio);
+        };
+    }, []);
+
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
+            {showHandScroll &&
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.2 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute bottom-8 flex flex-col gap-2 items-center left-[calc(50%-50px)] text-white text-center w-[120px] z-[10]">
+                    <Image className="w-[50px]" alt="" width={512} height={512} src={`/assets/images/icons/hand-scroll.png`} />
+                    <div>Scroll left/right to view full map</div>
+                </motion.div>
+            }
             <AnimatePresence>{/*Loading Percentage For Unity*/}
                 {!loaderHidden && (
                     <motion.div

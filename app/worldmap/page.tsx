@@ -282,7 +282,7 @@ const WorldMap = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 0.2 }}
                         exit={{ opacity: 0 }}
-                        className="absolute bottom-4 flex flex-col gap-2 items-center left-[calc(50%-50px)] text-white text-center w-[120px] z-[10]">
+                        className="absolute bottom-8 flex flex-col gap-2 items-center left-[calc(50%-50px)] text-white text-center w-[120px] z-[10]">
                         <Image className="w-[50px]" alt="" width={512} height={512} src={`/assets/images/icons/hand-scroll.png`} />
                         <div>Scroll left/right to view full map</div>
                     </motion.div>
