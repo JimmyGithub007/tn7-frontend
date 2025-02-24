@@ -16,10 +16,24 @@ const Home = () => {
         codeUrl: "unity/build/HomeScene.wasm.unityweb",
     });
 
-    const [loadingPercentage, setLoadingPercentage] = useState<number>(0);
-    const [loaderHidden, setLoaderHidden] = useState<boolean>(false);
-    //const [tvId, setTvId] = useState<number>(0); // 当前聊天 ID
+    const [ loadingPercentage, setLoadingPercentage ] = useState<number>(0);
+    const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
+    const [ hoverTvId, setHoverTvId ] = useState<number>(0);
+    const [ mousePosition, setMousePosition ] = useState({ x: 0, y: 0 });
     const [ showHandScroll, setShowHandScroll ] = useState<boolean>(false);
+
+    const handleHoverTV = useCallback((tvData: any) => {
+        const [tvId, tvX, tvY] = tvData.split(",");
+        if(tvId > 0) setMousePosition({ x: parseInt(tvX) - 100, y: window.innerHeight - parseInt(tvY) - 100 });
+        setHoverTvId(parseInt(tvId))
+    }, []);
+
+    useEffect(() => {
+        addEventListener("ReactHoverTV", handleHoverTV);
+        return () => {
+            removeEventListener("ReactHoverTV", handleHoverTV);
+        };
+    }, [addEventListener, removeEventListener, handleHoverTV]);
 
     const handleClickTV = useCallback((tvId: any) => {
         //setTvId(tvId)
@@ -102,6 +116,45 @@ const Home = () => {
         };
     }, []);
 
+    //random text - start
+    const tvs = [
+        { id: 1, name: "TN7 UNIVERSE" },
+        { id: 2, name: "TN7 LORE" },
+        { id: 3, name: "TN7 WORLD MAP" }
+    ];
+
+    const [tvName, setTvName] = useState<string>("");
+
+    const generateRandomString = (length: number) => {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+        return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+    };
+
+    const animateBuildingName = (finalName: string) => {
+        let currentLength = 0;
+        const interval = setInterval(() => {
+            if (currentLength <= finalName.length) {
+                const partialName = finalName.slice(0, currentLength);
+                const randomString = generateRandomString(finalName.length - currentLength);
+                setTvName(partialName + randomString);
+                currentLength++;
+            } else {
+                clearInterval(interval);
+                setTvName(finalName);
+            }
+        }, 50); // 控制每次变化的速度 (50ms)
+    };
+
+    useEffect(() => {
+        if (hoverTvId > 0) {
+            const tv = tvs.find((b) => b.id === hoverTvId);
+            if (tv) {
+                animateBuildingName(tv.name); // 开始动画
+            }
+        }
+    }, [hoverTvId]);
+    //end
+
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
@@ -115,6 +168,24 @@ const Home = () => {
                     <div>Scroll left/right to view full map</div>
                 </motion.div>
             }
+            <div className="absolute h-12 overflow-hidden w-full" style={{ left: mousePosition.x, top: mousePosition.y-80 }}>
+                <AnimatePresence>
+                    {   hoverTvId > 0 && (
+                        <motion.div
+                            className={`absolute font-bold text-4xl text-white`}
+                            initial={{ opacity: 0, y: "100%" }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: "100%" }}
+                            transition={{ duration: 0.5 }}
+                            key={hoverTvId} // Ensure animation runs for each new ID
+                        >
+                            {
+                                tvName
+                            }
+                        </motion.div>
+                    )}
+                </AnimatePresence>                
+            </div>
             <AnimatePresence>{/*Loading Percentage For Unity*/}
                 {!loaderHidden && (
                     <motion.div
