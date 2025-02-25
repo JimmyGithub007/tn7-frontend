@@ -5,6 +5,7 @@ import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 const Home = () => {
     const router = useRouter();
@@ -105,6 +106,8 @@ const Home = () => {
         const checkRatio = () => {
             if(window.innerWidth/window.innerHeight <= 1.333) {
                 setShowHandScroll(true);
+            } else {
+                setShowHandScroll(false);
             }
         };
 
@@ -158,13 +161,17 @@ const Home = () => {
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
-            {showHandScroll &&
+            {   showHandScroll &&
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 0.2 }}
                     exit={{ opacity: 0 }}
-                    className="absolute bottom-8 flex flex-col gap-2 items-center left-[calc(50%-50px)] text-white text-center w-[120px] z-[10]">
-                    <Image className="w-[50px]" alt="" width={512} height={512} src={`/assets/images/icons/hand-scroll.png`} />
+                    className="absolute bottom-12 flex flex-col gap-2 items-center left-[calc(50%-105px)] text-white text-center w-[210px] z-[10]">
+                    <div className="relative  text-xl">
+                        <FaArrowLeft className="absolute animate-left-arrow -left-12" />
+                        <FaArrowRight className="absolute animate-right-arrow -right-12" />
+                    </div>
+                    <Image className="animate-wiggle w-[40px]" alt="" width={328} height={481} src={`/assets/images/icons/hand-scroll.png`} />
                     <div>Scroll left/right to view full map</div>
                 </motion.div>
             }
