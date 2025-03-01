@@ -101,7 +101,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
     <AnimatePresence>
       {isOpenMenu && (
         <motion.div
-          className="fixed bg-white/20 right-0 h-screen backdrop-blur-md overflow-y-auto w-full md:w-[500px] z-[40]"
+          className="fixed bg-white/20 right-0 h-screen backdrop-blur-xl overflow-y-auto w-full md:w-[500px] z-[40]"
           initial={{ translateX: "100%" }}
           animate={{ translateX: "0%" }}
           exit={{ translateX: "100%" }}

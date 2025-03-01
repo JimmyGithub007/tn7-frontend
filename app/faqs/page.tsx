@@ -1,6 +1,7 @@
 "use client";
 
 import { MaskText, Header } from "@/components";
+import { opinionPro } from "@/components/Font";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 
@@ -53,7 +54,7 @@ const Collapse = ({ children, title }: { children: ReactNode, title: string }) =
         <div ref={headRef} className={`${isOpen ? "text-red-800" : "text-white"} cursor-pointer duration-300 flex font-bold gap-4 justify-between text-md sm:text-2xl`} onClick={() => setIsOpen(!isOpen)}>
             {title} <IoIosArrowDown className={`transform transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
         </div>
-        <div className={`flex flex-col gap-8 text-sm sm:text-lg`}>
+        <div className={`flex flex-col text-sm sm:text-xl`}>
             {children}
         </div>
     </div>
@@ -85,16 +86,16 @@ const Faqs = () => {
                 ))*/
             }
             <div className="flex flex-col gap-4">
-                <MaskText className="font-bold text-xl sm:text-4xl">Digital Comic Series</MaskText>
-                <div className="border-t-4">
+                <MaskText className="font-bold text-xl sm:text-3xl">Digital Comic Series</MaskText>
+                <div className={`${opinionPro.className}`}>
                     <Collapse title="Q: What is the digital comic series?">
                         <MaskText>A: The digital comic series is the first edition to the TN7 universe - the Genesis Arc is Viu&apos;s first-ever digital comic series. This series when launched will be available on our website, providing a rich, visual narrative for fans to enjoy.</MaskText>
                     </Collapse>
                 </div>
             </div>
             <div className="flex flex-col gap-4">
-                <MaskText className="font-bold text-xl sm:text-4xl">TN7 Digital Pack and NFTs</MaskText>
-                <div className="border-t-4 flex flex-col">
+                <MaskText className="font-bold text-xl sm:text-3xl">TN7 Digital Pack and NFTs</MaskText>
+                <div className={`flex flex-col ${opinionPro.className}`}>
                     <Collapse title="Q: What is the TN7 Digital Pack?">
                         <MaskText>A: The TN7 Digital Pack consists of 4 NFTs, containing images of a unique digital character and three comic covers. The digital character will be minted first, with the comic covers to follow later. These covers will be created by renowned artists.</MaskText>
                     </Collapse>
@@ -117,8 +118,8 @@ const Faqs = () => {
                 </div>
             </div>
             <div className="flex flex-col gap-4">
-                <MaskText className="font-bold text-xl sm:text-4xl">Community and Engagement</MaskText>
-                <div className="border-t-4 flex flex-col">
+                <MaskText className="font-bold text-xl sm:text-3xl">Community and Engagement</MaskText>
+                <div className={`flex flex-col ${opinionPro.className}`}>
                     <Collapse title="Q: What’s coming?">
                         <MaskText>A: In the near future, you will have the opportunity to contribute and vote on stories, participate in content creation initiatives, and collaborate with other members to shape the TN7 universe. Your involvement will be crucial in driving the evolution and expansion of our world. Stay tuned for exciting updates and new ways to engage!</MaskText>
                     </Collapse>

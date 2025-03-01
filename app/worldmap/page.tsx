@@ -12,6 +12,7 @@ import { TbPlayerTrackNextFilled } from "react-icons/tb";
 import Image from "next/image";
 import Link from "next/link";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { opinionPro } from "@/components/Font";
 
 //const lilita_one = Lilita_One({ subsets: ["latin"], weight: "400" });
 
@@ -350,9 +351,9 @@ const WorldMap = () => {
                             loading="lazy" // Enable lazy loading
                             onError={() => console.error("Failed to load image.")}
                         />
-                        {   imageLoaded && <div className="absolute flex flex-col sm:gap-2 left-[8%] top-[25%] lg:top-[30%] text-white w-[80%] sm:w-[45%]">
+                        {   imageLoaded && <div className={`absolute flex flex-col justify-center h-[73%] italic sm:gap-2 left-[8%] top-[22%] text-white w-[80%] sm:w-[45%]`}>
                                 <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl">{buildings.find(b => b.id === buildingId)?.name}</div>
-                                <div className="text-xs sm:text-sm md:text-md lg:text-lg" dangerouslySetInnerHTML={{ __html: buildings.find(b => b.id === buildingId)?.content || "<p></p>" }} />
+                                <div className={`text-sm sm:text-md md:text-lg lg:text-xl ${opinionPro.className}`} dangerouslySetInnerHTML={{ __html: buildings.find(b => b.id === buildingId)?.content || "<p></p>" }} />
                                 <Link href={{ pathname: "/lore", query: { category: "locations", id: buildingId } }}>
                                     <button
                                         className="duration-300 flex group hover:opacity-50 items-center text-sm sm:text-md md:text-lg lg:text-xl underline">

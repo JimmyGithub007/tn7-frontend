@@ -4,6 +4,7 @@ import Dialog from "./Dialog";
 import ProgressiveImage from "./ProgressiveImage";
 import MaskText from "./MaskText";
 import Loader from "./Loader";
+import Footer from "./Footer";
 
 export {
     WebGL,
@@ -11,5 +12,6 @@ export {
     Dialog,
     ProgressiveImage,
     MaskText,
-    Loader
+    Loader,
+    Footer
 }
