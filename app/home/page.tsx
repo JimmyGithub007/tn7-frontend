@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { Footer, Header } from "@/components";
 
 const Home = () => {
     const router = useRouter();
@@ -160,6 +161,7 @@ const Home = () => {
 
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
+            <Header />
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
             {   showHandScroll &&
                 <motion.div
@@ -209,6 +211,7 @@ const Home = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+            <Footer />
         </div>
     );
 };

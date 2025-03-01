@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
 //import { Lilita_One } from "next/font/google";
-import { Header } from "@/components";
+import { Footer, Header } from "@/components";
 import { CgClose } from "react-icons/cg";
 import { IoIosArrowRoundForward } from "react-icons/io";
 import { TbPlayerTrackNextFilled } from "react-icons/tb";
@@ -32,8 +32,8 @@ const buildings = [
     { id: 4, name:"THE WATERING HOLE", img: "b4", content: "<p>At the heart of Cyber Valley lies The Watering Hole, a bustling marketplace where merchants gather to promote their latest technological innovations and services. Deals are made in the open, but for those who know where to look, even the rarest, most illicit tech can be acquired for a right price.</p>" },
     { id: 5, name:"KOI AND LOTUS CLUB", img: "b5", content: "<p>The Koi and Lotus Club is Cyber Valley’s premier hotspot, a hub for power play and secret deals. Beneath its lavish exterior, the club serves as the legitimate front for The Misfits' operations, seamlessly straddling both legal and underground tech ventures—primarily hacking and information brokering.</p>" },
     { id: 6, name:"THE CODEX", img: "b6", content: "<p>The Codex is a sanctuary of knowledge, housing ancient wisdom with cutting-edge breakthroughs. It serves as a pivotal center for scholars, technologists, and seekers of knowledge. Within its walls,lies a profound repository of intellectual discovery and exploration.</p>" },
-    { id: 7, name:"THE FORT", img: "b7", content: "<p>A massive concrete fortress dominates the city's skyline, serving as the Akio Family's business headquarters. Guards patrol its perimeter vigilantly, a constant reminder of Akio's iron grip over the city.</p>" },
-    { id: 8, name:"AKIO INDUSTRIES", img: "b8", content: "<p>The city's only access point is a massive mechanized gate reinforced with red titanium bars. When it opens, a deep, resonant rumble echoes through the surrounding area, a stark reminder of the city's impenetrable defenses.</p>" },
+    { id: 7, name:"THE FORT", img: "b7", content: "<p>The city's only access point is a massive mechanized gate reinforced with red titanium bars. When it opens, a deep, resonant rumble echoes through the surrounding area, a stark reminder of the city's impenetrable defenses.</p>" },
+    { id: 8, name:"AKIO INDUSTRIES", img: "b8", content: "<p>A massive concrete fortress dominates the city's skyline, serving as the Akio Family's business headquarters. Guards patrol its perimeter vigilantly, a constant reminder of Akio's iron grip over the city.</p>" },
     { id: 9, name:"THE ENERGY FIELD", img: "b9", content: "<p>The Energy Field, built by Akio Industries, extracts geothermal energy using massive drills that operate continuously. Rumors of a shrinking reservoir and declining output have led to heightened security around this vital resource.</p>" },
 ];
 
@@ -398,6 +398,7 @@ const WorldMap = () => {
                     </div>
                 }
             </AnimatePresence>
+            <Footer />
         </div>
     );
 };

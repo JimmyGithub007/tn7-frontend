@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import Image from 'next/image';
-import { Header, ProgressiveImage } from '@/components';
+import { Footer, Header, Loader, ProgressiveImage } from '@/components';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -39,10 +39,12 @@ const Universe = () => {
 
         // Mouse movement tracking for the parallax effect
         const handleMouseMove = (e: MouseEvent) => {
-            const { clientX, clientY } = e;
-            const x = clientX - window.innerWidth / 2;
-            const y = clientY - window.innerHeight / 2;
-            setMousePosition({ x, y });
+            if(window.innerWidth >= 1024) {
+                const { clientX, clientY } = e;
+                const x = clientX - window.innerWidth / 2;
+                const y = clientY - window.innerHeight / 2;
+                setMousePosition({ x, y });
+            }
         };
 
         window.addEventListener("mousemove", handleMouseMove);
@@ -55,20 +57,7 @@ const Universe = () => {
     return (
         <div className="fixed flex justify-center h-screen items-center w-full">
             <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/universe/webp/Background.webp`} priority />
-            <AnimatePresence>
-                {!isLoaded && (
-                    <motion.div
-                        id="loader"
-                        className="absolute flex h-full items-center justify-center left-0 w-full top-0 bg-black z-[100]"
-                        initial={{ y: 0 }}
-                        animate={{ y: 0 }}
-                        exit={{ y: "-100%" }}
-                        transition={{ duration: 1, ease: "easeInOut" }}
-                    >
-                        <span className="font-bold text-5xl text-white">{loadingPercentage}%</span>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            <Loader />
             {isLoaded && (
                 <>
                     <Header />
@@ -147,6 +136,7 @@ const Universe = () => {
                     </div>
                 </>
             )}
+            <Footer />
         </div>
     );
 };

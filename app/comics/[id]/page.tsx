@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader, Header } from "@/components";
+import { Loader, Header, Footer } from "@/components";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -96,6 +96,7 @@ const ComicsId = () => {
                 </div>
             </div>
         </div>
+        <Footer />
     </div>)
 }
 
