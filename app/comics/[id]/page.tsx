@@ -77,15 +77,15 @@ const ComicsId = () => {
                     style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 80/100 }}
                 >
                     <div className={`flex flex-col gap-2`}>
-                        <div className="text-xl sm:text-2xl md:text-3xl xl:text-4xl">{comics.find(e => e.id === id)?.name || ""}</div>
-                        <div className={`text-sm md:text-md lg:text-lg ${opinionPro.className}`}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s</div>
-                        <Link href={`/comics/${id}/1`} className="bg-[#007d6b] duration-300 px-8 py-2 rounded-2xl hover:opacity-80 w-fit">START READING</Link>
+                        <div className="text-lg sm:text-xl md:text-2xl xl:text-3xl">{comics.find(e => e.id === id)?.name || ""}</div>
+                        <div className={`text-xs sm:text-sm md:text-md lg:text-lg italic ${opinionPro.className}`}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s</div>
+                        <Link href={`/comics/${id}/1`} className="bg-[#007d6b] duration-300 px-4 py-1 text-xs sm:text-lg sm:px-8 sm:py-2 rounded-2xl hover:opacity-80 w-fit">START READING</Link>
                     </div>
                     <div className="border-[#007d6b] border-t-2 flex flex-col gap-4">
                         {
                             content.map((value, key) => (
                                 <Link href={`/comics/${id}/${value.id}`} key={key} className="cursor-pointer duration-300 flex group items-center justify-between hover:bg-slate-50/10">
-                                    <div className="flex items-center gap-8">
+                                    <div className={`flex items-center gap-8 ${opinionPro.className}`}>
                                         <Image className="duration-300 group-hover:saturate-150 w-16" alt="prelude" height={315} width={315} src={`/assets/images/comics/prelude.png`} priority />
                                         {value.title}
                                     </div>

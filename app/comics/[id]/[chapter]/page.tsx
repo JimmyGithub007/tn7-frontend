@@ -83,7 +83,7 @@ const ComicsChapter = () => {
             <AnimatePresence>
             {   showHeader && <motion.div  
                 initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -50 }} transition={{ duration: 0.5, delay: 0.2 }}
-                className="bg-black fixed grid grid-cols-1 md:grid-cols-3 h-48 md:h-16 items-center px-8 shadow-lg shadow-slate-700/20 text-xl top-0 w-full z-[20]" id="comicsHeader">
+                className="backdrop-blur-sm bg-black/80 sm:bg-black fixed grid grid-cols-1 md:grid-cols-3 h-48 md:h-16 items-center px-8 shadow-lg shadow-slate-700/20 text-xl top-0 w-full z-[20]" id="comicsHeader">
                 <div className="flex items-center gap-2 text-white text-sm sm:text-2xl"><Link className="underline" href={`/comics/${id}`}>{comics.find(e => e.id === id)?.name || ""}</Link> <IoIosArrowForward /> {content.find(e => e.id === chapter)?.title}</div>
                 <div className="flex gap-4 justify-center">
                     {/*<Link href={`/comics/${id}/${Number(chapter) > 1 ? Number(chapter) - 1 : chapter}`} className={`${Number(chapter) === 1 ? "opacity-20 cursor-not-allowed" : "hover:opacity-50" } bg-white duration-300 rounded-sm text-4xl`}><IoIosArrowBack /></Link>*/}
@@ -103,7 +103,7 @@ const ComicsChapter = () => {
                 {
                     isOpenDropDown && <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
-                    className="absolute bg-black flex gap-8 h-36 items-center justify-center w-full top-48 md:top-16 text-white shadow-lg shadow-slate-700/20">
+                    className="absolute backdrop-blur-sm bg-black/90 sm:bg-black flex gap-8 h-36 items-center justify-center w-full top-48 md:top-16 text-white shadow-lg shadow-slate-700/20">
                         {
                             content.map((value, key) => (
                                 <Link key={key} href={`/comics/${id}/${value.id}`} className={`${value.id === chapter ? "opacity-30 cursor-not-allowed" : ""} flex flex-col gap-2 group items-center`}>

@@ -141,11 +141,11 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
   const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
 
   return (<>
-    <Link href={`/home`}><Image alt="logo" className="fixed left-8 top-0 w-32 z-[100]" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} priority quality={50} /></Link>
+    <Link href={`/home`}><Image alt="logo" className="fixed left-8 top-0 w-20 sm:w-32 z-[100]" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} priority quality={50} /></Link>
     <button onClick={() => {
       setIsOpenMenu(!isOpenMenu);
       if (setIsOpenMenuParent) setIsOpenMenuParent(!isOpenMenuParent);
-    }} className="fixed duration-300 h-[36px] right-8 hover:opacity-80 top-8 w-[36px] z-[100]">
+    }} className="fixed duration-300 h-[36px] right-8 hover:opacity-80 top-4 sm:top-8 w-[36px] z-[100]">
       <div className="relative h-full w-full">
         <div className={`absolute bg-white duration-300 h-[4px] w-[36px] left-0 ${isOpenMenu ? "rotate-45 top-[16px]" : "rotate-0 top-[8px]"}`}></div>
         <div className={`absolute bg-white duration-300 h-[4px] left-0 ${isOpenMenu ? "rotate-[135deg] top-[16px] w-[36px] border-2" : "rotate-0 top-[24px] w-[28px]"}`}></div>

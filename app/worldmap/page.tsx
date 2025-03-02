@@ -385,14 +385,14 @@ const WorldMap = () => {
                             loading="lazy" // Enable lazy loading
                             onError={() => console.error("Failed to load image.")}
                         />
-                        {   imageLoaded && <div className={`absolute flex flex-col justify-center h-[73%] italic sm:gap-2 left-[8%] top-[22%] text-white w-[80%] sm:w-[45%]`}>
+                        {   imageLoaded && <div className={`absolute flex flex-col justify-center h-[73%] italic sm:gap-2 left-[8%] top-[22%] text-white w-[85%] sm:w-[45%]`}>
                                 <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl">{buildings.find(b => b.id === buildingId)?.name}</div>
-                                <div className={`text-sm sm:text-md md:text-lg lg:text-xl ${opinionPro.className}`} dangerouslySetInnerHTML={{ __html: buildings.find(b => b.id === buildingId)?.content || "<p></p>" }} />
+                                <div className={`text-xs/4 sm:text-md md:text-lg lg:text-xl ${opinionPro.className}`} dangerouslySetInnerHTML={{ __html: buildings.find(b => b.id === buildingId)?.content || "<p></p>" }} />
                                 <Link href={{ pathname: "/lore", query: { category: "locations", id: buildingId } }}>
                                     <button
-                                        className="duration-300 flex group hover:opacity-50 items-center text-sm sm:text-md md:text-lg lg:text-xl underline">
+                                        className={`duration-300 flex group hover:opacity-50 items-center text-sm sm:text-md md:text-lg lg:text-xl underline ${opinionPro.className}`}>
                                         READ MORE
-                                        <IoIosArrowRoundForward className="duration-200 -rotate-45 group-hover:rotate-0 text-3xl sm:text-4xl" />
+                                        <IoIosArrowRoundForward className="duration-200 -rotate-45 group-hover:rotate-0 text-2xl sm:text-3xl md:text-4xl" />
                                     </button>
                                 </Link>
                             </div>  
@@ -402,7 +402,7 @@ const WorldMap = () => {
                                 onClick={() => {
                                     sendMessage(`b${buildingId}_0`, "UnClickBuilding");
                                 }}
-                                className="absolute bg-white duration-300 p-2 right-4 rounded-full shadow-xl shadow-black/50 text-3xl top-4 sm:top-12 z-20 hover:bg-black hover:text-white">
+                                className="absolute bg-white duration-300 p-2 right-0 sm:right-4 rounded-full shadow-xl shadow-black/50 text-3xl top-4 sm:top-12 z-20 hover:bg-black hover:text-white">
                                 <CgClose />
                             </button>
                         }
@@ -419,14 +419,14 @@ const WorldMap = () => {
                             transition={{ duration: 1.2, delay: 0.2 }}
                             className="w-full lg:w-[1080px] relative flex justify-center">
                             <Image alt="character" width={1494} height={688} src={`/assets/images/worldmap/webp/character.webp`} />
-                            <div className={`absolute flex h-full italic items-center justify-center p-4 left-[5%] sm:left-[10%] text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl top-[5%] sm:top-[8%] w-[55%] sm:w-[50%] ${opinionPro.className}`}>
+                            <div className={`absolute flex h-full italic items-center justify-center p-4 left-[5%] sm:left-[10%] text-sm/4 sm:text-lg md:text-xl lg:text-2xl xl:text-3xl top-[5%] sm:top-[8%] w-[55%] sm:w-[50%] ${opinionPro.className}`}>
                                 {displayText}
                             </div>
                             {!isAnimating && <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="absolute bottom-[10%] flex justify-between w-[80%] sm:text-lg md:text-xl lg:text-2xl">
+                                className="absolute bottom-[10%] flex justify-between w-[80%] text-xs sm:text-lg md:text-xl lg:text-2xl">
                                     <button className="animate-pulse duration-300 flex gap-2 items-center hover:opacity-50">NEXT <TbPlayerTrackNextFilled /></button>
                                     <button className="animate-pulse duration-300 flex gap-2 items-center hover:opacity-50"
                                         onClick={() => {
