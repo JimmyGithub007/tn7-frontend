@@ -13,7 +13,7 @@ const impact = localFont({
     { path: '../public/fonts/Impacted.ttf', weight: '700', style: 'normal' },
     { path: '../public/fonts/unicode.impact.ttf', weight: '400', style: 'italic' }
   ],
-  variable: '--font-impact' // 可选，定义 CSS 变量
+  variable: '--font-impact'
 });
 
 //const archivo_black = Archivo_Black({ subsets: ["latin"], weight: "400" });
@@ -30,9 +30,9 @@ export default function RootLayout({
 }>) {
   return (<StoreProvider>
     <html lang="en">
-      <body className={impact.className}>
+      <body className={impact.className} style={{ overflow: "hidden" }}>
         {children}
-        <Dialog />
+        {/*<Dialog />*/}
       </body>
     </html>
   </StoreProvider>);

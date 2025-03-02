@@ -8,6 +8,18 @@ const Loader = () => {
     const [loadingPercentage, setLoadingPercentage] = useState(0);
 
     useEffect(() => {
+        if (!isLoaded) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isLoaded]);
+
+    useEffect(() => {
         // Simulate loading process
         const interval = setInterval(() => {
             setLoadingPercentage((prev) => {

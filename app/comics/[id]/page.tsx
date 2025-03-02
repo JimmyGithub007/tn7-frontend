@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader, Header, Footer } from "@/components";
+import { opinionPro } from "@/components/Font";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -8,8 +9,8 @@ import { useEffect, useState } from "react";
 
 const content = [
     { id: "1", title: "PRELUDE", date: "07 FEB 2025" },
-    { id: "2", title: "EPISODE 1", date: "07 FEB 2025" },
-    { id: "3", title: "EPISODE 2", date: "07 FEB 2025" }
+    //{ id: "2", title: "EPISODE 1", date: "07 FEB 2025" },
+    //{ id: "3", title: "EPISODE 2", date: "07 FEB 2025" }
 ];
 
 const comics = [
@@ -75,9 +76,9 @@ const ComicsId = () => {
                 <div className={`filter-bar flex flex-col gap-8 md:justify-center overflow-y-auto overflow-x-hidden overflow-y-auto px-4 text-white z-10`}
                     style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 80/100 }}
                 >
-                    <div className="flex flex-col gap-2">
+                    <div className={`flex flex-col gap-2`}>
                         <div className="text-xl sm:text-2xl md:text-3xl xl:text-4xl">{comics.find(e => e.id === id)?.name || ""}</div>
-                        <div className="text-sm md:text-md lg:text-lg">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s</div>
+                        <div className={`text-sm md:text-md lg:text-lg ${opinionPro.className}`}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s</div>
                         <Link href={`/comics/${id}/1`} className="bg-[#007d6b] duration-300 px-8 py-2 rounded-2xl hover:opacity-80 w-fit">START READING</Link>
                     </div>
                     <div className="border-[#007d6b] border-t-2 flex flex-col gap-4">

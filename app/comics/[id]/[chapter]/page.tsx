@@ -1,15 +1,16 @@
 "use client";
 
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IoIosArrowBack, IoIosArrowForward, IoIosArrowUp } from "react-icons/io";
 import { motion } from "framer-motion";
-import { FaCopy, FaFacebookF } from "react-icons/fa";
+import { FaCopy, FaFacebookF, FaInstagram } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { Loader } from "@/components";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { BsDiscord, BsInstagram, BsTiktok, BsTwitterX } from "react-icons/bs";
 
 // 示例 Webtoon 图片列表（模拟后端数据）
 const comics = [
@@ -20,8 +21,8 @@ const comics = [
 
 const content = [
     { id: "1", title: "PRELUDE" },
-    { id: "2", title: "EPISODE 1" },
-    { id: "3", title: "EPISODE 2" }
+    //{ id: "2", title: "EPISODE 1" },
+    //{ id: "3", title: "EPISODE 2" }
 ];
 
 const ComicsChapter = () => {
@@ -29,53 +30,80 @@ const ComicsChapter = () => {
     const id = params.id;
     const chapter = params.chapter;
 
+    const [ showHeader, setShowHeader ] = useState<boolean>(true);
     const [ isTop, setIsTop ] = useState<boolean>(true);
     const [ isOpenDropDown, setIsOpenDropDown ] = useState<boolean>(true);
 
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
     const scrollToTop = () => {
-        window.scrollTo({ top:0, behavior: "smooth" });
-    }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        // 清除滚动事件的 timeout
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+        // 立即显示 isTop
+        setIsTop(true);
+    };
 
     useEffect(() => {
-        setIsOpenDropDown(false);
-    }, [isTop])
+        if(!showHeader) setIsOpenDropDown(false);
+    }, [showHeader])
 
     useEffect(() => {
-        const scrollEvent = () => {
-            if(window.scrollY > 0) {
+        const handleScroll = () => {
+            if (window.scrollY > 0) {
                 setIsTop(false);
-            } else {
+            } else if (window.scrollY === 0) {
                 setIsTop(true);
+                setShowHeader(true);
+                return;
             }
-        }
 
-        window.addEventListener("scroll", scrollEvent);
-        return () => window.removeEventListener("scroll", scrollEvent);
-    }, [])
+            // 立即隐藏 isTop
+            setShowHeader(false);
 
+            // 重新设置 1 秒后显示 isTop
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            timeoutRef.current = setTimeout(() => {
+                setShowHeader(true);
+            }, 1000);
+        };
+
+        window.addEventListener("scroll", handleScroll);
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
+    }, []);
     return (
         <div className="flex flex-col items-center bg-black min-h-screen">
             <Loader />
             <AnimatePresence>
-            {   isTop && <motion.div  
+            {   showHeader && <motion.div  
                 initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -50 }} transition={{ duration: 0.5, delay: 0.2 }}
-                className="bg-black fixed gap-2 grid grid-cols-1 md:grid-cols-3 h-28 md:h-16 items-center px-8 shadow-md shadow-slate-700/10 text-xl top-0 w-full relative z-[20]" id="comicsHeader">
-                <div className="flex items-center gap-2 text-white"><Link className="underline" href={`/comics/${id}`}>{comics.find(e => e.id === id)?.name || ""}</Link> <IoIosArrowForward /> {content.find(e => e.id === chapter)?.title}</div>
+                className="bg-black fixed grid grid-cols-1 md:grid-cols-3 h-48 md:h-16 items-center px-8 shadow-lg shadow-slate-700/20 text-xl top-0 w-full z-[20]" id="comicsHeader">
+                <div className="flex items-center gap-2 text-white text-sm sm:text-2xl"><Link className="underline" href={`/comics/${id}`}>{comics.find(e => e.id === id)?.name || ""}</Link> <IoIosArrowForward /> {content.find(e => e.id === chapter)?.title}</div>
                 <div className="flex gap-4 justify-center">
-                    <Link href={`/comics/${id}/${Number(chapter) > 1 ? Number(chapter) - 1 : chapter}`} className={`${Number(chapter) === 1 ? "opacity-20 cursor-not-allowed" : "hover:opacity-50" } bg-white duration-300 rounded-sm text-4xl`}><IoIosArrowBack /></Link>
+                    {/*<Link href={`/comics/${id}/${Number(chapter) > 1 ? Number(chapter) - 1 : chapter}`} className={`${Number(chapter) === 1 ? "opacity-20 cursor-not-allowed" : "hover:opacity-50" } bg-white duration-300 rounded-sm text-4xl`}><IoIosArrowBack /></Link>*/}
+                    <button className="flex items-center justify-center opacity-20 cursor-not-allowed bg-white duration-300 rounded-sm sm:text-4xl w-8 h-8 sm:w-10 sm:h-10"><IoIosArrowBack /></button>
                     <button className="text-white underline" onClick={() => { setIsOpenDropDown(!isOpenDropDown); }}>#{chapter}</button>
-                    <Link href={`/comics/${id}/${Number(chapter) < 3 ? Number(chapter) + 1 : chapter}`} className={`${Number(chapter) === 3 ? "opacity-20 cursor-not-allowed" : "hover:opacity-50" } bg-white duration-300 rounded-sm text-4xl`}><IoIosArrowForward /></Link>
+                    <button className="flex items-center justify-center opacity-20 cursor-not-allowed bg-white duration-300 rounded-sm sm:text-4xl w-8 h-8 sm:w-10 sm:h-10"><IoIosArrowForward /></button>
+                    {/*<Link href={`/comics/${id}/${Number(chapter) < 3 ? Number(chapter) + 1 : chapter}`} className={`${Number(chapter) === 3 ? "opacity-20 cursor-not-allowed" : "hover:opacity-50" } bg-white duration-300 rounded-sm text-4xl`}><IoIosArrowForward /></Link>*/}
                 </div>
-                <div className="hidden md:flex gap-4 items-center justify-end text-white">
+                <div className="flex gap-4 items-center justify-end text-white">
                     <FaFacebookF className="cursor-pointer duration-300 hover:opacity-50" />
-                    <FaXTwitter className="cursor-pointer duration-300 hover:opacity-50" />
-                    <FaCopy className="cursor-pointer duration-300 hover:opacity-50" />
+                    <BsInstagram className="cursor-pointer duration-300 hover:opacity-50" />
+                    <BsTwitterX className="cursor-pointer duration-300 hover:opacity-50" />
+                    <BsTiktok className="cursor-pointer duration-300 hover:opacity-50" />
+                    <BsDiscord className="cursor-pointer duration-300 hover:opacity-50" />
                 </div>
                 <AnimatePresence>
                 {
                     isOpenDropDown && <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
-                    className="absolute bg-black flex gap-8 h-36 items-center justify-center w-full top-28 md:top-16 text-white">
+                    className="absolute bg-black flex gap-8 h-36 items-center justify-center w-full top-48 md:top-16 text-white shadow-lg shadow-slate-700/20">
                         {
                             content.map((value, key) => (
                                 <Link key={key} href={`/comics/${id}/${value.id}`} className={`${value.id === chapter ? "opacity-30 cursor-not-allowed" : ""} flex flex-col gap-2 group items-center`}>
@@ -89,7 +117,7 @@ const ComicsChapter = () => {
                 </AnimatePresence>
             </motion.div> }                
             </AnimatePresence>
-            <div className="max-w-[800px]">
+            <div className="max-w-[800px] mt-48 sm:mt-16">
                 {[1, 2, 3, 4, 5, 6].map((value, index) => (
                     <Image
                         key={index}
@@ -105,7 +133,7 @@ const ComicsChapter = () => {
             {   !isTop && <motion.button 
                     onClick={() => scrollToTop() } 
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
-                    className="duration-300 fixed flex flex-col hover:bg-white/50 items-center justify-center bg-white bottom-12 right-12 h-12 shadow-md shadow-slate-100/20 w-12">
+                    className="duration-300 fixed flex flex-col bg-white/60 sm:bg-white hover:bg-white/50 items-center justify-center bg-white bottom-4 right-4 sm:bottom-12 sm:right-12 h-12 shadow-md shadow-slate-100/20 w-12">
                     <IoIosArrowUp /> TOP
                 </motion.button>
             }
