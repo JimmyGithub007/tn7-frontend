@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { opinionPro } from "./Font";
 
 const randomCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
 
@@ -125,9 +126,9 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                 </Link>
               ))}
             </ul>
-            <div className="flex flex-col text-xs font-light text-slate-900">
-              <div>TERMS & CONDITIONS</div>
-              <div>PRIVACY POLICY</div>
+            <div className={`flex flex-col text-sm ${opinionPro.className}`}>
+              <Link className="duration-300 hover:opacity-50" href={`/termsandconditions`}>TERMS & CONDITIONS</Link>
+              <div>TN7 © 2024 - 2025</div>
             </div>
           </div>
         </motion.div>

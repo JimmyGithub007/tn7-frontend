@@ -6,23 +6,28 @@ import { AnimatePresence, motion } from "framer-motion";
 //import { Lilita_One } from "next/font/google";
 import { Footer, Header } from "@/components";
 import { CgClose } from "react-icons/cg";
+import { BsSkipForward } from "react-icons/bs";
 import { IoIosArrowRoundForward } from "react-icons/io";
 import { TbPlayerTrackNextFilled } from "react-icons/tb";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { opinionPro } from "@/components/Font";
 
 import Image from "next/image";
 import Link from "next/link";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { opinionPro } from "@/components/Font";
 
 //const lilita_one = Lilita_One({ subsets: ["latin"], weight: "400" });
 
 const chatContent = [
-    { content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry." },
-    { content: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s." },
-    { content: "When an unknown printer took a galley of type and scrambled it to make a type specimen book." },
-    { content: "It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged." },
-    { content: "It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages." },
-    { content: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout." },
+    { content: "Oh! A new face! You just got here, huh?" },
+    { content: "Welcome to TN7! I’ve been all over this place - lemme show you around!" },
+    { content: "Oh..almost forgot…Name’s Haru." },
+    { content: "This world’s huge! Buildings that touch the sky, hidden paths only a few know about, and stories waiting to be uncovered." },
+    { content: "See this map? It will help you get around." },
+    { content: "But please be careful…TN7 is a dangerous place." },
+    { content: "Clans fight for dominance, the government looks the other way, and—between you and me—there are whispers of something ancient waking up." },
+    { content: "Something big… huge." },
+    { content: "What you see now? Just the start. More places, more surprises—coming soon!" },
+    { content: "I’ll be around—maybe we’ll run into each other again." },
 ];
 
 const buildings = [
@@ -52,28 +57,19 @@ const WorldMap = () => {
     const [ displayText, setDisplayText ] = useState<string>(""); // 当前显示的文字
     const [ isAnimating, setIsAnimating ] = useState<boolean>(false); // 是否正在显示文字动画
     const [ isMenuOpen, setIsMenuOpen ] = useState(false);
-    const [ mousePosition, setMousePosition ] = useState({ x: 0, y: 0 });
+    const [ buildingData, setBuildingData ] = useState<{ id: number, name: string, x: number, y: number }[]>([
+        { id: 1, name: "", x: 0, y: 0 },
+        { id: 2, name: "", x: 0, y: 0 },
+        { id: 3, name: "", x: 0, y: 0 },
+        { id: 4, name: "", x: 0, y: 0 },
+        { id: 5, name: "", x: 0, y: 0 },
+        { id: 6, name: "", x: 0, y: 0 },
+        { id: 7, name: "", x: 0, y: 0 },
+        { id: 8, name: "", x: 0, y: 0 },
+        { id: 9, name: "", x: 0, y: 0 }
+    ]);
     const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
-    //const [ showRotateWarning, setRotateShowWarning ] = useState(false);
     const [ showHandScroll, setShowHandScroll ] = useState<boolean>(false);
-
-    /*useEffect(() => {
-        const checkOrientation = () => {
-            const isPortrait = window.matchMedia("(orientation: portrait)").matches;
-            const isSmallScreen = window.innerWidth < 480;
-            setRotateShowWarning(isSmallScreen && isPortrait);
-        };
-
-        checkOrientation(); // 初始检测
-
-        window.addEventListener("resize", checkOrientation);
-        window.addEventListener("orientationchange", checkOrientation);
-
-        return () => {
-            window.removeEventListener("resize", checkOrientation);
-            window.removeEventListener("orientationchange", checkOrientation);
-        };
-    }, []);*/
 
     useEffect(() => {
         const checkRatio = () => {
@@ -101,7 +97,7 @@ const WorldMap = () => {
     }, [isMenuOpen])
 
     useEffect(() => {
-        if (chatId > -1 && chatId < 6) {
+        if (chatId > -1 && chatId < chatContent.length) {
             // 重置显示文字并启动逐字显示动画
             const fullText = chatContent[chatId].content;
             let currentIndex = 0;
@@ -116,11 +112,11 @@ const WorldMap = () => {
                     clearInterval(interval);
                     setIsAnimating(false); // 动画完成
                 }
-            }, 20); // 每个字显示的时间间隔 (50ms)
+            }, 10); // 每个字显示的时间间隔 (50ms)
 
             return () => clearInterval(interval); // 清理定时器
-        } else if (chatId === 6) {
-            localStorage.setItem("isCompletedGuide", "true");
+        } else if (chatId === chatContent.length) {
+            sessionStorage.setItem("isCompletedGuide", "true");
             const timeout = setTimeout(() => {
                 sendMessage(`World Map`, "StartWorldMap");
             }, 1000);
@@ -137,8 +133,27 @@ const WorldMap = () => {
 
     const handleHoverBuilding = useCallback((buildingData: any) => {
         const [buildingId, buildingX, buildingY] = buildingData.split(",");
-        if(buildingId > 0) setMousePosition({ x: parseInt(buildingX) - 100, y: window.innerHeight - parseInt(buildingY) - 100 });
+        if(buildingId > 0) {
+            setBuildingData(prev =>
+                prev.map(item =>
+                    item.id === parseInt(buildingId)
+                        ? { ...item, x: parseInt(buildingX) - 100, y: window.innerHeight - parseInt(buildingY) - 100 } // Update the matching entry
+                        : item // Keep the rest unchanged
+                )
+            );
+        }
         setHoverBuildingId(parseInt(buildingId))
+    }, []);
+
+    const handleInitialBuilding = useCallback((buildingData: any) => {
+        const [buildingId, buildingX, buildingY] = buildingData.split(",");
+        setBuildingData(prev =>
+            prev.map(item =>
+                item.id === parseInt(buildingId)
+                    ? { ...item, x: parseInt(buildingX) - 100, y: window.innerHeight - parseInt(buildingY) - 100 } // Update the matching entry
+                    : item // Keep the rest unchanged
+            )
+        );
     }, []);
 
     useEffect(() => {
@@ -155,34 +170,51 @@ const WorldMap = () => {
         };
     }, [addEventListener, removeEventListener, handleHoverBuilding]);
 
-    //random text - start
-    const [buildingName, setBuildingName] = useState<string>("");
+    useEffect(() => {
+        addEventListener("ReactInitialBuilding", handleInitialBuilding);
+        return () => {
+            removeEventListener("ReactInitialBuilding", handleInitialBuilding);
+        };
+    }, [addEventListener, removeEventListener, handleInitialBuilding]);
 
+    //random text - start
     const generateRandomString = (length: number) => {
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
         return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
     };
     
     const animateBuildingName = (finalName: string) => {
-      let currentLength = 0;
-      const interval = setInterval(() => {
-        if (currentLength <= finalName.length) {
-          const partialName = finalName.slice(0, currentLength);
-          const randomString = generateRandomString(finalName.length - currentLength);
-          setBuildingName(partialName + randomString);
-          currentLength++;
-        } else {
-          clearInterval(interval);
-          setBuildingName(finalName);
-        }
-      }, 50); // 控制每次变化的速度 (50ms)
+        let currentLength = 0;
+        const interval = setInterval(() => {
+            if (currentLength <= finalName.length) {
+                const partialName = finalName.slice(0, currentLength);
+                const randomString = generateRandomString(finalName.length - currentLength);
+                setBuildingData(prev =>
+                    prev.map(item =>
+                        item.id === hoverBuildingId
+                            ? { ...item, name: partialName + randomString } // Update the matching entry
+                            : item // Keep the rest unchanged
+                    )
+                );
+                currentLength++;
+            } else {
+                clearInterval(interval);
+                setBuildingData(prev =>
+                    prev.map(item =>
+                        item.id === hoverBuildingId
+                            ? { ...item, name: finalName } // Update the matching entry
+                            : item // Keep the rest unchanged
+                    )
+                );
+            }
+        }, 50); // 控制每次变化的速度 (50ms)
     };
     
     useEffect(() => {
       if (hoverBuildingId > 0) {
         const building = buildings.find((b) => b.id === hoverBuildingId);
         if (building) {
-          animateBuildingName(building.name); // 开始动画
+            animateBuildingName(building.name); // 开始动画
         }
       }
     }, [hoverBuildingId]);
@@ -190,16 +222,17 @@ const WorldMap = () => {
 
     useEffect(() => {
         if(loadingPercentage === 100) {
-            const completed = localStorage.getItem("isCompletedGuide");
+            const completed = sessionStorage.getItem("isCompletedGuide");//for check if complete guide before, if completed skip introduction chat
             if(!completed) {
                 setChatId(0);         
             } else {
                 const timeout = setTimeout(() => {
-                    setChatId(6);
+                    setChatId(chatContent.length);
                 }, 1000);
         
                 return () => clearTimeout(timeout);
             }
+            setChatId(0);
         }
     }, [loadingPercentage]);
 
@@ -244,11 +277,40 @@ const WorldMap = () => {
 
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={() => {
-            if (chatId === 6 || chatId < 0 || isAnimating) return; // 如果正在显示动画，不允许切换
+            if (chatId === chatContent.length || chatId < 0 || isAnimating) return; // 如果正在显示动画，不允许切换
             setChatId((prevId) => (prevId + 1));
         }}>
-            { buildingId === 0 && chatId === 6 && <Header setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} /> }
+            { buildingId === 0 && chatId === chatContent.length && <Header setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} /> }
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
+            <AnimatePresence>
+                {   chatId < 4 &&
+                    <motion.div 
+                        initial={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 1 }}
+                        className="absolute backdrop-blur-xl bg-black/50 h-full top-0 left-0 w-full z-10">
+
+                    </motion.div >
+                }
+            </AnimatePresence>
+            <AnimatePresence>
+                {
+                    showHandScroll &&
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 0.2 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute bottom-12 flex flex-col gap-2 items-center left-[calc(50%-105px)] text-white text-center w-[210px] z-[10]"
+                    >
+                        <div className="relative text-xl">
+                            <FaArrowLeft className="absolute animate-left-arrow -left-12" />
+                            <FaArrowRight className="absolute animate-right-arrow -right-12" />
+                        </div>
+                        <Image className="animate-wiggle w-[40px]" alt="" width={328} height={481} src={`/assets/images/icons/hand-scroll.png`} />
+                        <div>Scroll left/right to view full map</div>
+                    </motion.div>
+                }
+            </AnimatePresence>
             <AnimatePresence>{/*Loading Percentage For Unity*/}
                 {!loaderHidden && (
                     <motion.div
@@ -265,56 +327,28 @@ const WorldMap = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-            <AnimatePresence>
-                {   /*showRotateWarning && (
-                    <motion.div
-                        id="loader"
-                        className="absolute bg-white flex flex-col gap-4 h-full items-center justify-center left-0 w-full top-0 z-[100]"
-                        initial={{ y: 0 }}
-                        animate={{ y: 0 }}
-                        exit={{ y: "100%" }}
-                        transition={{ duration: 1, ease: "easeInOut" }}
-                    >
-                        <Image alt="rotatePhone" width={100} height={100} src={`/assets/images/worldmap/phone-rotate.gif`} quality={50} priority />
-                        <span className="font-bold text-2xl text-center">
-                            PLEASE ROTATE YOUR DEVICE FOR BETTER EXPERIENCE
-                        </span>
-                    </motion.div>
-                )*/
-                    showHandScroll &&
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 0.2 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute bottom-12 flex flex-col gap-2 items-center left-[calc(50%-105px)] text-white text-center w-[210px] z-[10]">
-                        <div className="relative  text-xl">
-                            <FaArrowLeft className="absolute animate-left-arrow -left-12" />
-                            <FaArrowRight className="absolute animate-right-arrow -right-12" />
-                        </div>
-                        <Image className="animate-wiggle w-[40px]" alt="" width={328} height={481} src={`/assets/images/icons/hand-scroll.png`} />
-                        <div>Scroll left/right to view full map</div>
-                    </motion.div>
-                }
-            </AnimatePresence>
-            <div className="absolute h-12 overflow-hidden w-full" style={{ left: mousePosition.x, top: mousePosition.y }}>
-                <AnimatePresence>
-                    {   hoverBuildingId > 0 && buildingId == 0 && (
-                        <motion.div
-                            className={`absolute font-bold text-3xl text-white`}
-                            initial={{ opacity: 0, y: "100%" }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: "100%" }}
-                            transition={{ duration: 0.5 }}
-                            key={hoverBuildingId} // Ensure animation runs for each new ID
-                        >
-                            {
-                                //buildings.find((e) => e.id === hoverBuildingId)?.name || ""
-                                buildingName
-                            }
-                        </motion.div>
-                    )}
-                </AnimatePresence>                
-            </div>
+           {
+                buildings.map((value, key) => (
+                    <div key={key} className="absolute h-12 overflow-hidden w-full" style={{ left: buildingData.find(e => e.id === value.id)?.x || 0, top: buildingData.find(e => e.id === value.id)?.y || 0 }}>
+                        <AnimatePresence>
+                            {   hoverBuildingId === value.id && buildingId == 0 && (
+                                <motion.div
+                                    className={`absolute font-bold text-3xl text-white`}
+                                    initial={{ opacity: 0, y: "100%", rotate: 3 }}
+                                    animate={{ opacity: 1, y: 0, rotate: 0 }}
+                                    exit={{ opacity: 0, y: "100%" }}
+                                    transition={{ duration: 0.5 }}
+                                    key={value.id}
+                                >
+                                    {
+                                        buildingData.find(e => e.id === value.id)?.name || ""
+                                    }
+                                </motion.div>
+                            )}
+                        </AnimatePresence>                
+                    </div>
+                ))
+           }
             {/* Building Image Display */}
             <AnimatePresence>
                 {buildingId > 0 && (
@@ -377,28 +411,37 @@ const WorldMap = () => {
             </AnimatePresence>
             <AnimatePresence>
                 {
-                    loaderHidden && chatId > -1 && chatId < 6 && <div className="absolute bottom-0 z-50 flex justify-center text-white w-full">
+                    loaderHidden && chatId > -1 && chatId < chatContent.length && <div className="absolute top-[45%] sm:bottom-0 z-50 flex justify-center text-white w-full scale-[1.08]">
                         <motion.div
                             initial={{ opacity: 0, y: 100 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 100 }}
                             transition={{ duration: 1.2, delay: 0.2 }}
-                            className="w-full lg:w-[1080px] relative">
+                            className="w-full lg:w-[1080px] relative flex justify-center">
                             <Image alt="character" width={1494} height={688} src={`/assets/images/worldmap/webp/character.webp`} />
-                            <div className="absolute flex h-full items-center justify-center p-4 left-[10%] text-lg md:text-xl lg:text-2xl xl:text-3xl top-[8%] w-[50%]">
+                            <div className={`absolute flex h-full italic items-center justify-center p-4 left-[5%] sm:left-[10%] text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl top-[5%] sm:top-[8%] w-[55%] sm:w-[50%] ${opinionPro.className}`}>
                                 {displayText}
                             </div>
                             {!isAnimating && <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="absolute bottom-[10%] flex gap-2 items-center left-[10%] text-xl">NEXT <TbPlayerTrackNextFilled />
+                                className="absolute bottom-[10%] flex justify-between w-[80%] sm:text-lg md:text-xl lg:text-2xl">
+                                    <button className="animate-pulse duration-300 flex gap-2 items-center hover:opacity-50">NEXT <TbPlayerTrackNextFilled /></button>
+                                    <button className="animate-pulse duration-300 flex gap-2 items-center hover:opacity-50"
+                                        onClick={() => {
+                                            setChatId(-1);
+                                            setTimeout(() => {
+                                                setChatId(chatContent.length);
+                                            }, 100)
+                                        }}
+                                    >SKIP THE INTRO <BsSkipForward /></button>
                             </motion.div>}
                         </motion.div>
                     </div>
                 }
             </AnimatePresence>
-            <Footer />
+            { buildingId === 0 && chatId === chatContent.length && <Footer /> }
         </div>
     );
 };
