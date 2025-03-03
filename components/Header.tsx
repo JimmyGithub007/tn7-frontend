@@ -159,12 +159,12 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                     style={{ paddingTop: "16px" }}
                     defaultActiveKey={[ pathname.includes("lore") ? "2" : "" ]}
                   >
-                    <Panel header={<span 
-                        onMouseEnter={() => handleMouseEnter(2, "TN7 LORE")}
-                        className={`text-white text-xl ${opinionPro.className}`}>
-                        {menuText[2] || "TN7 LORE"}</span>} 
-                        key="2"
-                      >
+                    <Panel header={<div 
+                      onMouseEnter={() => handleMouseEnter(2, "TN7 LORE")}
+                      className={`text-white text-xl ${opinionPro.className}`}>
+                      {menuText[2] || "TN7 LORE"}</div>} 
+                      key="2"
+                    >
                       <Collapse
                         ghost
                         expandIcon={({ isActive }) => (
