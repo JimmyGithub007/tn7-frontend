@@ -13,6 +13,7 @@
     "@react-three/fiber": "^8.17.10",
     "@reduxjs/toolkit": "^2.5.0",
     "@studio-freight/lenis": "^1.0.42",
+    "antd": "^5.24.2",
     "framer-motion": "^11.15.0",
     "next": "14.2.5",
     "react": "^18",

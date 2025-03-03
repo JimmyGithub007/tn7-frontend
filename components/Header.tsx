@@ -1,23 +1,36 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { opinionPro } from "./Font";
+import { IoIosArrowForward } from "react-icons/io";
+import { Collapse } from "antd";
+import { FaFacebookF } from "react-icons/fa";
+import { BsDiscord, BsInstagram, BsTiktok, BsTwitterX } from "react-icons/bs";
+const { Panel } = Collapse;
 import Image from "next/image";
 import Link from "next/link";
-import { opinionPro } from "./Font";
 
 const randomCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
 
+const Divider = () => {
+  return <div className="bg-black/10 w-full h-[0.15rem]" />
+}
+
 const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [menuText, setMenuText] = useState<string[]>(["", "", ""]);
   const [hoverState, setHoverState] = useState<boolean[]>([false, false, false]);
 
   useEffect(() => {
     if (!isOpenMenu) return;
 
-    const targetMenus = ["TN7 UNIVERSE", "TN7 LORE", "TN7 WORLD MAP", "FAQS"];
+    const targetMenus = ["TN7 UNIVERSE", "COMICS", "TN7 LORE", "CITIES", "SYNTHCITY", "CYBER VALLEY", "NEW HELM", "LOCATIONS", "TEMPLE ON THE HELL", "THE PINNACLE TOWERS",
+      "THE LOWER DISTRICT", "THE WATERING HOLE", "THE KOI AND LOTUS CLUB", "THE CODEX", "THE FORT", "AKIO INDUTRIES", "THE ENERGY FIELD", "TN7 WORLD MAP", "SOCIALS",
+      "FACEBOOK", "INSTAGRAM", "X", "TIKTOK", "DISCORD", "FAQS"
+    ];
     const intervals: NodeJS.Timeout[] = [];
 
     targetMenus.forEach((menu, index) => {
@@ -102,30 +115,165 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
     <AnimatePresence>
       {isOpenMenu && (
         <motion.div
-          className="fixed bg-white/20 right-0 h-screen backdrop-blur-xl overflow-y-auto w-full md:w-[500px] z-[40]"
+          className="backdrop-blur-xl bg-white/20 filter-bar fixed right-0 h-screen overflow-y-auto w-full md:w-[500px] z-[40]"
           initial={{ translateX: "100%" }}
           animate={{ translateX: "0%" }}
           exit={{ translateX: "100%" }}
           transition={{ type: "spring", stiffness: 80, damping: 20 }}
         >
-          <div className="flex flex-col gap-8 pt-40 px-12">
-            <ul className="text-xl font-bold text-white">
-              {[
-                { name: "TN7 UNIVERSE", url: "/universe" },
-                { name: "TN7 LORE", url: "/lore" },
-                { name: "TN7 WORLD MAP", url: "/worldmap" },
-                { name: "FAQS", url: "/faqs" }
-              ].map((menu, key) => (
-                <Link key={key} href={menu.url}>
-                  <li
-                    className={`border-b-2 border-slate-50/30 duration-300 py-4 ${pathname.includes(menu.url) || hoverState[key] ? "text-red-800" : "hover:text-red-800"}`}
-                    onMouseEnter={() => handleMouseEnter(key, menu.name)}
+          <div className="flex flex-col gap-8 pt-20 px-12">
+            <div className={`flex flex-col font-bold text-white text-xl ${opinionPro.className}`}>
+              <Collapse
+                ghost
+                expandIcon={({ isActive }) => (
+                  <IoIosArrowForward
+                    style={{ color: "white", fontSize: "1.5rem" }}
+                    className={`transition-transform duration-300 ${isActive ? "rotate-90" : "-rotate-90"}`}
+                  />
+                )}
+                expandIconPosition="end"
+                style={{ padding: "16px 0" }}
+                defaultActiveKey={[ pathname.includes("lore") ? "1" : "" ]}
+              >
+                <Panel header={<div 
+                    onMouseEnter={() => handleMouseEnter(0, "TN7 UNIVERSE")}
+                    className={`text-white text-xl ${opinionPro.className}`}>{menuText[0] || "TN7 UNIVERSE"}
+                  </div>
+                } key="1">
+                  <a 
+                    className={`flex flex-col gap-6 py-4 text-xl text-white ${opinionPro.className} ${pathname === "/comics" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/comics"
+                    onMouseEnter={() => handleMouseEnter(1, "COMICS")}
                   >
-                    {menuText[key] || menu.name}
-                  </li>
-                </Link>
-              ))}
-            </ul>
+                    {menuText[1] || "COMICS"}
+                  </a>
+                  <Divider />
+                  <Collapse
+                    ghost
+                    expandIcon={({ isActive }) => (
+                      <IoIosArrowForward
+                          style={{ color: "white", fontSize: "1.5rem" }}
+                          className={`transition-transform duration-300 ${isActive ? "rotate-90" : "-rotate-90"}`}
+                      />
+                    )}
+                    expandIconPosition={"end"}
+                    style={{ paddingTop: "16px" }}
+                    defaultActiveKey={[ pathname.includes("lore") ? "2" : "" ]}
+                  >
+                    <Panel header={<span 
+                        onMouseEnter={() => handleMouseEnter(2, "TN7 LORE")}
+                        className={`text-white text-xl ${opinionPro.className}`}>
+                        {menuText[2] || "TN7 LORE"}</span>} 
+                        key="2"
+                      >
+                      <Collapse
+                        ghost
+                        expandIcon={({ isActive }) => (
+                          <IoIosArrowForward
+                            style={{ color: "white", fontSize: "1.5rem" }}
+                            className={`transition-transform duration-300 ${isActive ? "rotate-90" : "-rotate-90"
+                              }`}
+                          />
+                        )}
+                        expandIconPosition={"end"}
+                        style={{ padding: "16px 0" }}
+                        defaultActiveKey={[ pathname.includes("lore") && searchParams.get("category") === "cities" ? "3" : "" ]}
+                      >
+                        <Panel header={<div 
+                          onMouseEnter={() => handleMouseEnter(3, "CITIES")}
+                          className={`text-white text-xl ${opinionPro.className}`}>
+                            {menuText[3] || "CITIES"}
+                          </div>} key="3"
+                        >
+                          <div className={`flex flex-col pl-4 text-xl text-white ${opinionPro.className}`}>
+                            <Link className={`py-4 ${pathname+"?"+searchParams.toString() === "/lore?category=cities&id=1" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=cities&id=1" onMouseEnter={() => handleMouseEnter(4, "SYNTHCITY")}>{menuText[4] || "SYNTHCITY"}</Link>
+                            <Divider />
+                            <Link className={`py-4 ${pathname+"?"+searchParams.toString() === "/lore?category=cities&id=2" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=cities&id=2" onMouseEnter={() => handleMouseEnter(5, "CYBER VALLEY")}>{menuText[5] || "CYBER VALLEY"}</Link>
+                            <Divider />
+                            <Link className={`pt-4 ${pathname+"?"+searchParams.toString() === "/lore?category=cities&id=3" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=cities&id=3" onMouseEnter={() => handleMouseEnter(6, "NEW HELM")}>{menuText[6] || "NEW HELM"}</Link>
+                          </div>
+                        </Panel>
+                      </Collapse>
+                      <Divider />
+                      <Collapse
+                        ghost
+                        expandIcon={({ isActive }) => (
+                          <IoIosArrowForward
+                            style={{ color: "white", fontSize: "1.5rem" }}
+                            className={`transition-transform duration-300 ${isActive ? "rotate-90" : "-rotate-90"}`}
+                          />
+                        )}
+                        expandIconPosition={"end"}
+                        style={{ paddingTop: "16px" }}
+                        defaultActiveKey={[ pathname.includes("lore") && searchParams.get("category") === "locations" ? "4" : "" ]}
+                      >
+                        <Panel header={<div 
+                          onMouseEnter={() => handleMouseEnter(7, "LOCATIONS")}
+                          className={`text-white text-xl ${opinionPro.className}`}>
+                            {menuText[7] || "LOCATIONS"}
+                          </div>} key="4"
+                        >
+                          <div className={`flex flex-col pl-4 text-xl text-white ${opinionPro.className}`}>
+                            <Link className={`py-4 ${pathname+"?"+searchParams.toString() === "/lore?category=locations&id=1" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=locations&id=1" onMouseEnter={() => handleMouseEnter(8, "TEMPLE ON THE HELL")}>{menuText[8] || "TEMPLE ON THE HELL"}</Link>
+                            <Divider />
+                            <Link className={`py-4 ${pathname+"?"+searchParams.toString() === "/lore?category=locations&id=2" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=locations&id=2" onMouseEnter={() => handleMouseEnter(9, "THE PINNACLE TOWERS")}>{menuText[9] || "THE PINNACLE TOWERS"}</Link>
+                            <Divider />
+                            <Link className={`py-4 ${pathname+"?"+searchParams.toString() === "/lore?category=locations&id=3" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=locations&id=3" onMouseEnter={() => handleMouseEnter(10, "THE LOWER DISTRICT")}>{menuText[10] || "THE LOWER DISTRICT"}</Link>
+                            <Divider />
+                            <Link  className={`py-4 ${pathname+"?"+searchParams.toString() === "/lore?category=locations&id=4" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=locations&id=4" onMouseEnter={() => handleMouseEnter(11, "THE WATERING HOLE")}>{menuText[11] || "THE WATERING HOLE"}</Link>
+                            <Divider />
+                            <Link  className={`py-4 ${pathname+"?"+searchParams.toString() === "/lore?category=locations&id=5" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=locations&id=5" onMouseEnter={() => handleMouseEnter(12, "THE KOI AND LOTUS CLUB")}>{menuText[12] || "THE KOI AND LOTUS CLUB"}</Link>
+                            <Divider />
+                            <Link  className={`py-4 ${pathname+"?"+searchParams.toString() === "/lore?category=locations&id=6" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=locations&id=6" onMouseEnter={() => handleMouseEnter(13, "THE CODEX")}>{menuText[13] || "THE CODEX"}</Link>
+                            <Divider />
+                            <Link  className={`py-4 ${pathname+"?"+searchParams.toString() === "/lore?category=locations&id=7" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=locations&id=7" onMouseEnter={() => handleMouseEnter(14, "THE FORT")}>{menuText[14] || "THE FORT"}</Link>
+                            <Divider />
+                            <Link  className={`py-4 ${pathname+"?"+searchParams.toString() === "/lore?category=locations&id=8" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=locations&id=8" onMouseEnter={() => handleMouseEnter(15, "AKIO INDUSTRIES")}>{menuText[15] || "AKIO INDUSTRIES"}</Link>
+                            <Divider />
+                            <Link  className={`pt-4 ${pathname+"?"+searchParams.toString() === "/lore?category=locations&id=9" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=locations&id=9" onMouseEnter={() => handleMouseEnter(16, "THE ENERGY FIELD")}>{menuText[16] || "THE ENERGY FIELD"}</Link>
+                          </div>
+                        </Panel>
+                      </Collapse>
+                    </Panel>
+                  </Collapse>
+                </Panel>
+              </Collapse>
+              <Divider />
+              <a className={`py-4 ${pathname === "/worldmap" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/worldmap" onMouseEnter={() => handleMouseEnter(17, "TN7 WORLD MAP")}>{menuText[17] || "TN7 WORLD MAP"}</a>
+              <Divider />
+              <Collapse
+                ghost
+                expandIcon={({ isActive }) => (
+                  <IoIosArrowForward
+                    style={{ color: "white", fontSize: "1.5rem" }}
+                    className={`transition-transform duration-300 ${isActive ? "rotate-90" : "-rotate-90"}`}
+                  />
+                )}
+                expandIconPosition={"end"}
+                style={{ padding: "16px 0" }}
+              >
+                <Panel header={<div 
+                  onMouseEnter={() => handleMouseEnter(18, "SOCIALS")}
+                  className={`text-white text-xl ${opinionPro.className}`}>
+                    {menuText[18] || "SOCIALS"}
+                  </div>} key="5"
+                >
+                  <div className={`flex flex-col pl-4 text-xl text-white ${opinionPro.className}`}>
+                    <a className="flex gap-2 items-center py-2 hover:text-white" href="/" onMouseEnter={() => handleMouseEnter(19, "FACEBOOK")}><FaFacebookF /> {menuText[19] || "FACEBOOK"}</a>
+                    <Divider />
+                    <a className="flex gap-2 items-center py-2 hover:text-white" href="/" onMouseEnter={() => handleMouseEnter(20, "INSTAGRAM")}><BsInstagram /> {menuText[20] || "INSTAGRAM"}</a>
+                    <Divider />
+                    <a className="flex gap-2 items-center py-2 hover:text-white" href="/" onMouseEnter={() => handleMouseEnter(21, "X")}><BsTwitterX /> {menuText[21] || "X"}</a>
+                    <Divider />
+                    <a className="flex gap-2 items-center py-2 hover:text-white" href="/" onMouseEnter={() => handleMouseEnter(22, "TIKTOK")}><BsTiktok /> {menuText[22] || "TIKTOK"}</a>
+                    <Divider />
+                    <a className="flex gap-2 items-center pt-2 hover:text-white" href="/" onMouseEnter={() => handleMouseEnter(23, "DISCORD")}><BsDiscord /> {menuText[23] || "DISCORD"}</a>
+                  </div>
+                </Panel>
+              </Collapse>
+              <Divider />
+              <a className={`py-4 ${pathname === "/faqs" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/faqs" onMouseEnter={() => handleMouseEnter(24, "FAQS")}>{menuText[24] || "FAQS"}</a>
+              <Divider />
+            </div>
             <div className={`flex flex-col text-sm ${opinionPro.className}`}>
               <Link className="duration-300 hover:opacity-50" href={`/termsandconditions`}>TERMS & CONDITIONS</Link>
               <div>TN7 © 2024 - 2025</div>
@@ -151,7 +299,9 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
         <div className={`absolute bg-white duration-300 h-[4px] left-0 ${isOpenMenu ? "rotate-[135deg] top-[16px] w-[36px] border-2" : "rotate-0 top-[24px] w-[28px]"}`}></div>
       </div>
     </button>
-    <Sidebar isOpenMenu={isOpenMenu} />
+    <Suspense fallback={null}>
+      <Sidebar isOpenMenu={isOpenMenu} />
+    </Suspense>
   </>)
 }
 

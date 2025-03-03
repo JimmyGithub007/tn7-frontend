@@ -33,3 +33,7 @@
   background: #f1f1f1; /* 滚动条背景 */
   border-radius: 10px;
 }
+
+.ant-collapse-header {
+  padding: 0!important;
+}
