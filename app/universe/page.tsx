@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 
 const universes = [
     { id: 1, name: "COMICS", image: "u1", url: "/comics", available: true },
-    { id: 2, name: "TN7 LORE", image: "u2", url: "/lore", available: true },
+    { id: 2, name: "TN7 LORE", image: "u2", url: "/lore?category=cities&id=0", available: true },
     { id: 3, name: "PUBLIC ENTRIES", image: "u3", url: "/publicentries", available: false },
     { id: 4, name: "VIDEOS", image: "u4", url: "/videos", available: false }
 ];
