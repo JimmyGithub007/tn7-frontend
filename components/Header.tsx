@@ -121,8 +121,8 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
           exit={{ translateX: "100%" }}
           transition={{ type: "spring", stiffness: 80, damping: 20 }}
         >
-          <div className="flex flex-col gap-8 pt-20 px-12">
-            <div className={`flex flex-col font-bold text-white text-xl ${opinionPro.className}`}>
+          <div className="flex flex-col gap-8 pt-20 px-8 sm:px-12">
+            <div className={`flex flex-col font-bold text-white text-md sm:text-xl ${opinionPro.className}`}>
               <Collapse
                 ghost
                 expandIcon={({ isActive }) => (
@@ -137,11 +137,11 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
               >
                 <Panel header={<div 
                     onMouseEnter={() => handleMouseEnter(0, "TN7 UNIVERSE")}
-                    className={`text-white text-xl ${opinionPro.className}`}>{menuText[0] || "TN7 UNIVERSE"}
+                    className={`text-white text-md sm:text-xl ${opinionPro.className}`}>{menuText[0] || "TN7 UNIVERSE"}
                   </div>
                 } key="1">
                   <a 
-                    className={`flex flex-col gap-6 py-4 text-xl text-white ${opinionPro.className} ${pathname === "/comics" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/comics"
+                    className={`flex flex-col gap-6 py-4 text-md sm:text-xl text-white ${opinionPro.className} ${pathname === "/comics" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/comics"
                     onMouseEnter={() => handleMouseEnter(1, "COMICS")}
                   >
                     {menuText[1] || "COMICS"}
@@ -161,7 +161,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                   >
                     <Panel header={<div 
                       onMouseEnter={() => handleMouseEnter(2, "TN7 LORE")}
-                      className={`text-white text-xl ${opinionPro.className}`}>
+                      className={`text-white text-md sm:text-xl ${opinionPro.className}`}>
                       {menuText[2] || "TN7 LORE"}</div>} 
                       key="2"
                     >
@@ -180,11 +180,11 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                       >
                         <Panel header={<div 
                           onMouseEnter={() => handleMouseEnter(3, "CITIES")}
-                          className={`text-white text-xl ${opinionPro.className}`}>
+                          className={`text-white text-md sm:text-xl ${opinionPro.className}`}>
                             {menuText[3] || "CITIES"}
                           </div>} key="3"
                         >
-                          <div className={`flex flex-col pl-4 text-xl text-white ${opinionPro.className}`}>
+                          <div className={`flex flex-col pl-4 text-md sm:text-xl text-white ${opinionPro.className}`}>
                             <Link className={`py-4 ${pathname+"?"+searchParams.toString() === "/lore?category=cities&id=1" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=cities&id=1" onMouseEnter={() => handleMouseEnter(4, "SYNTHCITY")}>{menuText[4] || "SYNTHCITY"}</Link>
                             <Divider />
                             <Link className={`py-4 ${pathname+"?"+searchParams.toString() === "/lore?category=cities&id=2" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=cities&id=2" onMouseEnter={() => handleMouseEnter(5, "CYBER VALLEY")}>{menuText[5] || "CYBER VALLEY"}</Link>
@@ -208,11 +208,11 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                       >
                         <Panel header={<div 
                           onMouseEnter={() => handleMouseEnter(7, "LOCATIONS")}
-                          className={`text-white text-xl ${opinionPro.className}`}>
+                          className={`text-white text-md sm:text-xl ${opinionPro.className}`}>
                             {menuText[7] || "LOCATIONS"}
                           </div>} key="4"
                         >
-                          <div className={`flex flex-col pl-4 text-xl text-white ${opinionPro.className}`}>
+                          <div className={`flex flex-col pl-4 text-md sm:text-xl text-white ${opinionPro.className}`}>
                             <Link className={`py-4 ${pathname+"?"+searchParams.toString() === "/lore?category=locations&id=1" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=locations&id=1" onMouseEnter={() => handleMouseEnter(8, "TEMPLE ON THE HELL")}>{menuText[8] || "TEMPLE ON THE HELL"}</Link>
                             <Divider />
                             <Link className={`py-4 ${pathname+"?"+searchParams.toString() === "/lore?category=locations&id=2" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore?category=locations&id=2" onMouseEnter={() => handleMouseEnter(9, "THE PINNACLE TOWERS")}>{menuText[9] || "THE PINNACLE TOWERS"}</Link>
@@ -253,11 +253,11 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
               >
                 <Panel header={<div 
                   onMouseEnter={() => handleMouseEnter(18, "SOCIALS")}
-                  className={`text-white text-xl ${opinionPro.className}`}>
+                  className={`text-white text-md sm:text-xl ${opinionPro.className}`}>
                     {menuText[18] || "SOCIALS"}
                   </div>} key="5"
                 >
-                  <div className={`flex flex-col pl-4 text-xl text-white ${opinionPro.className}`}>
+                  <div className={`flex flex-col pl-4 text-md sm:text-xl text-white ${opinionPro.className}`}>
                     <a className="flex gap-2 items-center py-2 hover:text-white" href="/" onMouseEnter={() => handleMouseEnter(19, "FACEBOOK")}><FaFacebookF /> {menuText[19] || "FACEBOOK"}</a>
                     <Divider />
                     <a className="flex gap-2 items-center py-2 hover:text-white" href="/" onMouseEnter={() => handleMouseEnter(20, "INSTAGRAM")}><BsInstagram /> {menuText[20] || "INSTAGRAM"}</a>
