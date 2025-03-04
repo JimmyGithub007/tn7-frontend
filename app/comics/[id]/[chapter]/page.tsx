@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { BsDiscord, BsInstagram, BsTiktok, BsTwitterX } from "react-icons/bs";
+import { opinionPro } from "@/components/Font";
 
 // 示例 Webtoon 图片列表（模拟后端数据）
 const comics = [
@@ -85,12 +86,12 @@ const ComicsChapter = () => {
             {   showHeader && <motion.div  
                 initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -50 }} transition={{ duration: 0.5, delay: 0.2 }}
                 className="backdrop-blur-sm bg-black/80 sm:bg-black fixed grid grid-cols-1 md:grid-cols-3 h-24 md:h-16 items-center px-32 shadow-lg shadow-slate-700/20 text-xl top-0 w-full z-[20]" id="comicsHeader">
-                <div className="flex items-center gap-2 text-white text-sm sm:text-2xl"><Link className="underline" href={`/comics/${id}`}>{comics.find(e => e.id === id)?.name || ""}</Link> <IoIosArrowForward /> {content.find(e => e.id === chapter)?.title}</div>
+                <div className={`flex items-center gap-2 text-white text-xs sm:text-sm md:text-md lg:text-xl ${opinionPro.className}`}><Link className="underline" href={`/comics/${id}`}>{comics.find(e => e.id === id)?.name || ""}</Link> <IoIosArrowForward /> {content.find(e => e.id === chapter)?.title}</div>
                 <div className="flex gap-4 justify-center">
                     {/*<Link href={`/comics/${id}/${Number(chapter) > 1 ? Number(chapter) - 1 : chapter}`} className={`${Number(chapter) === 1 ? "opacity-20 cursor-not-allowed" : "hover:opacity-50" } bg-white duration-300 rounded-sm text-4xl`}><IoIosArrowBack /></Link>*/}
-                    <button className="flex items-center justify-center opacity-20 cursor-not-allowed bg-white duration-300 rounded-sm sm:text-4xl w-8 h-8 sm:w-10 sm:h-10"><IoIosArrowBack /></button>
-                    <button className="text-white underline" onClick={() => { setIsOpenDropDown(!isOpenDropDown); }}>#{chapter}</button>
-                    <button className="flex items-center justify-center opacity-20 cursor-not-allowed bg-white duration-300 rounded-sm sm:text-4xl w-8 h-8 sm:w-10 sm:h-10"><IoIosArrowForward /></button>
+                    <button className="flex items-center justify-center opacity-20 cursor-not-allowed bg-white duration-300 rounded-sm sm:text-4xl w-6 h-6 sm:w-10 sm:h-10"><IoIosArrowBack /></button>
+                    <button className="text-white underline text-sm sm:text-md md:text-lg" onClick={() => { setIsOpenDropDown(!isOpenDropDown); }}>#{chapter}</button>
+                    <button className="flex items-center justify-center opacity-20 cursor-not-allowed bg-white duration-300 rounded-sm sm:text-4xl w-6 h-6 sm:w-10 sm:h-10"><IoIosArrowForward /></button>
                     {/*<Link href={`/comics/${id}/${Number(chapter) < 3 ? Number(chapter) + 1 : chapter}`} className={`${Number(chapter) === 3 ? "opacity-20 cursor-not-allowed" : "hover:opacity-50" } bg-white duration-300 rounded-sm text-4xl`}><IoIosArrowForward /></Link>*/}
                 </div>
                 <AnimatePresence>
