@@ -186,6 +186,7 @@ const Content = () => {
     const [category, setCategory] = useState<string>("cities");
     const [loreId, setLoreId] = useState<string>("0");
     const [imgHeight, setImgHeight] = useState<number>(0);
+    const [imgWidth, setImgWidth] = useState<number>(0);
     const [isMobile, setIsMobile] = useState<boolean>(false);
 
     useEffect(() => {
@@ -208,6 +209,8 @@ const Content = () => {
         if (contentFrame) {
             const height = contentFrame.clientHeight;
             setImgHeight(height);
+            const width = contentFrame.clientWidth;
+            setImgWidth(width);
         }
     };
 
@@ -239,17 +242,28 @@ const Content = () => {
                 }
             </div>
         </div>
-        <div className="h-full w-full flex items-center justify-center sm:p-20">
-            <div className="relative w-[80%] max-w-[1200px] h-full flex items-center">
-                <Image className="invisible sm:visible absolute scale-[1.2]" alt="contentFrameHorizontal" height={1287} width={2187} src={`/assets/images/lore/webp/ContentFrameHorizontal.webp`} priority />
-                <Image className="sm:invisible absolute scale-[1.25]" alt="contentFrameVertical" height={2187} width={1287} src={`/assets/images/lore/webp/ContentFrameVertical.webp`} priority />
+        <div className="h-full w-full sm:pt-0 flex flex-col sm:justify-center sm:items-center mt-32 sm:mt-0">
+            <div className="flex h-10 w-full overflow-x-auto sm:invisible">
+                {
+                    menus.map((menu, key) => (
+                        <Link
+                            href={{ pathname: '/lore', query: { category: menu.id, id: "0" } }}
+                            className={`cursor-pointer duration-300 flex items-center text-white z-10 ${menu.id === category ? "bg-gradient-to-r from-orange-500 to-yellow-500" : "hover:text-yellow-400"}`} key={key}>
+                            <span className="px-6 z-10">{menu.title}</span>
+                        </Link>
+                    ))
+                }
+            </div>
+            <div className="relative h-[calc(100vh-200px)] sm:h-full w-full sm:w-[80%] flex items-center justify-center mt-10 sm:-mt-10">
+                <Image className="invisible sm:visible absolute" alt="contentFrameHorizontal" height={1287} width={2187} src={`/assets/images/lore/webp/ContentFrameHorizontal.webp`} priority />
+                <Image className="sm:invisible absolute h-[calc(100vh-140px)] w-auto" alt="contentFrameVertical" height={2187} width={1287} src={`/assets/images/lore/webp/ContentFrameVertical.webp`} priority />
                 <AnimatePresence>
                     {
                         loreId != "0" ?
-                            <motion.div className={`absolute z-20 ${isMobile ? "scale-[1.25]" : "scale-[1.2]"}`}
+                            <motion.div className={`absolute z-20`}
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
                             >
-                                <div className="relative">
+                                <div className="relative" style={{ width: imgWidth }}>
                                     <ProgressiveImage
                                         className="duration-300 group-hover:scale-105 group-hover:saturate-200"
                                         lowQualitySrc={`/assets/images/lore/${category}/webp/tiny/${category === "cities" ? "c" : "b"}${loreId}${isMobile ? "Vertical" : "Horizontal"}.webp`}
@@ -258,7 +272,7 @@ const Content = () => {
                                         width={2187}
                                         height={1287}
                                     />
-                                    <motion.div className={`absolute ${ isMobile ? "top-[47%] w-[90%]" : "right-[6%] top-[18%] w-[45%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-10 text-white z-20`} 
+                                    <motion.div className={`absolute ${ isMobile ? "top-[47%] w-[90%]" : "right-[6%] top-[18%] w-[45%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-12 text-white z-20`} 
                                         style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 70 / 100 }}
                                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.7 }}
                                     >
@@ -286,8 +300,12 @@ const Content = () => {
                             </motion.div> :
                             (
                                 category === "locations" || category === "cities" ? 
-                                    <div className={`absolute filter-bar gap-6 grid grid-cols-1 ${category === "locations" ? "md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "lg:grid-cols-2"} z-10 overflow-x-hidden overflow-y-auto px-4`}
-                                    style={{ height: isMobile ? imgHeight : imgHeight * 80 / 100 }}>
+                                    <div className={`absolute filter-bar gap-6 grid grid-cols-1 ${category === "locations" ? "sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "lg:grid-cols-2"} z-10 overflow-x-hidden overflow-y-auto p-4`}
+                                        style={{ 
+                                            width: isMobile ? imgWidth * 80/100 : imgWidth * 90 / 100, 
+                                            height: isMobile ? "inherit" : imgHeight * 80 / 100 
+                                        }}
+                                    >
                                     {
                                         contents.map((value, key) => {
                                             if(value.category === category) return <motion.div key={key} 
