@@ -1,47 +1,118 @@
 "use client";
 
-import { useState } from "react";
-import { Header, Loader } from "@/components";
+import { useCallback, useEffect, useState } from "react";
+import { Header } from "@/components";
 import { useRouter } from "next/navigation";
 
-import Image from "next/image";
+import { Unity, useUnityContext } from "react-unity-webgl";
+import { AnimatePresence, motion } from "framer-motion";
 
 const Comics = () => {
     const router = useRouter();
 
+    const { unityProvider, isLoaded, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
+        loaderUrl: "unity/build/ComicTimeLineScene.loader.js",
+        dataUrl: "unity/build/ComicTimeLineScene.data.unityweb",
+        frameworkUrl: "unity/build/ComicTimeLineScene.framework.js.unityweb",
+        codeUrl: "unity/build/ComicTimeLineScene.wasm.unityweb",
+    });
+
+    const [ loadingPercentage, setLoadingPercentage ] = useState<number>(0);
+    const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
+    const [ hoverComicId, setHoverComicId ] = useState<number>(0);
+    const [ mousePosition, setMousePosition ] = useState({ x: 0, y: 0 });
+
+    const handleHoverComic = useCallback((comicData: any) => {
+        const [comicId, comicX, comicY] = comicData.split(",");
+        if(comicId > 0) setMousePosition({ x: parseInt(comicX) - 100, y: window.innerHeight - parseInt(comicY) - 100 });
+        setHoverComicId(parseInt(comicId))
+    }, []);
+
+    useEffect(() => {
+        addEventListener("ReactHoverComic", handleHoverComic);
+        return () => {
+            removeEventListener("ReactHoverComic", handleHoverComic);
+        };
+    }, [addEventListener, removeEventListener, handleHoverComic]);
+
+
+    useEffect(() => {
+        if (loadingPercentage === 100) {
+            const timeout = setTimeout(() => setLoaderHidden(true), 200); // 确保动画有时间完成
+            return () => clearTimeout(timeout);
+        }
+    }, [loadingPercentage]);
+
+    useEffect(() => {
+        if (loadingProgression === 1) {
+            if (loadingPercentage < 90) {
+                const interval = setInterval(() => {
+                    setLoadingPercentage((prev) => {
+                        if (prev >= 99) {
+                            clearInterval(interval);
+                            return 100;
+                        }
+                        return prev + 1;
+                    });
+                }, 50);
+                return () => clearInterval(interval);
+            } else {
+                setLoadingPercentage(100);
+            }
+        } else if (loadingProgression >= 0.9) {
+            const interval = setInterval(() => {
+                setLoadingPercentage((prev) => {
+                    if (prev >= 99) {
+                        clearInterval(interval);
+                        return 100;
+                    }
+                    return prev + 1; // 模拟平滑增加
+                });
+            }, 200); // 每 200ms 增加 1%
+            return () => clearInterval(interval);
+        } else if (loadingProgression < 0.9) {
+            setLoadingPercentage(Math.round(loadingProgression * 100));
+        }
+    }, [loadingProgression]);
+
+    const clickComic = () => {
+        let url = "";
+        switch (hoverComicId) {
+            case 1:
+                url = "/comics/pk";
+                break;
+            case 2:
+                url = "/comics/azuki";
+                break;
+            case 3:
+                url = "/comics/thepathofvengeance";
+                break;
+        }
+
+        router.push(url);
+    }
+
     return (
-        <div className="bg-black h-screen w-full text-white flex flex-col justify-center items-center text-nowrap overflow-y-hidden">
+        <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
             <Header />
-            <Loader />
-            <div className="flex gap-16">
-                <div className="flex flex-col items-center justify-end">
-                    <div className="cursor-pointer flex flex-col items-center" onClick={() => { router.push(`/comics/azuki`) }}>
-                        <Image alt="" className="h-36 opacity-80 overflow-hidden object-cover object-top" width={200} height={200} src={`/assets/images/comics/azuki/webp/profile.webp`} />
-                        <div className="text-2xl">AZUKI</div>
-                    </div>
-                    <div className="rounded-full h-20 w-[2px] bg-white"></div>
-                    <div>17 JAN 2025</div>
-                </div>
-                <div className="flex flex-col items-center justify-end">
-                    <div className="cursor-pointer flex flex-col items-center" onClick={() => { router.push(`/comics/pk`) }}>
-                        <Image alt="" className="h-48 overflow-hidden object-cover object-top" width={200} height={200} src={`/assets/images/comics/pk/webp/profile.webp`} />
-                        <div className="text-2xl">PK OON: ORIGINS</div>
-                    </div>
-                    <div className="rounded-full h-8 w-[2px] bg-white"></div>
-                    <div>05 MAR 2025</div>
-                </div>
-            </div>
-            <div className="border-y-2 text-center text-4xl font-bold tracking-[50px] min-w-full">TN7 PHASE ONE</div>
-            <div className="flex gap-16">
-                <div className="flex flex-col items-center justify-start">
-                    <div>22 FEB 2025</div>
-                    <div className="rounded-full h-8 w-[2px] bg-white"></div>
-                    <div className="cursor-pointer flex flex-col items-center" onClick={() => { router.push(`/comics/thepathofvengeance`) }}>
-                        <Image alt="" className="h-48 overflow-hidden object-cover object-top" width={200} height={200} src={`/assets/images/comics/thepathofvengeance/webp/profile.webp`} />
-                        <div className="text-2xl">THE PATH OF VENGEANCE</div>
-                    </div>
-                </div>
-            </div>
+            { hoverComicId > 0 && <div className="absolute cursor-pointer w-full h-full opacity-0" onClick={() => clickComic() }></div> }
+            <Unity className={`h-full w-full`} unityProvider={unityProvider} />
+            <AnimatePresence>{/*Loading Percentage For Unity*/}
+                {!loaderHidden && (
+                    <motion.div
+                        id="loader"
+                        className="absolute bg-black flex h-full items-center justify-center left-0 w-full top-0 z-[100]"
+                        initial={{ y: 0 }}
+                        animate={{ y: 0 }}
+                        exit={{ y: "100%" }}
+                        transition={{ duration: 1, ease: "easeInOut" }}
+                    >
+                        <span className="font-bold text-5xl text-white">
+                            {loadingPercentage}%
+                        </span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
