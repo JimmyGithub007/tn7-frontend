@@ -18,8 +18,7 @@ import Link from "next/link";
 //const lilita_one = Lilita_One({ subsets: ["latin"], weight: "400" });
 
 const chatContent = [
-    { content: "Oh! A new face! You just got here, huh?" },
-    { content: "Welcome to TN7! I’ve been all over this place - lemme show you around!" },
+    { content: "Oh! A new face! You just got here, huh? Welcome to TN7! I’ve been all over this place - lemme show you around!" },
     { content: "Oh..almost forgot…Name’s Haru." },
     { content: "This world’s huge! Buildings that touch the sky, hidden paths only a few know about, and stories waiting to be uncovered." },
     { content: "See this map? It will help you get around." },
@@ -283,7 +282,7 @@ const WorldMap = () => {
             { buildingId === 0 && chatId === chatContent.length && <Header setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} /> }
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
             <AnimatePresence>
-                {   chatId < 4 &&
+                {   chatId < 3 &&
                     <motion.div 
                         initial={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
@@ -411,14 +410,14 @@ const WorldMap = () => {
             </AnimatePresence>
             <AnimatePresence>
                 {
-                    loaderHidden && chatId > -1 && chatId < chatContent.length && <div className="absolute top-[45%] sm:bottom-0 z-50 flex justify-center text-white w-full scale-[1.08]">
+                    loaderHidden && chatId > -1 && chatId < chatContent.length && <div className="absolute bottom-[45%] sm:bottom-0 z-50 flex justify-center text-white w-full scale-[1.08]">
                         <motion.div
                             initial={{ opacity: 0, y: 100 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 100 }}
                             transition={{ duration: 1.2, delay: 0.2 }}
-                            className="w-full lg:w-[1080px] relative flex justify-center">
-                            <Image alt="character" width={1494} height={688} src={`/assets/images/worldmap/webp/character.webp`} />
+                            className="w-full lg:w-[900px] relative flex justify-center">
+                            <Image className="object-contain" alt="character" width={1494} height={688} src={`/assets/images/worldmap/webp/character.webp`} />
                             <div className={`absolute flex h-full italic items-center justify-center p-4 left-[5%] sm:left-[10%] text-sm/4 sm:text-lg md:text-xl lg:text-2xl xl:text-3xl top-[5%] sm:top-[8%] w-[55%] sm:w-[50%] ${opinionPro.className}`}>
                                 {displayText}
                             </div>
@@ -428,14 +427,20 @@ const WorldMap = () => {
                                 exit={{ opacity: 0 }}
                                 className="absolute bottom-[10%] flex justify-between w-[80%] text-xs sm:text-lg md:text-xl lg:text-2xl">
                                     <button className="animate-pulse duration-300 flex gap-2 items-center hover:opacity-50">NEXT <TbPlayerTrackNextFilled /></button>
-                                    <button className="animate-pulse duration-300 flex gap-2 items-center hover:opacity-50"
-                                        onClick={() => {
-                                            setChatId(-1);
-                                            setTimeout(() => {
-                                                setChatId(chatContent.length);
-                                            }, 100)
-                                        }}
-                                    >SKIP THE INTRO <BsSkipForward /></button>
+                            </motion.div>}
+                            {!isAnimating && <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="absolute bg-white cursor-pointer p-2 rounded-full right-4 sm:right-8 shadow-xl shadow-black/50 text-xl sm:text-3xl text-black top-12 hover:bg-black hover:text-white"
+                                onClick={() => {
+                                    setChatId(-1);
+                                    setTimeout(() => {
+                                        setChatId(chatContent.length);
+                                    }, 100)
+                                }}
+                            >
+                                <CgClose />
                             </motion.div>}
                         </motion.div>
                     </div>

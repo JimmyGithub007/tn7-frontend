@@ -27,9 +27,8 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
   useEffect(() => {
     if (!isOpenMenu) return;
 
-    const targetMenus = ["TN7 UNIVERSE", "COMICS", "TN7 LORE", "CITIES", "SYNTHCITY", "CYBER VALLEY", "NEW HELM", "LOCATIONS", "TEMPLE ON THE HELL", "THE PINNACLE TOWERS",
-      "THE LOWER DISTRICT", "THE WATERING HOLE", "THE KOI AND LOTUS CLUB", "THE CODEX", "THE FORT", "AKIO INDUTRIES", "THE ENERGY FIELD", "TN7 WORLD MAP", "SOCIALS",
-      "FACEBOOK", "INSTAGRAM", "X", "TIKTOK", "DISCORD", "FAQS"
+    const targetMenus = ["HOME", "LORE", "WORLD MAP", "SOCIALS",
+      "X", "DISCORD", "INSTAGRAM", "FAQS"
     ];
     const intervals: NodeJS.Timeout[] = [];
 
@@ -123,7 +122,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
         >
           <div className="flex flex-col gap-8 pt-20 px-8 sm:px-12">
             <div className={`flex flex-col font-bold text-white text-md sm:text-xl ${opinionPro.className}`}>
-              <Collapse
+              {/*<Collapse
                 ghost
                 expandIcon={({ isActive }) => (
                   <IoIosArrowForward
@@ -236,9 +235,12 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                     </Panel>
                   </Collapse>
                 </Panel>
-              </Collapse>
+              </Collapse>*/}
+              <Link className={`py-4 ${pathname === "/home" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/home" onMouseEnter={() => handleMouseEnter(0, "HOME")}>{menuText[0] || "HOME"}</Link>
               <Divider />
-              <a className={`py-4 ${pathname === "/worldmap" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/worldmap" onMouseEnter={() => handleMouseEnter(17, "TN7 WORLD MAP")}>{menuText[17] || "TN7 WORLD MAP"}</a>
+              <Link className={`py-4 ${pathname === "/lore" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/lore" onMouseEnter={() => handleMouseEnter(1, "LORE")}>{menuText[1] || "LORE"}</Link>
+              <Divider />
+              <Link className={`py-4 ${pathname === "/worldmap" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/worldmap" onMouseEnter={() => handleMouseEnter(2, "WORLD MAP")}>{menuText[2] || "WORLD MAP"}</Link>
               <Divider />
               <Collapse
                 ghost
@@ -252,26 +254,22 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                 style={{ padding: "16px 0" }}
               >
                 <Panel header={<div 
-                  onMouseEnter={() => handleMouseEnter(18, "SOCIALS")}
+                  onMouseEnter={() => handleMouseEnter(3, "SOCIALS")}
                   className={`text-white text-md sm:text-xl ${opinionPro.className}`}>
-                    {menuText[18] || "SOCIALS"}
+                    {menuText[3] || "SOCIALS"}
                   </div>} key="5"
                 >
                   <div className={`flex flex-col pl-4 text-md sm:text-xl text-white ${opinionPro.className}`}>
-                    <a className="flex gap-2 items-center py-2 hover:text-white" href="/" onMouseEnter={() => handleMouseEnter(19, "FACEBOOK")}><FaFacebookF /> {menuText[19] || "FACEBOOK"}</a>
+                    <a href="https://x.com/tn7_viu" className="flex gap-2 items-center py-2 hover:text-white" onMouseEnter={() => handleMouseEnter(4, "X")}><BsTwitterX /> {menuText[4] || "X"}</a>
                     <Divider />
-                    <a className="flex gap-2 items-center py-2 hover:text-white" href="/" onMouseEnter={() => handleMouseEnter(20, "INSTAGRAM")}><BsInstagram /> {menuText[20] || "INSTAGRAM"}</a>
+                    <a href="https://discord.gg/ynEgRUF2UA" className="flex gap-2 items-center pt-2 hover:text-white" onMouseEnter={() => handleMouseEnter(5, "DISCORD")}><BsDiscord /> {menuText[5] || "DISCORD"}</a>
                     <Divider />
-                    <a className="flex gap-2 items-center py-2 hover:text-white" href="/" onMouseEnter={() => handleMouseEnter(21, "X")}><BsTwitterX /> {menuText[21] || "X"}</a>
-                    <Divider />
-                    <a className="flex gap-2 items-center py-2 hover:text-white" href="/" onMouseEnter={() => handleMouseEnter(22, "TIKTOK")}><BsTiktok /> {menuText[22] || "TIKTOK"}</a>
-                    <Divider />
-                    <a className="flex gap-2 items-center pt-2 hover:text-white" href="/" onMouseEnter={() => handleMouseEnter(23, "DISCORD")}><BsDiscord /> {menuText[23] || "DISCORD"}</a>
+                    <a href="https://www.instagram.com/tn7_viu" className="flex gap-2 items-center py-2 hover:text-white" onMouseEnter={() => handleMouseEnter(6, "INSTAGRAM")}><BsInstagram /> {menuText[6] || "INSTAGRAM"}</a>
                   </div>
                 </Panel>
               </Collapse>
               <Divider />
-              <a className={`py-4 ${pathname === "/faqs" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/faqs" onMouseEnter={() => handleMouseEnter(24, "FAQS")}>{menuText[24] || "FAQS"}</a>
+              <Link className={`py-4 ${pathname === "/faqs" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/faqs" onMouseEnter={() => handleMouseEnter(9, "FAQS")}>{menuText[9] || "FAQS"}</Link>
               <Divider />
             </div>
             <div className={`flex flex-col text-sm ${opinionPro.className}`}>

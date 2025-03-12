@@ -103,17 +103,17 @@ const Faqs = () => {
                         <MaskText>A: You will be granted the relevant licence that allows you to create content, such as writing stories, creating images or videos. Others in the community can also use the character in their own creative projects within our TN7 platform.</MaskText>
                     </Collapse>
                     <Collapse title="Q: I am interested in purchasing a digital pack, how can I do so?">
-                        <MaskText>A: You can express your interest in purchasing the digital pack by providing your digital wallet ID to get whitelisted today. Follow us on our social media channels to stay updated on when the drop will happen.</MaskText>
+                        <MaskText>A: Follow us on our social media channels to stay updated on when the drop will happen.</MaskText>
                     </Collapse>
-                    <Collapse title="Q: What is whitelisting?">
+                    {/*<Collapse title="Q: What is whitelisting?">
                         <MaskText>A: Whitelisting is our way of offering early access to the TN7 Digital Pack, ensuring that our most engaged and enthusiastic community members get the first opportunity to participate.</MaskText>
                         <MaskText>Joining the whitelist gives you priority access and special privileges, making sure you are among the first to enjoy these unique benefits. You can join our whitelist [here].</MaskText>
-                    </Collapse>
+                    </Collapse>*/}
                     <Collapse title="Q: What are NFTs and how do they work?">
                         <MaskText>A: NFTs (Non-Fungible Tokens) are unique digital assets that grant you certain rights within the TN7 universe. We will guide you through the process, making it easy even if you&apos;re new to NFTs.</MaskText>
                     </Collapse>
                     <Collapse title="Q: Which blockchain will the NFTs live on?">
-                        <MaskText>A: It will be on the Ethereum blockchain.</MaskText>
+                        <MaskText>A: Stay tuned to our official channels for our Blockchain announcements.</MaskText>
                     </Collapse>                    
                 </div>
             </div>

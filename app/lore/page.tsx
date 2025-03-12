@@ -18,7 +18,7 @@ const details = [
         `,
         children: [
             { name: "The Pinnacle Towers", url: "/lore?category=locations&id=2" },
-            { name: "The Temple on the hill", url: "/lore?category=locations&id=1" },
+            { name: "The Temple on the Hill", url: "/lore?category=locations&id=1" },
             { name: "The Lower District (Silver Coin District)", url: "/lore?category=locations&id=3" }
         ]
     },
@@ -283,7 +283,7 @@ const Content = () => {
                                             <div className={`flex ${ category === "locations" ? "flex-col" : "gap-2 flex-wrap" } ${opinionPro.className}`}>
                                                 {
                                                     details.find(e => e.category === category && e.id === loreId)?.children.map((value, key) => (
-                                                        <div key={key}>{ category === "locations" ? ( key === 0 ? "Location : " : "Appearance : " ) : "" }<Link className="underline text-red-800" href={value.url}>{value.name}</Link></div>
+                                                        <div key={key}>{ category === "locations" ? ( key === 0 ? "Location : " : "Appearance : " ) : "" }<Link className="underline text-red-800" href={value.name != "To be revealed" && key != 1 ? value.url : "#"}>{value.name}</Link></div>
                                                     ))
                                                 }
                                             </div>

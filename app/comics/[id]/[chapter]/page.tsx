@@ -113,10 +113,10 @@ const ComicsChapter = () => {
             </motion.div> }                
             </AnimatePresence>
             <div className="max-w-[800px] mt-48 sm:mt-16">
-                {[1, 2, 3, 4, 5, 6].map((value, index) => (
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18].map((value, index) => (
                     <Image
                         key={index}
-                        src={`/assets/images/comics/chapter${chapter}/0${value}.png`}
+                        src={`/assets/images/comics/chapter${chapter}/${value}.png`}
                         width={1876}
                         height={1900}
                         alt={`${index + 1}`}
@@ -128,7 +128,7 @@ const ComicsChapter = () => {
             {   !isTop && <motion.button 
                     onClick={() => scrollToTop() } 
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
-                    className="duration-300 fixed flex flex-col bg-white/60 sm:bg-white hover:bg-white/50 items-center justify-center bg-white bottom-4 right-4 sm:bottom-12 sm:right-8 h-12 shadow-md shadow-slate-100/20 w-12">
+                    className="duration-300 fixed flex flex-col bg-white/60 sm:bg-white hover:bg-white/50 items-center justify-center bg-white bottom-4 right-4 sm:bottom-16 sm:right-8 h-12 shadow-md shadow-slate-100/20 w-12">
                     <IoIosArrowUp /> TOP
                 </motion.button>
             }
