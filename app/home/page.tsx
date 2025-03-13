@@ -35,7 +35,7 @@ const Home = () => {
             setTvData(prev =>
                 prev.map(item =>
                     item.id === parseInt(tvId)
-                        ? { ...item, x: parseInt(tvX) - 80, y: window.innerHeight - parseInt(tvY) - 50 } // Update the matching entry
+                        ? { ...item, x: parseInt(tvX) - (tvId == 2 ? -100 : 80), y: window.innerHeight - parseInt(tvY) - 50 } // Update the matching entry
                         : item // Keep the rest unchanged
                 )
             );
