@@ -23,10 +23,23 @@ const Home = () => {
     const [ hoverTvId, setHoverTvId ] = useState<number>(0);
     const [ mousePosition, setMousePosition ] = useState({ x: 0, y: 0 });
     const [ showHandScroll, setShowHandScroll ] = useState<boolean>(false);
+    const [ tvData, setTvData ] = useState<{ id: number, name: string, x: number, y: number }[]>([
+        { id: 1, name: "", x: 0, y: 0 },
+        { id: 2, name: "", x: 0, y: 0 },
+        { id: 3, name: "", x: 0, y: 0 },
+    ]);
 
     const handleHoverTV = useCallback((tvData: any) => {
         const [tvId, tvX, tvY] = tvData.split(",");
-        if(tvId > 0) setMousePosition({ x: parseInt(tvX) - 100, y: window.innerHeight - parseInt(tvY) - 100 });
+        if(tvId > 0) {
+            setTvData(prev =>
+                prev.map(item =>
+                    item.id === parseInt(tvId)
+                        ? { ...item, x: parseInt(tvX) - 80, y: window.innerHeight - parseInt(tvY) - 50 } // Update the matching entry
+                        : item // Keep the rest unchanged
+                )
+            );
+        }
         setHoverTvId(parseInt(tvId))
     }, []);
 
@@ -123,8 +136,8 @@ const Home = () => {
     //random text - start
     const tvs = [
         { id: 1, name: "TN7 UNIVERSE" },
-        { id: 2, name: "TN7 LORE" },
-        { id: 3, name: "TN7 WORLD MAP" }
+        { id: 2, name: "LORE" },
+        { id: 3, name: "WORLD MAP" }
     ];
 
     const [tvName, setTvName] = useState<string>("");
@@ -140,11 +153,23 @@ const Home = () => {
             if (currentLength <= finalName.length) {
                 const partialName = finalName.slice(0, currentLength);
                 const randomString = generateRandomString(finalName.length - currentLength);
-                setTvName(partialName + randomString);
+                setTvData(prev =>
+                    prev.map(item =>
+                        item.id === hoverTvId
+                            ? { ...item, name: partialName + randomString } // Update the matching entry
+                            : item // Keep the rest unchanged
+                    )
+                );
                 currentLength++;
             } else {
                 clearInterval(interval);
-                setTvName(finalName);
+                setTvData(prev =>
+                    prev.map(item =>
+                        item.id === hoverTvId
+                            ? { ...item, name: finalName } // Update the matching entry
+                            : item // Keep the rest unchanged
+                    )
+                );
             }
         }, 50); // 控制每次变化的速度 (50ms)
     };
@@ -177,24 +202,28 @@ const Home = () => {
                     <div>Scroll left/right to view full map</div>
                 </motion.div>
             }
-            <div className="absolute h-12 overflow-hidden w-full" style={{ left: mousePosition.x, top: mousePosition.y-80 }}>
-                <AnimatePresence>
-                    {   hoverTvId > 0 && (
-                        <motion.div
-                            className={`absolute font-bold text-4xl text-white`}
-                            initial={{ opacity: 0, y: "100%" }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: "100%" }}
-                            transition={{ duration: 0.5 }}
-                            key={hoverTvId} // Ensure animation runs for each new ID
-                        >
-                            {
-                                tvName
-                            }
-                        </motion.div>
-                    )}
-                </AnimatePresence>                
-            </div>
+           {
+                [1, 2, 3].map((value, key) => (
+                    <div key={key} className="absolute h-12 overflow-hidden w-full" style={{ left: tvData.find(e => e.id === value)?.x || 0, top: tvData.find(e => e.id === value)?.y || 0 }}>
+                        <AnimatePresence>
+                            {   hoverTvId === value && (
+                                <motion.div
+                                    className={`absolute font-bold text-3xl text-white`}
+                                    initial={{ opacity: 0, y: "100%", rotate: 3 }}
+                                    animate={{ opacity: 1, y: 0, rotate: 0 }}
+                                    exit={{ opacity: 0, y: "100%" }}
+                                    transition={{ duration: 0.5 }}
+                                    key={value}
+                                >
+                                    {
+                                        tvData.find(e => e.id === value)?.name || ""
+                                    }
+                                </motion.div>
+                            )}
+                        </AnimatePresence>                
+                    </div>
+                ))
+           }
             <AnimatePresence>{/*Loading Percentage For Unity*/}
                 {!loaderHidden && (
                     <motion.div
