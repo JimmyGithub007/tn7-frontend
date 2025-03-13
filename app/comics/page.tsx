@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Header } from "@/components";
+import { Footer, Header } from "@/components";
 import { useRouter } from "next/navigation";
 
 import { Unity, useUnityContext } from "react-unity-webgl";
@@ -97,6 +97,7 @@ const Comics = () => {
             <Header />
             { hoverComicId > 0 && <div className="absolute cursor-pointer w-full h-full opacity-0" onClick={() => clickComic() }></div> }
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
+            <Footer />
             <AnimatePresence>{/*Loading Percentage For Unity*/}
                 {!loaderHidden && (
                     <motion.div
