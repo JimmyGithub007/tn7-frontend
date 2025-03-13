@@ -1,21 +1,10 @@
-"use client";
-
-import { useEffect, useState } from "react";
-
 const Privacy = () => {
-    const [privacyContent, setPrivacyContent] = useState("");
-
-    useEffect(() => {
-      fetch("/docs/TN7PrivacyNotice_151024_.docx.html")
-        .then((res) => res.text())
-        .then((html) => setPrivacyContent(html));
-    }, []);
-  
-    return (
-        <div className="py-12 h-screen overflow-auto flex justify-center">
-            <div className="max-w-[1024px]" dangerouslySetInnerHTML={{ __html: privacyContent }} />
-      </div>
-    );
+    return (<iframe
+        src="https://docs.google.com/document/d/1YeDtrZzpt3AM5Q3GqxDwc44NNweNFU5W/preview?embedded=true"
+        width="100%"
+        height="800px"
+        className="border"
+    ></iframe >);
 }
 
 export default Privacy;
