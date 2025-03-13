@@ -70,6 +70,25 @@ const Home = () => {
         router.push(url);
     }, []);
 
+    const clickTV = () => {
+        let url = "";
+        switch (hoverTvId) {
+            case 1:
+                url = "/universe";
+                break;
+            case 2:
+                url = "/lore?category=cities";
+                break;
+            case 3:
+                url = "/worldmap";
+                break;
+            default:
+                url = "";
+        }
+
+        router.push(url);
+    }
+
     useEffect(() => {
         addEventListener("ReactClickTV", handleClickTV);
         return () => {
@@ -187,6 +206,7 @@ const Home = () => {
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
             <Header />
+            { hoverTvId > 0 && <div className="absolute cursor-pointer w-full h-full opacity-0 z-10" onClick={() => clickTV() }></div> }
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
             {   showHandScroll &&
                 <motion.div
