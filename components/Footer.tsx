@@ -21,10 +21,10 @@ const Footer = () => {
                     <IoIosArrowBack /> BACK
                 </Link>
             }
-            <Link className={`fixed bottom-4 duration-300 right-8 underline hover:opacity-50 text-xs text-right ${opinionPro.className}`} href={`/termsandconditions`}>
+            <div className={`fixed bottom-4 right-8 text-xs text-right ${opinionPro.className}`}>
                 PCCW OTT (Singapore) Pte. Ltd<br />
                 All rights reserved.*
-            </Link>
+            </div>
         </div>
     );
 }

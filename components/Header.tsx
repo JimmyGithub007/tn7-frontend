@@ -273,7 +273,10 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
               <Divider />
             </div>
             <div className={`flex flex-col text-sm ${opinionPro.className}`}>
-              <Link className="duration-300 hover:opacity-50" href={`/termsandconditions`}>TERMS & CONDITIONS</Link>
+              <div className="flex gap-2">
+                <Link className="duration-300 hover:opacity-50" href={`/termsofuse`} target="_blank">TERMS OF USE</Link> |
+                <Link className="duration-300 hover:opacity-50" href={`/privacy`} target="_blank">PRIVACY NOTICE</Link>
+              </div>
               <div>TN7 © 2024 - 2025</div>
             </div>
           </div>
