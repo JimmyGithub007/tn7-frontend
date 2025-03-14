@@ -93,12 +93,10 @@ const Comics = () => {
     }
 
     return (
-        <div className="fixed top-0 left-0 h-screen w-full overflow-hidden">
+        <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
             <Header />
-            { hoverComicId > 0 && <div className={`absolute w-full h-full opacity-0 ${hoverComicId === 2 ? "cursor-pointer" : "cursor-not-allowed"}`} onClick={() => clickComic() }></div> }
-            <div className="w-full h-full overflow-x-auto overflow-y-hidden touch-pan-x">
-                <Unity className={`h-full w-full`} unityProvider={unityProvider} />                
-            </div>
+            { hoverComicId > 0 && <div className={`absolute hidden lg:block w-full h-full opacity-0 ${hoverComicId === 2 ? "cursor-pointer" : "cursor-not-allowed"}`} onClick={() => clickComic() }></div> }
+            <Unity className={`h-full w-full`} unityProvider={unityProvider} />
             <Footer />
             <AnimatePresence>{/*Loading Percentage For Unity*/}
                 {!loaderHidden && (
