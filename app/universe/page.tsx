@@ -104,7 +104,7 @@ const Universe = () => {
                                     initial={{ opacity: 0 }}
                                     whileInView={{ opacity: 1 }}
                                     transition={{ duration: 0.5, delay: key * 0.1 }}
-                                    //viewport={{ once: true }}
+                                    viewport={{ once: true }}
                                     onClick={() => value.available && router.push(value.url)}
                                     className={`${value.available ? "cursor-pointer" : "cursor-not-allowed"} relative h-full w-full`}>
                                     <ProgressiveImage
@@ -128,7 +128,7 @@ const Universe = () => {
                             </SwiperSlide>
                         ))}
                     </Swiper>
-                    <div className="absolute bottom-4 flex flex-col gap-1 items-center p-1 rounded-3xl text-white">
+                    <div className="absolute bottom-24 sm:bottom-4 flex flex-col gap-1 items-center p-1 rounded-3xl text-white">
                         <div className="border-white border-2 flex h-8 items-center justify-center rounded-3xl w-6 z-10">
                             <div className="animate-scroll bg-white h-1 rounded-full w-1"></div>
                         </div>

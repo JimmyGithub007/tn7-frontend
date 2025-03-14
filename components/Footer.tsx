@@ -23,7 +23,7 @@ const Footer = () => {
             }
             <div className={`fixed bottom-4 right-8 text-xs text-right ${opinionPro.className}`}>
                 PCCW OTT (Singapore) Pte. Ltd<br />
-                All rights reserved.*
+                All rights reserved.
             </div>
         </div>
     );
