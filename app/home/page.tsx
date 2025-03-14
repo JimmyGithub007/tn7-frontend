@@ -22,7 +22,7 @@ const Home = () => {
     const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
     const [ hoverTvId, setHoverTvId ] = useState<number>(0);
     const [ mousePosition, setMousePosition ] = useState({ x: 0, y: 0 });
-    const [ showHandScroll, setShowHandScroll ] = useState<boolean>(false);
+    //const [ showHandScroll, setShowHandScroll ] = useState<boolean>(false);
     const [ tvData, setTvData ] = useState<{ id: number, name: string, x: number, y: number }[]>([
         { id: 1, name: "", x: 0, y: 0 },
         { id: 2, name: "", x: 0, y: 0 },
@@ -135,7 +135,7 @@ const Home = () => {
         }
     }, [loadingProgression]);
 
-    useEffect(() => {
+    /*useEffect(() => {
         const checkRatio = () => {
             if(window.innerWidth/window.innerHeight <= 1.333) {
                 setShowHandScroll(true);
@@ -150,7 +150,7 @@ const Home = () => {
         return () => {
             window.removeEventListener("resize", checkRatio);
         };
-    }, []);
+    }, []);*/
 
     //random text - start
     const tvs = [
@@ -206,9 +206,9 @@ const Home = () => {
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
             <Header />
-            { hoverTvId > 0 && <div className="absolute cursor-pointer w-full h-full opacity-0 z-10" onClick={() => clickTV() }></div> }
+            { hoverTvId > 0 && <div className="absolute hidden lg:block cursor-pointer w-full h-full opacity-0 z-10" onClick={() => clickTV() }></div> }
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
-            {   showHandScroll &&
+            {   /*showHandScroll &&
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 0.2 }}
@@ -220,7 +220,7 @@ const Home = () => {
                     </div>
                     <Image className="animate-wiggle w-[40px]" alt="" width={328} height={481} src={`/assets/images/icons/hand-scroll.png`} />
                     <div>Scroll left/right to view full map</div>
-                </motion.div>
+                </motion.div>*/
             }
            {
                 [1, 2, 3].map((value, key) => (
