@@ -79,23 +79,23 @@ const Comics = () => {
         let url = "";
         switch (hoverComicId) {
             case 1:
-                url = "/comics/pk";
+                //url = "/comics/pk";
                 break;
             case 2:
                 url = "/comics/azuki";
                 break;
             case 3:
-                url = "/comics/thepathofvengeance";
+                //url = "/comics/thepathofvengeance";
                 break;
         }
 
-        router.push(url);
+        if(url != "") router.push(url);
     }
 
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
             <Header />
-            { hoverComicId > 0 && <div className="absolute cursor-pointer w-full h-full opacity-0" onClick={() => clickComic() }></div> }
+            { hoverComicId > 0 && <div className={`absolute w-full h-full opacity-0 ${hoverComicId === 2 ? "cursor-pointer" : "cursor-not-allowed"}`} onClick={() => clickComic() }></div> }
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
             <Footer />
             <AnimatePresence>{/*Loading Percentage For Unity*/}
