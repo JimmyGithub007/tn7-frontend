@@ -82,7 +82,7 @@ const ComicsId = () => {
                 />
                 <div className="grid grid-cols-1 grid-rows-2 sm:grid-rows-1 sm:grid-cols-2 items-center relative"
                     style={{ 
-                        height: isMobile ? ((winWidth*2260/1379)*85/100)+"px" : imgHeight * 80/100,
+                        height: isMobile ? ((winWidth*2260/1379)*82/100)+"px" : imgHeight * 80/100,
                         width: isMobile ? "75%" : ((imgHeight*2260/1379)*90/100)+"px"
                     }}
                 >
