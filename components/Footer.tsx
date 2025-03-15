@@ -17,11 +17,11 @@ const Footer = () => {
                     <a href="https://discord.gg/ynEgRUF2UA"><BsDiscord className="cursor-pointer duration-300 hover:opacity-50" /></a>
                     <a href="https://www.instagram.com/tn7_viu"><BsInstagram className="cursor-pointer duration-300 hover:opacity-50" /></a>
                 </div> :
-                <Link className="fixed bottom-4 duration-300 flex items-center left-8 text-2xl hover:opacity-50" href={`/home`}>
+                <Link className="fixed bottom-2 duration-300 flex items-center left-8 text-2xl hover:opacity-50" href={`/home`}>
                     <IoIosArrowBack /> BACK
                 </Link>
             }
-            <div className={`fixed bottom-4 right-8 text-xs text-right ${opinionPro.className}`}>
+            <div className={`fixed bottom-2 right-8 text-xs text-right ${opinionPro.className}`}>
                 PCCW OTT (Singapore) Pte. Ltd<br />
                 All rights reserved.
             </div>

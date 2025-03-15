@@ -255,7 +255,7 @@ const Content = () => {
                     ))
                 }
             </div>
-            <div className="h-[calc(100vh-120px)] w-full sm:w-[80%] flex items-top sm:items-center justify-center mt-12 sm:-mt-10">
+            <div className="h-[calc(100vh-120px)] w-full sm:w-[85%] flex items-top sm:items-center justify-center mt-12 sm:-mt-10">
                 <div className="relative h-[calc(100vh-300px)] w-full flex items-center justify-center">
                     <Image className="invisible sm:visible absolute" alt="contentFrameHorizontal" height={1287} width={2187} src={`/assets/images/lore/webp/ContentFrameHorizontal.webp`} priority />
                     <Image className="sm:invisible absolute h-[calc(100vh-220px)] w-auto" alt="contentFrameVertical" height={2187} width={1287} src={`/assets/images/lore/webp/ContentFrameVertical.webp`} priority />
