@@ -239,7 +239,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
               <Link className={`py-4 ${pathname === "/home" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/home" onMouseEnter={() => handleMouseEnter(0, "Home")}>{menuText[0] || "Home"}</Link>
               <Divider />
               <div className="pt-4" onMouseEnter={() => handleMouseEnter(1, "TN7 Universe")}>{menuText[1] || "TN7 Universe"}</div>
-              <Link className={`pl-2 py-4 ${pathname === "/comics" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/comic" onMouseEnter={() => handleMouseEnter(2, "Comic")}>&#x2022;&nbsp;&nbsp;&nbsp;{menuText[2] || "Comic"}</Link>
+              <Link className={`pl-2 py-4 ${pathname === "/comics" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/comics" onMouseEnter={() => handleMouseEnter(2, "Comic")}>&#x2022;&nbsp;&nbsp;&nbsp;{menuText[2] || "Comic"}</Link>
               <Divider />
               <Link className={`pl-2 py-4 ${pathname === "/lore" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/lore" onMouseEnter={() => handleMouseEnter(3, "Lore")}>&#x2022;&nbsp;&nbsp;&nbsp;{menuText[3] || "Lore"}</Link>
               <Divider />
