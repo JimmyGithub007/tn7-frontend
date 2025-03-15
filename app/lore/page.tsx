@@ -254,17 +254,17 @@ const Content = () => {
                     ))
                 }
             </div>
-            <div className="h-[calc(100vh-120px)] w-full sm:w-[80%] flex items-center justify-center sm:-mt-10">
+            <div className="h-[calc(100vh-120px)] w-full sm:w-[80%] flex items-top sm:items-center justify-center mt-10 sm:-mt-10">
                 <div className="relative h-[calc(100vh-300px)] w-full flex items-center justify-center">
                     <Image className="invisible sm:visible absolute" alt="contentFrameHorizontal" height={1287} width={2187} src={`/assets/images/lore/webp/ContentFrameHorizontal.webp`} priority />
-                    <Image className="sm:invisible absolute h-[calc(100vh-230px)] w-auto" alt="contentFrameVertical" height={2187} width={1287} src={`/assets/images/lore/webp/ContentFrameVertical.webp`} priority />
+                    <Image className="sm:invisible absolute h-[calc(100vh-220px)] w-auto" alt="contentFrameVertical" height={2187} width={1287} src={`/assets/images/lore/webp/ContentFrameVertical.webp`} priority />
                     <AnimatePresence>
                         {
                             loreId != "0" ?
                                 <motion.div className={`absolute z-20`}
                                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
                                 >
-                                    <div className="relative" style={{ width: imgWidth }}>
+                                    <div className="relative flex justify-center" style={{ width: imgWidth }}>
                                         <ProgressiveImage
                                             className="duration-300 group-hover:scale-105 group-hover:saturate-200"
                                             lowQualitySrc={`/assets/images/lore/${category}/webp/tiny/${category === "cities" ? "c" : "b"}${loreId}${isMobile ? "Vertical" : "Horizontal"}.webp`}
@@ -273,13 +273,13 @@ const Content = () => {
                                             width={2187}
                                             height={1287}
                                         />
-                                        <motion.div className={`absolute ${ isMobile ? "top-[47%] w-[90%]" : "right-[6%] top-[18%] w-[45%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-12 text-white z-20`} 
-                                            style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 70 / 100 }}
+                                        <motion.div className={`absolute ${ isMobile ? "top-[47%]" : "right-[6%] top-[18%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto pr-4 text-white z-20`} 
+                                            style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 70 / 100, width: isMobile ? imgWidth * 80/100 : imgWidth * 40 / 100  }}
                                             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.7 }}
                                         >
                                             <div className="font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">{contents.find(e => e.category === category && e.id === loreId)?.name}</div>
                                             <div className={`text-xs md:text-sm lg:text-md xl:text-lg ${opinionPro.className}`} dangerouslySetInnerHTML={{ __html: details.find(e => e.category === category && e.id === loreId)?.detail || "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." }} />
-                                            <div className="flex flex-col">
+                                            <div className="flex flex-col text-xs md:text-sm lg:text-md xl:text-lg">
                                                 {   category === "cities" && <div>Major landmarks</div> }
                                                 <div className={`flex ${ category === "locations" ? "flex-col" : "gap-2 flex-wrap" } ${opinionPro.className}`}>
                                                     {
