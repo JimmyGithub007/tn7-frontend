@@ -20,12 +20,14 @@ const Comics = () => {
     const [ loadingPercentage, setLoadingPercentage ] = useState<number>(0);
     const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
     const [ hoverComicId, setHoverComicId ] = useState<number>(0);
-    const [ mousePosition, setMousePosition ] = useState({ x: 0, y: 0 });
 
     const handleHoverComic = useCallback((comicData: any) => {
         const [comicId, comicX, comicY] = comicData.split(",");
-        if(comicId > 0) setMousePosition({ x: parseInt(comicX) - 100, y: window.innerHeight - parseInt(comicY) - 100 });
         setHoverComicId(parseInt(comicId))
+    }, []);
+
+    const handleClickComic = useCallback((comicId: any) => {
+        clickComic(parseInt(comicId));
     }, []);
 
     useEffect(() => {
@@ -35,6 +37,12 @@ const Comics = () => {
         };
     }, [addEventListener, removeEventListener, handleHoverComic]);
 
+    useEffect(() => {
+        addEventListener("ReactClickComic", handleClickComic);
+        return () => {
+            removeEventListener("ReactClickComic", handleClickComic);
+        };
+    }, [addEventListener, removeEventListener, handleClickComic]);
 
     useEffect(() => {
         if (loadingPercentage === 100) {
@@ -75,7 +83,7 @@ const Comics = () => {
         }
     }, [loadingProgression]);
 
-    const clickComic = () => {
+    const clickComic = (hoverComicId:number) => {
         let url = "";
         switch (hoverComicId) {
             case 1:
@@ -95,7 +103,7 @@ const Comics = () => {
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
             <Header />
-            { hoverComicId > 0 && <div className={`absolute hidden lg:block w-full h-full opacity-0 ${hoverComicId === 2 ? "cursor-pointer" : "cursor-not-allowed"}`} onClick={() => clickComic() }></div> }
+            { hoverComicId > 0 && <div className={`absolute hidden lg:block w-full h-full opacity-0 ${hoverComicId === 2 ? "cursor-pointer" : "cursor-not-allowed"}`} onClick={() => clickComic(hoverComicId) }></div> }
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
             <Footer />
             <AnimatePresence>{/*Loading Percentage For Unity*/}
