@@ -242,8 +242,8 @@ const Content = () => {
                 }
             </div>
         </div>
-        <div className="h-full w-full sm:pt-0 flex flex-col sm:justify-center sm:items-center mt-32 sm:mt-0">
-            <div className="flex h-10 w-full overflow-x-auto sm:invisible">
+        <div className="h-full w-full flex flex-col items-center justify-center mt-24 lg:mt-0">
+            <div className="flex h-10 w-full overflow-x-auto lg:invisible">
                 {
                     menus.map((menu, key) => (
                         <Link
@@ -254,88 +254,91 @@ const Content = () => {
                     ))
                 }
             </div>
-            <div className="relative h-[calc(100vh-200px)] sm:h-full w-full sm:w-[80%] flex items-center justify-center mt-10 sm:-mt-10">
-                <Image className="invisible sm:visible absolute" alt="contentFrameHorizontal" height={1287} width={2187} src={`/assets/images/lore/webp/ContentFrameHorizontal.webp`} priority />
-                <Image className="sm:invisible absolute h-[calc(100vh-140px)] w-auto" alt="contentFrameVertical" height={2187} width={1287} src={`/assets/images/lore/webp/ContentFrameVertical.webp`} priority />
-                <AnimatePresence>
-                    {
-                        loreId != "0" ?
-                            <motion.div className={`absolute z-20`}
-                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
-                            >
-                                <div className="relative" style={{ width: imgWidth }}>
-                                    <ProgressiveImage
-                                        className="duration-300 group-hover:scale-105 group-hover:saturate-200"
-                                        lowQualitySrc={`/assets/images/lore/${category}/webp/tiny/${category === "cities" ? "c" : "b"}${loreId}${isMobile ? "Vertical" : "Horizontal"}.webp`}
-                                        highQualitySrc={`/assets/images/lore/${category}/webp/${category === "cities" ? "c" : "b"}${loreId}${isMobile ? "Vertical" : "Horizontal"}.webp`}
-                                        alt={``}
-                                        width={2187}
-                                        height={1287}
-                                    />
-                                    <motion.div className={`absolute ${ isMobile ? "top-[47%] w-[90%]" : "right-[6%] top-[18%] w-[45%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-12 text-white z-20`} 
-                                        style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 70 / 100 }}
-                                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.7 }}
-                                    >
-                                        <div className="font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">{contents.find(e => e.category === category && e.id === loreId)?.name}</div>
-                                        <div className={`text-xs md:text-sm lg:text-md xl:text-lg ${opinionPro.className}`} dangerouslySetInnerHTML={{ __html: details.find(e => e.category === category && e.id === loreId)?.detail || "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." }} />
-                                        <div className="flex flex-col">
-                                            {   category === "cities" && <div>Major landmarks</div> }
-                                            <div className={`flex ${ category === "locations" ? "flex-col" : "gap-2 flex-wrap" } ${opinionPro.className}`}>
-                                                {
-                                                    details.find(e => e.category === category && e.id === loreId)?.children.map((value, key) => (
-                                                        <div key={key}>{ category === "locations" ? ( key === 0 ? "Location : " : "Appearance : " ) : "" }<Link className="underline text-red-800" href={value.name != "To be revealed" && key != 1 ? value.url : "#"}>{value.name}</Link></div>
-                                                    ))
-                                                }
+            <div className="h-[calc(100vh-120px)] w-full sm:w-[80%] flex items-center justify-center sm:-mt-10">
+                <div className="relative h-[calc(100vh-300px)] w-full flex items-center justify-center">
+                    <Image className="invisible sm:visible absolute" alt="contentFrameHorizontal" height={1287} width={2187} src={`/assets/images/lore/webp/ContentFrameHorizontal.webp`} priority />
+                    <Image className="sm:invisible absolute h-[calc(100vh-230px)] w-auto" alt="contentFrameVertical" height={2187} width={1287} src={`/assets/images/lore/webp/ContentFrameVertical.webp`} priority />
+                    <AnimatePresence>
+                        {
+                            loreId != "0" ?
+                                <motion.div className={`absolute z-20`}
+                                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
+                                >
+                                    <div className="relative" style={{ width: imgWidth }}>
+                                        <ProgressiveImage
+                                            className="duration-300 group-hover:scale-105 group-hover:saturate-200"
+                                            lowQualitySrc={`/assets/images/lore/${category}/webp/tiny/${category === "cities" ? "c" : "b"}${loreId}${isMobile ? "Vertical" : "Horizontal"}.webp`}
+                                            highQualitySrc={`/assets/images/lore/${category}/webp/${category === "cities" ? "c" : "b"}${loreId}${isMobile ? "Vertical" : "Horizontal"}.webp`}
+                                            alt={``}
+                                            width={2187}
+                                            height={1287}
+                                        />
+                                        <motion.div className={`absolute ${ isMobile ? "top-[47%] w-[90%]" : "right-[6%] top-[18%] w-[45%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-12 text-white z-20`} 
+                                            style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 70 / 100 }}
+                                            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.7 }}
+                                        >
+                                            <div className="font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">{contents.find(e => e.category === category && e.id === loreId)?.name}</div>
+                                            <div className={`text-xs md:text-sm lg:text-md xl:text-lg ${opinionPro.className}`} dangerouslySetInnerHTML={{ __html: details.find(e => e.category === category && e.id === loreId)?.detail || "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." }} />
+                                            <div className="flex flex-col">
+                                                {   category === "cities" && <div>Major landmarks</div> }
+                                                <div className={`flex ${ category === "locations" ? "flex-col" : "gap-2 flex-wrap" } ${opinionPro.className}`}>
+                                                    {
+                                                        details.find(e => e.category === category && e.id === loreId)?.children.map((value, key) => (
+                                                            <div key={key}>{ category === "locations" ? ( key === 0 ? "Location : " : "Appearance : " ) : "" }<Link className={`${category === "locations" && key === 1 ?  "cursor-not-allowed line-through" : "duration-300 hover:opacity-50 underline text-red-800"}`} href={category === "locations" && key === 1 ? "#" : value.url}>{value.name}</Link></div>
+                                                        ))
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
+                                        </motion.div>
+                                        <motion.div 
+                                            initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2, delay: 0.7 }}
+                                            className={`absolute cursor-pointer duration-200 hover:opacity-50 ${isMobile ? "right-[12%] top-[5%]" : "right-[6%] top-[10%]"} text-white text-4xl z-20`}>
+                                            <Link href={{ pathname: '/lore', query: { category: category, id: "0" } }}>
+                                                <TbArrowBackUp />
+                                            </Link>
+                                        </motion.div>
+                                    </div>
+                                </motion.div> :
+                                (
+                                    category === "locations" || category === "cities" ? 
+                                        <div className={`absolute filter-bar gap-6 grid grid-cols-1 items-center
+                                            ${category === "locations" ? "sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-4" : "md:grid-cols-2"} z-10 overflow-x-hidden overflow-y-auto`}
+                                            style={{ 
+                                                width: isMobile ? imgWidth * 80/100 : imgWidth * 90 / 100, 
+                                                height: isMobile ? "inherit" : imgHeight * 80 / 100 
+                                            }}
+                                        >
+                                        {
+                                            contents.map((value, key) => {
+                                                if(value.category === category) return <motion.div key={key} 
+                                                    initial={{ opacity: 0, y: 10 }} 
+                                                    animate={{ opacity: 1, y: 0 }} 
+                                                    exit={{ opacity: 0 }} 
+                                                    transition={{ duration: 0.8, delay: 0.1 * parseInt(value.id) }} 
+                                                    className="cursor-pointer group relative">
+                                                    <Link href={{ pathname: '/lore', query: { category: category, id: value.id } }}>
+                                                        <ProgressiveImage
+                                                            className="duration-300 group-hover:scale-105 group-hover:saturate-200"
+                                                            lowQualitySrc={`/assets/images/lore/${category}/webp/tiny/${value.img}.webp`}
+                                                            highQualitySrc={`/assets/images/lore/${category}/webp/${value.img}.webp`}
+                                                            alt={`lore ${value.name}`}
+                                                            width={532}
+                                                            height={532}
+                                                        />
+                                                        <div className="absolute bottom-2 font-bold px-4 text-white text-center text-sm sm:text-md/5 md:text-lg/5 lg:text-xl/5 w-full z-10" style={{ textShadow: "black 1px 4px" }}>{value.name}</div>
+                                                    </Link>
+                                                </motion.div>
+                                            })
+                                        }
+                                    </div> : <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} 
+                                        className="font-bold flex justify-center items-center text-5xl text-white w-full z-10"
+                                        style={{ height: isMobile ? imgHeight : imgHeight * 80 / 100 }}>
+                                        COMING SOON
                                     </motion.div>
-                                    <motion.div 
-                                        initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2, delay: 0.7 }}
-                                        className={`absolute cursor-pointer duration-200 hover:opacity-50 ${isMobile ? "right-[12%] top-[5%]" : "right-[6%] top-[10%]"} text-white text-4xl z-20`}>
-                                        <Link href={{ pathname: '/lore', query: { category: category, id: "0" } }}>
-                                            <TbArrowBackUp />
-                                        </Link>
-                                    </motion.div>
-                                </div>
-                            </motion.div> :
-                            (
-                                category === "locations" || category === "cities" ? 
-                                    <div className={`absolute filter-bar gap-6 grid grid-cols-1 ${category === "locations" ? "sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "lg:grid-cols-2"} z-10 overflow-x-hidden overflow-y-auto p-4`}
-                                        style={{ 
-                                            width: isMobile ? imgWidth * 80/100 : imgWidth * 90 / 100, 
-                                            height: isMobile ? "inherit" : imgHeight * 80 / 100 
-                                        }}
-                                    >
-                                    {
-                                        contents.map((value, key) => {
-                                            if(value.category === category) return <motion.div key={key} 
-                                                initial={{ opacity: 0, y: 10 }} 
-                                                animate={{ opacity: 1, y: 0 }} 
-                                                exit={{ opacity: 0 }} 
-                                                transition={{ duration: 0.8, delay: 0.1 * parseInt(value.id) }} 
-                                                className="cursor-pointer group relative">
-                                                <Link href={{ pathname: '/lore', query: { category: category, id: value.id } }}>
-                                                    <ProgressiveImage
-                                                        className="duration-300 group-hover:scale-105 group-hover:saturate-200"
-                                                        lowQualitySrc={`/assets/images/lore/${category}/webp/tiny/${value.img}.webp`}
-                                                        highQualitySrc={`/assets/images/lore/${category}/webp/${value.img}.webp`}
-                                                        alt={`lore ${value.name}`}
-                                                        width={532}
-                                                        height={532}
-                                                    />
-                                                    <div className="absolute bottom-6 font-bold px-4 text-white text-center text-sm sm:text-md/5 md:text-lg/5 lg:text-xl/5 w-full z-10" style={{ textShadow: "black 1px 4px" }}>{value.name}</div>
-                                                </Link>
-                                            </motion.div>
-                                        })
-                                    }
-                                </div> : <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} 
-                                    className="font-bold flex justify-center items-center text-5xl text-white w-full z-10"
-                                    style={{ height: isMobile ? imgHeight : imgHeight * 80 / 100 }}>
-                                    COMING SOON
-                                </motion.div>
-                            )
-                    }
-                </AnimatePresence>
+                                )
+                        }
+                    </AnimatePresence>
+                </div>
             </div>
         </div>
     </div>)
