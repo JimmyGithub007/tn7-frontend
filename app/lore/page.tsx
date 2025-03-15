@@ -5,10 +5,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Footer, Header, Loader, ProgressiveImage } from "@/components";
 import { TbArrowBackUp } from "react-icons/tb";
 import { useSearchParams } from 'next/navigation';
+import { opinionPro } from "@/components/Font";
 
 import Image from "next/image";
 import Link from "next/link";
-import { opinionPro } from "@/components/Font";
+import parse from "html-react-parser";
 
 const details = [
     {
@@ -254,7 +255,7 @@ const Content = () => {
                     ))
                 }
             </div>
-            <div className="h-[calc(100vh-120px)] w-full sm:w-[80%] flex items-top sm:items-center justify-center mt-10 sm:-mt-10">
+            <div className="h-[calc(100vh-120px)] w-full sm:w-[80%] flex items-top sm:items-center justify-center mt-12 sm:-mt-10">
                 <div className="relative h-[calc(100vh-300px)] w-full flex items-center justify-center">
                     <Image className="invisible sm:visible absolute" alt="contentFrameHorizontal" height={1287} width={2187} src={`/assets/images/lore/webp/ContentFrameHorizontal.webp`} priority />
                     <Image className="sm:invisible absolute h-[calc(100vh-220px)] w-auto" alt="contentFrameVertical" height={2187} width={1287} src={`/assets/images/lore/webp/ContentFrameVertical.webp`} priority />
@@ -273,12 +274,25 @@ const Content = () => {
                                             width={2187}
                                             height={1287}
                                         />
-                                        <motion.div className={`absolute ${ isMobile ? "top-[47%]" : "right-[6%] top-[18%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto pr-4 text-white z-20`} 
+                                        <motion.div className={`absolute ${ isMobile ? "top-[47%]" : "right-[6%] top-[18%]" } filter-bar flex flex-col gap-2 sm:gap-4 overflow-x-hidden overflow-y-auto px-2 text-white z-20`} 
                                             style={{ height: isMobile ? imgHeight * 45/100 : imgHeight * 70 / 100, width: isMobile ? imgWidth * 80/100 : imgWidth * 40 / 100  }}
                                             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.7 }}
                                         >
                                             <div className="font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">{contents.find(e => e.category === category && e.id === loreId)?.name}</div>
-                                            <div className={`text-xs md:text-sm lg:text-md xl:text-lg ${opinionPro.className}`} dangerouslySetInnerHTML={{ __html: details.find(e => e.category === category && e.id === loreId)?.detail || "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." }} />
+                                            <div className={`text-xs md:text-sm lg:text-md xl:text-lg ${opinionPro.className}`}>
+                                                {parse(details.find(e => e.category === category && e.id === loreId)?.detail || "", {
+                                                    replace: (domNode: any) => {
+                                                        if (domNode.name === "a") {
+                                                            const href = domNode.attribs.href;
+                                                            return (
+                                                                <Link href={href} className={domNode.attribs.class}>
+                                                                    {domNode.children[0].data}
+                                                                </Link>
+                                                            );
+                                                        }
+                                                    },
+                                                })}
+                                            </div>
                                             <div className="flex flex-col text-xs md:text-sm lg:text-md xl:text-lg">
                                                 {   category === "cities" && <div>Major landmarks</div> }
                                                 <div className={`flex ${ category === "locations" ? "flex-col" : "gap-2 flex-wrap" } ${opinionPro.className}`}>
@@ -331,8 +345,12 @@ const Content = () => {
                                             })
                                         }
                                     </div> : <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} 
-                                        className="font-bold flex justify-center items-center text-5xl text-white w-full z-10"
-                                        style={{ height: isMobile ? imgHeight : imgHeight * 80 / 100 }}>
+                                        className="font-bold flex justify-center items-center text-center text-4xl sm:text-5xl text-white w-full z-10"
+                                        style={{ 
+                                            width: isMobile ? imgWidth * 80/100 : imgWidth * 90 / 100, 
+                                            height: isMobile ? "inherit" : imgHeight * 80 / 100 
+                                        }}
+                                    >
                                         COMING SOON
                                     </motion.div>
                                 )
