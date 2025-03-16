@@ -6,8 +6,9 @@ import { Dialog } from "@/components";
 
 import localFont from 'next/font/local';
 import "./globals.css";
+import { opinionPro } from "@/components/Font";
 
-const impact = localFont({
+export const impact = localFont({
   src: [
     { path: '../public/fonts/impact.ttf', weight: '400', style: 'normal' },
     { path: '../public/fonts/Impacted.ttf', weight: '700', style: 'normal' },
@@ -29,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (<StoreProvider>
-    <html lang="en">
+    <html lang="en" className={opinionPro.variable}>
       <body className={impact.className} style={{ overflow: "hidden" }}>
         {children}
         {/*<Dialog />*/}
