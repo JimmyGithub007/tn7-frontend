@@ -2,20 +2,10 @@ import type { Metadata } from "next";
 //import { Archivo_Black, Audiowide, Inter, Lilita_One, Staatliches } from "next/font/google";
 
 import { StoreProvider } from "@/store/StoreProvider";
-import { Dialog } from "@/components";
+//import { Dialog } from "@/components";
 
-import localFont from 'next/font/local';
+import { impact, opinionPro } from "@/components/Font";
 import "./globals.css";
-import { opinionPro } from "@/components/Font";
-
-export const impact = localFont({
-  src: [
-    { path: '../public/fonts/impact.ttf', weight: '400', style: 'normal' },
-    { path: '../public/fonts/Impacted.ttf', weight: '700', style: 'normal' },
-    { path: '../public/fonts/unicode.impact.ttf', weight: '400', style: 'italic' }
-  ],
-  variable: '--font-impact'
-});
 
 //const archivo_black = Archivo_Black({ subsets: ["latin"], weight: "400" });
 
