@@ -18,6 +18,7 @@ const config: Config = {
         'wiggle': 'wiggle 2.5s ease-in-out infinite',
         'right-arrow': 'right-arrow 2.5s ease-in-out infinite',
         'left-arrow': 'left-arrow 2.5s ease-in-out infinite',
+        'glow': "glow 5s linear infinite",
       },
       keyframes: {
         'scroll': {
@@ -40,6 +41,11 @@ const config: Config = {
           "0%, 74%": { transform: "translateX(0)" }, // 保持不动
           "75%": { transform: "translateX(-10px)" }, // 手指向左时，箭头左移
           "100%": { transform: "translateX(0)" }, // 回到原位
+        },
+        'glow': {
+          "0%, ": { rotate: "0deg" },
+          "50%": { scale: "1 1.5" },
+          "100%": { rotate: "360deg" },
         },
       } 
     },

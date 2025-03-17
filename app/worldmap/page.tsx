@@ -14,6 +14,8 @@ import { opinionPro } from "@/components/Font";
 
 import Image from "next/image";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { setUnityHover } from "@/store/slice/mouseSlice";
 
 //const lilita_one = Lilita_One({ subsets: ["latin"], weight: "400" });
 
@@ -69,6 +71,7 @@ const WorldMap = () => {
     ]);
     const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
     const [ showHandScroll, setShowHandScroll ] = useState<boolean>(false);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const checkRatio = () => {
@@ -142,6 +145,7 @@ const WorldMap = () => {
             );
         }
         setHoverBuildingId(parseInt(buildingId))
+        dispatch(setUnityHover(parseInt(buildingId) > 0 ? true : false));
     }, []);
 
     const handleInitialBuilding = useCallback((buildingData: any) => {

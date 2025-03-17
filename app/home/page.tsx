@@ -7,9 +7,12 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { Footer, Header } from "@/components";
+import { useDispatch } from "react-redux";
+import { setUnityHover } from "@/store/slice/mouseSlice";
 
 const Home = () => {
     const router = useRouter();
+    const dispatch = useDispatch();
 
     const { unityProvider, isLoaded, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
         loaderUrl: "unity/build/HomeScene.loader.js",
@@ -40,7 +43,8 @@ const Home = () => {
                 )
             );
         }
-        setHoverTvId(parseInt(tvId))
+        setHoverTvId(parseInt(tvId));
+        dispatch(setUnityHover(parseInt(tvId) > 0 ? true : false));
     }, []);
 
     useEffect(() => {

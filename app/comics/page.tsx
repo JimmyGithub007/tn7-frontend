@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
+import { setUnityHover } from "@/store/slice/mouseSlice";
+import { useDispatch } from "react-redux";
 
 const Comics = () => {
     const router = useRouter();
@@ -20,10 +22,12 @@ const Comics = () => {
     const [ loadingPercentage, setLoadingPercentage ] = useState<number>(0);
     const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
     const [ hoverComicId, setHoverComicId ] = useState<number>(0);
+    const dispatch = useDispatch();
 
     const handleHoverComic = useCallback((comicData: any) => {
         const [comicId, comicX, comicY] = comicData.split(",");
         setHoverComicId(parseInt(comicId))
+        dispatch(setUnityHover(parseInt(comicId) > 0 ? true : false));
     }, []);
 
     const handleClickComic = useCallback((comicId: any) => {

@@ -5,6 +5,7 @@ import ProgressiveImage from "./ProgressiveImage";
 import MaskText from "./MaskText";
 import Loader from "./Loader";
 import Footer from "./Footer";
+import MouseFollower from "./MouseFollower";
 
 export {
     WebGL,
@@ -13,5 +14,6 @@ export {
     ProgressiveImage,
     MaskText,
     Loader,
-    Footer
+    Footer,
+    MouseFollower
 }

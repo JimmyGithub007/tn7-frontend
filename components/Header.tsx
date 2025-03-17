@@ -258,7 +258,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
               >
                 <Panel header={<div 
                   onMouseEnter={() => handleMouseEnter(5, "Socials")}
-                  className={`text-white text-md sm:text-xl ${opinionPro.className}`}>
+                  className={`target text-white text-md sm:text-xl ${opinionPro.className}`}>
                     {menuText[5] || "Socials"}
                   </div>} key="5"
                 >
@@ -293,7 +293,7 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
   const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
 
   return (<>
-    <Link href={`/home`}><Image alt="logo" className="fixed left-8 top-0 w-20 sm:w-26 z-[100]" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} priority quality={50} /></Link>
+    <Link href={`/home`}><Image alt="logo" className="target fixed left-8 top-0 w-20 sm:w-26 z-[100]" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} priority quality={50} /></Link>
     <button onClick={() => {
       setIsOpenMenu(!isOpenMenu);
       if (setIsOpenMenuParent) setIsOpenMenuParent(!isOpenMenuParent);

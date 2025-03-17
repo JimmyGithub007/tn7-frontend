@@ -5,6 +5,7 @@ import { StoreProvider } from "@/store/StoreProvider";
 //import { Dialog } from "@/components";
 
 import { impact, opinionPro } from "@/components/Font";
+import { MouseFollower } from "@/components";
 import "./globals.css";
 
 //const archivo_black = Archivo_Black({ subsets: ["latin"], weight: "400" });
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className={impact.className} style={{ overflow: "hidden" }}>
         {children}
         {/*<Dialog />*/}
+        <MouseFollower />
       </body>
     </html>
   </StoreProvider>);

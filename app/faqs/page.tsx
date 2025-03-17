@@ -51,7 +51,7 @@ const Collapse = ({ children, title }: { children: ReactNode, title: string }) =
     }, [isOpen]);
     
     return <div ref={contentRef} className="border-2 border-white duration-300 flex flex-col gap-4 overflow-hidden p-4" style={{ height: height }}>
-        <div ref={headRef} className={`${isOpen ? "text-red-800" : "text-white"} cursor-pointer duration-300 flex font-bold gap-4 justify-between text-md sm:text-2xl`} onClick={() => setIsOpen(!isOpen)}>
+        <div ref={headRef} className={`${isOpen ? "text-red-800" : "text-white"} target cursor-pointer duration-300 flex font-bold gap-4 justify-between text-md sm:text-2xl`} onClick={() => setIsOpen(!isOpen)}>
             {title} <IoIosArrowDown className={`transform transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
         </div>
         <div className={`flex flex-col text-sm sm:text-xl`}>

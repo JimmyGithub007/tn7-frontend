@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import dialogReducer from "./slice/dialogSlice";
+import mouseReducer from "./slice/mouseSlice";
 
 const store = configureStore({
     reducer: {
         dialog: dialogReducer,
+        mouse: mouseReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
