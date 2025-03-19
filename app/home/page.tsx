@@ -11,12 +11,10 @@ import { setUnityHover } from "@/store/slice/mouseSlice";
 interface versionProps {
     handleHoverTV: (tvData: any) => void;
     handleClickTV: (tvId: any) => void;
+    setLoadingProgression: (state: number) => void;
 }
 
-const PCVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV }) => {
-    const [ loadingPercentage, setLoadingPercentage ] = useState<number>(0);
-    const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
-
+const PCVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV, setLoadingProgression }) => {
     const { unityProvider, loadingProgression, addEventListener, removeEventListener } = useUnityContext({
         loaderUrl: "unity/build/HomeScene.loader.js",
         dataUrl: "unity/build/HomeScene.data.unityweb",
@@ -25,45 +23,6 @@ const PCVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV }) => 
     });
 
     useEffect(() => {
-        if (loadingProgression === 1) {
-            if (loadingPercentage < 90) {
-                const interval = setInterval(() => {
-                    setLoadingPercentage((prev) => {
-                        if (prev >= 99) {
-                            clearInterval(interval);
-                            return 100;
-                        }
-                        return prev + 1;
-                    });
-                }, 50);
-                return () => clearInterval(interval);
-            } else {
-                setLoadingPercentage(100);
-            }
-        } else if (loadingProgression >= 0.9) {
-            const interval = setInterval(() => {
-                setLoadingPercentage((prev) => {
-                    if (prev >= 99) {
-                        clearInterval(interval);
-                        return 100;
-                    }
-                    return prev + 1; // 模拟平滑增加
-                });
-            }, 200); // 每 200ms 增加 1%
-            return () => clearInterval(interval);
-        } else if (loadingProgression < 0.9) {
-            setLoadingPercentage(Math.round(loadingProgression * 100));
-        }
-    }, [loadingProgression]);
-
-    useEffect(() => {
-        if (loadingPercentage === 100) {
-            const timeout = setTimeout(() => setLoaderHidden(true), 200); // 确保动画有时间完成
-            return () => clearTimeout(timeout);
-        }
-    }, [loadingPercentage]);
-
-    useEffect(() => {
         addEventListener("ReactHoverTV", handleHoverTV);
         return () => {
             removeEventListener("ReactHoverTV", handleHoverTV);
@@ -77,30 +36,14 @@ const PCVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV }) => 
         };
     }, [addEventListener, removeEventListener, handleClickTV]);
 
-    return (<>
-        <Unity className={`h-full w-full`} unityProvider={unityProvider} />
-        <AnimatePresence>{/*Loading Percentage For Unity*/}
-            {!loaderHidden && (
-                <motion.div
-                    id="loader"
-                    className="absolute bg-black flex h-full items-center justify-center left-0 w-full top-0 z-[100]"
-                    initial={{ y: 0 }}
-                    animate={{ y: 0 }}
-                    exit={{ y: "100%" }}
-                    transition={{ duration: 1, ease: "easeInOut" }}
-                >
-                    <span className="font-bold text-5xl text-white">
-                        {loadingPercentage}%
-                    </span>
-                </motion.div>
-            )}
-        </AnimatePresence></>)
+    useEffect(() => {
+        setLoadingProgression(loadingProgression);
+    }, [loadingProgression]);
+
+    return (<Unity className={`h-full w-full`} unityProvider={unityProvider} />);
 }
 
-const MobileVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV }) => {
-    const [ loadingPercentage, setLoadingPercentage ] = useState<number>(0);
-    const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
-
+const MobileVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV, setLoadingProgression }) => {
     const { unityProvider, loadingProgression, addEventListener, removeEventListener } = useUnityContext({
         loaderUrl: "unity/build/MobileVersionHomeScene.loader.js",
         dataUrl: "unity/build/MobileVersionHomeScene.data.unityweb",
@@ -109,45 +52,6 @@ const MobileVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV })
     });
 
     useEffect(() => {
-        if (loadingProgression === 1) {
-            if (loadingPercentage < 90) {
-                const interval = setInterval(() => {
-                    setLoadingPercentage((prev) => {
-                        if (prev >= 99) {
-                            clearInterval(interval);
-                            return 100;
-                        }
-                        return prev + 1;
-                    });
-                }, 50);
-                return () => clearInterval(interval);
-            } else {
-                setLoadingPercentage(100);
-            }
-        } else if (loadingProgression >= 0.9) {
-            const interval = setInterval(() => {
-                setLoadingPercentage((prev) => {
-                    if (prev >= 99) {
-                        clearInterval(interval);
-                        return 100;
-                    }
-                    return prev + 1; // 模拟平滑增加
-                });
-            }, 200); // 每 200ms 增加 1%
-            return () => clearInterval(interval);
-        } else if (loadingProgression < 0.9) {
-            setLoadingPercentage(Math.round(loadingProgression * 100));
-        }
-    }, [loadingProgression]);
-
-    useEffect(() => {
-        if (loadingPercentage === 100) {
-            const timeout = setTimeout(() => setLoaderHidden(true), 200); // 确保动画有时间完成
-            return () => clearTimeout(timeout);
-        }
-    }, [loadingPercentage]);
-
-    useEffect(() => {
         addEventListener("ReactHoverTV", handleHoverTV);
         return () => {
             removeEventListener("ReactHoverTV", handleHoverTV);
@@ -161,30 +65,20 @@ const MobileVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV })
         };
     }, [addEventListener, removeEventListener, handleClickTV]);
 
-    return (<>
-        <Unity className={`h-full w-full`} unityProvider={unityProvider} />
-        <AnimatePresence>{/*Loading Percentage For Unity*/}
-            {!loaderHidden && (
-                <motion.div
-                    id="loader"
-                    className="absolute bg-black flex h-full items-center justify-center left-0 w-full top-0 z-[100]"
-                    initial={{ y: 0 }}
-                    animate={{ y: 0 }}
-                    exit={{ y: "100%" }}
-                    transition={{ duration: 1, ease: "easeInOut" }}
-                >
-                    <span className="font-bold text-5xl text-white">
-                        {loadingPercentage}%
-                    </span>
-                </motion.div>
-            )}
-        </AnimatePresence></>)
+    useEffect(() => {
+        setLoadingProgression(loadingProgression);
+    }, [loadingProgression]);
+
+    return (<Unity className={`h-full w-full`} unityProvider={unityProvider} />);
 }
 
 const Home = () => {
     const router = useRouter();
     const dispatch = useDispatch();
 
+    const [ loadingProgression, setLoadingProgression ] = useState<number>(0);
+    const [ loadingPercentage, setLoadingPercentage ] = useState<number>(0);
+    const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
     const [ hoverTvId, setHoverTvId ] = useState<number>(0);
     const [ isMobile, setIsMobile ] = useState(false);
 
@@ -297,23 +191,83 @@ const Home = () => {
     //end
 
     useEffect(() => {
-        // 检测是否是移动端
-        const checkMobile = () => {
-          setIsMobile(window.innerWidth <= 768 || /Mobi|Android|iPhone/i.test(navigator.userAgent));
+        if (loadingProgression === 1) {
+            if (loadingPercentage < 90) {
+                const interval = setInterval(() => {
+                    setLoadingPercentage((prev) => {
+                        if (prev >= 99) {
+                            clearInterval(interval);
+                            return 100;
+                        }
+                        return prev + 1;
+                    });
+                }, 50);
+                return () => clearInterval(interval);
+            } else {
+                setLoadingPercentage(100);
+            }
+        } else if (loadingProgression >= 0.9) {
+            const interval = setInterval(() => {
+                setLoadingPercentage((prev) => {
+                    if (prev >= 99) {
+                        clearInterval(interval);
+                        return 100;
+                    }
+                    return prev + 1; // 模拟平滑增加
+                });
+            }, 200); // 每 200ms 增加 1%
+            return () => clearInterval(interval);
+        } else if (loadingProgression < 0.9) {
+            setLoadingPercentage(Math.round(loadingProgression * 100));
+        }
+    }, [loadingProgression]);
+
+    useEffect(() => {
+        if (loadingPercentage === 100) {
+            const timeout = setTimeout(() => setLoaderHidden(true), 200); // 确保动画有时间完成
+            return () => clearTimeout(timeout);
+        }
+    }, [loadingPercentage]);
+
+    useEffect(() => {
+        const checkRatio = () => {
+            if(window.innerWidth/window.innerHeight <= 1.333) {
+                setIsMobile(true);
+            } else {
+                setIsMobile(false);
+            }
         };
-    
-        checkMobile();
-        window.addEventListener("resize", checkMobile);
-    
-        return () => window.removeEventListener("resize", checkMobile);
-      }, []);
+
+        checkRatio(); // 初始检测
+
+        window.addEventListener("resize", checkRatio);
+        return () => {
+            window.removeEventListener("resize", checkRatio);
+        };
+    }, []);
 
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
             <Header />
-            {   isMobile ? <MobileVersion handleHoverTV={handleHoverTV} handleClickTV={handleClickTV} /> : 
-                <PCVersion handleHoverTV={handleHoverTV} handleClickTV={handleClickTV} />
+            {   isMobile ? <MobileVersion handleHoverTV={handleHoverTV} handleClickTV={handleClickTV} setLoadingProgression={setLoadingProgression} /> : 
+                <PCVersion handleHoverTV={handleHoverTV} handleClickTV={handleClickTV} setLoadingProgression={setLoadingProgression} />
             }
+            <AnimatePresence>{/*Loading Percentage For Unity*/}
+                {!loaderHidden && (
+                    <motion.div
+                        id="loader"
+                        className="absolute bg-black flex h-full items-center justify-center left-0 w-full top-0 z-[300]"
+                        initial={{ y: 0 }}
+                        animate={{ y: 0 }}
+                        exit={{ y: "100%" }}
+                        transition={{ duration: 1, ease: "easeInOut" }}
+                    >
+                        <span className="font-bold text-5xl text-white">
+                            {loadingPercentage}%
+                        </span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
             { hoverTvId > 0 && <div className="absolute hidden lg:block cursor-pointer w-full h-full opacity-0 z-10" onClick={() => clickTV() }></div> }
             {
                 [1, 2, 3].map((value, key) => (
