@@ -48,9 +48,9 @@ const MouseFollower = () => {
     if (isMobile) return;
 
     const updatePosition = () => {
-      posX.current += (mouseX.current - posX.current - 100) * 0.15;
+      posX.current += (mouseX.current - posX.current - 87) * 0.15;
       posY.current += (mouseY.current - posY.current - 100) * 0.15;
-      posY2.current += (mouseY.current - posY2.current) * 0.15;
+      posY2.current += (mouseY.current - posY2.current + 17) * 0.15;
 
       const transformStyle = `translate3d(${posX.current}px, ${posY.current}px, 0)`;
       const transformStyle2 = `translate3d(${posX.current}px, ${posY2.current}px, 0)`;
@@ -86,7 +86,7 @@ const MouseFollower = () => {
   return (
     <>
       {/* 背景模糊效果 */}
-      <div
+      {/*<div
         ref={cursorRef}
         className={`mix-blend-color pointer-events-none fixed left-0 top-0 w-[200px] -translate-x-1/2 -translate-y-1/2 z-[100] transition-opacity ${
           isMobile ? "hidden" : "opacity-100"
@@ -97,7 +97,7 @@ const MouseFollower = () => {
         }`}>
           <div className="h-full w-full animate-glow bg-gradient-to-r from-cyan-700 to-amber-600"></div>
         </div>
-      </div>
+      </div>*/}
 
       {/* 自定义光标 */}
       <div
