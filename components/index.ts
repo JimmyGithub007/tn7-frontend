@@ -6,7 +6,7 @@ import MaskText from "./MaskText";
 import Loader from "./Loader";
 import Footer from "./Footer";
 import MouseFollower from "./MouseFollower";
-
+import GlitchText from "./GlitchText";
 export {
     WebGL,
     Header,
@@ -15,5 +15,6 @@ export {
     MaskText,
     Loader,
     Footer,
-    MouseFollower
+    MouseFollower,
+    GlitchText
 }

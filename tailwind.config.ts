@@ -19,6 +19,8 @@ const config: Config = {
         'right-arrow': 'right-arrow 2.5s ease-in-out infinite',
         'left-arrow': 'left-arrow 2.5s ease-in-out infinite',
         'glow': "glow 5s linear infinite",
+        'glitch-1': "glitch1 0.5s infinite linear alternate",
+        'glitch-2': "glitch2 0.5s infinite linear alternate-reverse",
       },
       keyframes: {
         'scroll': {
@@ -46,6 +48,17 @@ const config: Config = {
           "0%, ": { rotate: "0deg" },
           "50%": { scale: "1 1.5" },
           "100%": { rotate: "360deg" },
+        },
+        'glitch1': {
+          "0%, 100%": { transform: "translate(0, 0)" },
+          "15%": { transform: "translate(-2px, -2px)" },
+          "50%": { transform: "translate(2px, 2px)" },
+          "85%": { transform: "translate(-2px, 2px)" },
+        },
+        'glitch2': {
+          "0%, 100%": { transform: "translate(0, 0)" },
+          "25%": { transform: "translate(2px, -2px)" },
+          "75%": { transform: "translate(-2px, 2px)" },
         },
       } 
     },

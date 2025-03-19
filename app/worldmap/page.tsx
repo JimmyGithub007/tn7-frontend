@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
 //import { Lilita_One } from "next/font/google";
-import { Footer, Header } from "@/components";
+import { Footer, GlitchText, Header } from "@/components";
 import { CgClose } from "react-icons/cg";
 import { BsSkipForward } from "react-icons/bs";
 import { IoIosArrowRoundForward } from "react-icons/io";
@@ -406,9 +406,9 @@ const WorldMap = () => {
                         exit={{ y: "100%" }}
                         transition={{ duration: 1, ease: "easeInOut" }}
                     >
-                        <span className="font-bold text-5xl text-white">
-                            {loadingPercentage}%
-                        </span>
+                        <div className="font-bold text-5xl text-white">
+                            <GlitchText text={`${loadingPercentage}%`} />
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>

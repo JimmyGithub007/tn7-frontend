@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import GlitchText from "./GlitchText";
 
 const Loader = () => {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -43,7 +44,9 @@ const Loader = () => {
                 exit={{ y: "-100%" }}
                 transition={{ duration: 1, ease: "easeInOut" }}
             >
-                <span className="font-bold text-5xl text-white">{loadingPercentage}%</span>
+                <div className="font-bold text-5xl text-white">
+                    <GlitchText text={`${loadingPercentage}%`} />
+                </div>
             </motion.div>
         )}
     </AnimatePresence>)
