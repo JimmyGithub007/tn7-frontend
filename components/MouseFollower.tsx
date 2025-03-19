@@ -102,7 +102,7 @@ const MouseFollower = () => {
       {/* 自定义光标 */}
       <div
         ref={cursorRef2}
-        className={`pointer-events-none fixed left-0 top-0 w-[200px] -translate-x-1/2 -translate-y-1/2 z-[100] transition-opacity ${
+        className={`pointer-events-none fixed left-0 top-0 w-[200px] -translate-x-1/2 -translate-y-1/2 z-[200] transition-opacity ${
           isMobile ? "hidden" : "opacity-100"
         }`}
       >

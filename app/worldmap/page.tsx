@@ -43,90 +43,23 @@ const buildings = [
     { id: 9, name:"THE ENERGY FIELD", img: "b9", content: "<p>The Energy Field, built by Akio Industries, extracts geothermal energy using massive drills that operate continuously. Rumors of a shrinking reservoir and declining output have led to heightened security around this vital resource.</p>" },
 ];
 
-const WorldMap = () => {
-    const { unityProvider, isLoaded, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
-        loaderUrl: "unity/build/WorldMapScene.loader.js",
-        dataUrl: "unity/build/WorldMapScene.data.unityweb",
-        frameworkUrl: "unity/build/WorldMapScene.framework.js.unityweb",
-        codeUrl: "unity/build/WorldMapScene.wasm.unityweb",
-    });
-    //const loadingPercentage = Math.round(loadingProgression * 100);
-    const [ loadingPercentage, setLoadingPercentage ] = useState<number>(0);
-    const [ chatId, setChatId ] = useState<number>(-1); // 当前聊天 ID
-    const [ buildingId, setBuildingId ] = useState<number>(0); // 当前聊天 ID
-    const [ hoverBuildingId, setHoverBuildingId ] = useState<number>(0); // 当前聊天 ID
-    const [ displayText, setDisplayText ] = useState<string>(""); // 当前显示的文字
-    const [ isAnimating, setIsAnimating ] = useState<boolean>(false); // 是否正在显示文字动画
-    const [ isMenuOpen, setIsMenuOpen ] = useState(false);
-    const [ buildingData, setBuildingData ] = useState<{ id: number, name: string, x: number, y: number }[]>([
-        { id: 1, name: "", x: 0, y: 0 },
-        { id: 2, name: "", x: 0, y: 0 },
-        { id: 3, name: "", x: 0, y: 0 },
-        { id: 4, name: "", x: 0, y: 0 },
-        { id: 5, name: "", x: 0, y: 0 },
-        { id: 6, name: "", x: 0, y: 0 },
-        { id: 7, name: "", x: 0, y: 0 },
-        { id: 8, name: "", x: 0, y: 0 },
-        { id: 9, name: "", x: 0, y: 0 }
-    ]);
-    const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
-    const [ showHandScroll, setShowHandScroll ] = useState<boolean>(false);
+interface versionProps {
+    setLoadingProgression: (state: number) => void;
+    setBuildingId: (state: number) => void;
+    setBuildingData: (state: ((prev: { id: number, name: string, x: number, y: number }[]) => { id: number, name: string, x: number, y: number }[]) | { id: number, name: string, x: number, y: number }[]) => void;
+    setHoverBuildingId: (state: number) => void;
+    setImageLoaded: (state: boolean) => void;
+    message: { id: string, content: string };
+}
+
+const MobileVersion: React.FC<versionProps> = ({ setLoadingProgression, setBuildingId, setBuildingData, setHoverBuildingId, setImageLoaded, message }) => {
     const dispatch = useDispatch();
-
-    useEffect(() => {
-        const checkRatio = () => {
-            if(window.innerWidth/window.innerHeight <= 1.333) {
-                setShowHandScroll(true);
-            } else {
-                setShowHandScroll(false);
-            }
-        };
-
-        checkRatio(); // 初始检测
-
-        window.addEventListener("resize", checkRatio);
-        return () => {
-            window.removeEventListener("resize", checkRatio);
-        };
-    }, []);
-
-    useEffect(() => {
-        if(isMenuOpen) {
-            sendMessage(`World Map`, "StopWorldMap");
-        } else {
-            sendMessage(`World Map`, "StartWorldMap");
-        }
-    }, [isMenuOpen])
-
-    useEffect(() => {
-        if (chatId > -1 && chatId < chatContent.length) {
-            // 重置显示文字并启动逐字显示动画
-            const fullText = chatContent[chatId].content;
-            let currentIndex = 0;
-            setDisplayText(""); // 清空当前显示内容
-            setIsAnimating(true); // 标记为动画中
-
-            const interval = setInterval(() => {
-                if (currentIndex <= fullText.length) {
-                    setDisplayText(fullText.slice(0, currentIndex)); // 使用 slice 避免拼接错误
-                    currentIndex++;
-                } else {
-                    clearInterval(interval);
-                    setIsAnimating(false); // 动画完成
-                }
-            }, 10); // 每个字显示的时间间隔 (50ms)
-
-            return () => clearInterval(interval); // 清理定时器
-        } else if (chatId === chatContent.length) {
-            sessionStorage.setItem("isCompletedGuide", "true");
-            const timeout = setTimeout(() => {
-                sendMessage(`World Map`, "StartWorldMap");
-            }, 1000);
-            return () => clearTimeout(timeout);
-        }
-    }, [chatId]); // 当 chatId 变化时触发
-
-    const [imageLoaded, setImageLoaded] = useState<boolean>(false);
+    const { unityProvider, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
+        loaderUrl: "unity/build/MobileVersionWorldMapScene.loader.js",
+        dataUrl: "unity/build/MobileVersionWorldMapScene.data.unityweb",
+        frameworkUrl: "unity/build/MobileVersionWorldMapScene.framework.js.unityweb",
+        codeUrl: "unity/build/MobileVersionWorldMapScene.wasm.unityweb",
+    });
 
     const handleClickBuilding = useCallback((buildingId: any) => {
         setBuildingId(buildingId)
@@ -160,6 +93,14 @@ const WorldMap = () => {
     }, []);
 
     useEffect(() => {
+        setLoadingProgression(loadingProgression);
+    }, [loadingProgression]);
+
+    useEffect(() => {
+        if(message.id !== "" && message.content !== "") sendMessage(message.id, message.content);
+    }, [message]);
+
+    useEffect(() => {
         addEventListener("ReactClickBuilding", handleClickBuilding);
         return () => {
             removeEventListener("ReactClickBuilding", handleClickBuilding);
@@ -179,6 +120,126 @@ const WorldMap = () => {
             removeEventListener("ReactInitialBuilding", handleInitialBuilding);
         };
     }, [addEventListener, removeEventListener, handleInitialBuilding]);
+
+    return (<Unity className={`h-full w-full`} unityProvider={unityProvider} />);
+}
+
+const PCVersion: React.FC<versionProps> = ({ setLoadingProgression, setBuildingId, setBuildingData, setHoverBuildingId, setImageLoaded, message }) => {
+    const dispatch = useDispatch();
+    const { unityProvider, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
+        loaderUrl: "unity/build/WorldMapScene.loader.js",
+        dataUrl: "unity/build/WorldMapScene.data.unityweb",
+        frameworkUrl: "unity/build/WorldMapScene.framework.js.unityweb",
+        codeUrl: "unity/build/WorldMapScene.wasm.unityweb",
+    });
+
+    const handleClickBuilding = useCallback((buildingId: any) => {
+        setBuildingId(buildingId)
+        setImageLoaded(false)
+    }, []);
+
+    const handleHoverBuilding = useCallback((buildingData: any) => {
+        const [buildingId, buildingX, buildingY] = buildingData.split(",");
+        if(buildingId > 0) {
+            setBuildingData(prev =>
+                prev.map(item =>
+                    item.id === parseInt(buildingId)
+                        ? { ...item, x: parseInt(buildingX) - 100, y: window.innerHeight - parseInt(buildingY) - 100 } // Update the matching entry
+                        : item // Keep the rest unchanged
+                )
+            );
+        }
+        setHoverBuildingId(parseInt(buildingId))
+        dispatch(setUnityHover(parseInt(buildingId) > 0 ? true : false));
+    }, []);
+
+    const handleInitialBuilding = useCallback((buildingData: any) => {
+        const [buildingId, buildingX, buildingY] = buildingData.split(",");
+        setBuildingData(prev =>
+            prev.map(item =>
+                item.id === parseInt(buildingId)
+                    ? { ...item, x: parseInt(buildingX) - 100, y: window.innerHeight - parseInt(buildingY) - 100 } // Update the matching entry
+                    : item // Keep the rest unchanged
+            )
+        );
+    }, []);
+
+    useEffect(() => {
+        setLoadingProgression(loadingProgression);
+    }, [loadingProgression]);
+
+    useEffect(() => {
+        if(message.id !== "" && message.content !== "") sendMessage(message.id, message.content);
+    }, [message]);
+
+    useEffect(() => {
+        addEventListener("ReactClickBuilding", handleClickBuilding);
+        return () => {
+            removeEventListener("ReactClickBuilding", handleClickBuilding);
+        };
+    }, [addEventListener, removeEventListener, handleClickBuilding]);
+
+    useEffect(() => {
+        addEventListener("ReactHoverBuilding", handleHoverBuilding);
+        return () => {
+            removeEventListener("ReactHoverBuilding", handleHoverBuilding);
+        };
+    }, [addEventListener, removeEventListener, handleHoverBuilding]);
+
+    useEffect(() => {
+        addEventListener("ReactInitialBuilding", handleInitialBuilding);
+        return () => {
+            removeEventListener("ReactInitialBuilding", handleInitialBuilding);
+        };
+    }, [addEventListener, removeEventListener, handleInitialBuilding]);
+
+    return (<Unity className={`h-full w-full`} unityProvider={unityProvider} />);
+}
+
+const WorldMap = () => {
+    const [ loadingProgression, setLoadingProgression ] = useState<number>(0);
+    const [ loadingPercentage, setLoadingPercentage ] = useState<number>(0);
+    const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
+    const [ isMobile, setIsMobile ] = useState<boolean>(false);
+    const [ chatId, setChatId ] = useState<number>(-1); // 当前聊天 ID
+    const [ buildingId, setBuildingId ] = useState<number>(0); // 当前聊天 ID
+    const [ hoverBuildingId, setHoverBuildingId ] = useState<number>(0); // 当前聊天 ID
+    const [ displayText, setDisplayText ] = useState<string>(""); // 当前显示的文字
+    const [ isAnimating, setIsAnimating ] = useState<boolean>(false); // 是否正在显示文字动画
+    const [ isMenuOpen, setIsMenuOpen ] = useState(false);
+    const [ buildingData, setBuildingData ] = useState<{ id: number, name: string, x: number, y: number }[]>([
+        { id: 1, name: "", x: 0, y: 0 },
+        { id: 2, name: "", x: 0, y: 0 },
+        { id: 3, name: "", x: 0, y: 0 },
+        { id: 4, name: "", x: 0, y: 0 },
+        { id: 5, name: "", x: 0, y: 0 },
+        { id: 6, name: "", x: 0, y: 0 },
+        { id: 7, name: "", x: 0, y: 0 },
+        { id: 8, name: "", x: 0, y: 0 },
+        { id: 9, name: "", x: 0, y: 0 }
+    ]);
+    const [ message, setMessage ] = useState<{ id:string, content:string }>({ id: "", content: "" });
+
+    //const [ showHandScroll, setShowHandScroll ] = useState<boolean>(false);
+
+    useEffect(() => {
+        const checkRatio = () => {
+            if(window.innerWidth/window.innerHeight <= 1.333) {
+                setIsMobile(true);
+            } else {
+                setIsMobile(false);
+            }
+        };
+
+        checkRatio(); // 初始检测
+
+        window.addEventListener("resize", checkRatio);
+        return () => {
+            window.removeEventListener("resize", checkRatio);
+        };
+    }, []);
+
+    const [imageLoaded, setImageLoaded] = useState<boolean>(false);
 
     //random text - start
     const generateRandomString = (length: number) => {
@@ -278,13 +339,79 @@ const WorldMap = () => {
         }
     }, [loadingProgression]);
 
+    useEffect(() => {
+        if (chatId > -1 && chatId < chatContent.length) {
+            // 重置显示文字并启动逐字显示动画
+            const fullText = chatContent[chatId].content;
+            let currentIndex = 0;
+            setDisplayText(""); // 清空当前显示内容
+            setIsAnimating(true); // 标记为动画中
+
+            const interval = setInterval(() => {
+                if (currentIndex <= fullText.length) {
+                    setDisplayText(fullText.slice(0, currentIndex)); // 使用 slice 避免拼接错误
+                    currentIndex++;
+                } else {
+                    clearInterval(interval);
+                    setIsAnimating(false); // 动画完成
+                }
+            }, 10); // 每个字显示的时间间隔 (50ms)
+
+            return () => clearInterval(interval); // 清理定时器
+        } else if (chatId === chatContent.length) {
+            sessionStorage.setItem("isCompletedGuide", "true");
+            const timeout = setTimeout(() => {
+                setMessage({ id: "World Map", content: "StartWorldMap" });
+            }, 1000);
+            return () => clearTimeout(timeout);
+        }
+    }, [chatId]); // 当 chatId 变化时触发
+
+    useEffect(() => {
+        if(isMenuOpen) {
+            setMessage({ id: "World Map", content: "StopWorldMap" });
+        } else {
+            setMessage({ id: "World Map", content: "StartWorldMap" });
+        }
+    }, [isMenuOpen])
+
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={() => {
             if (chatId === chatContent.length || chatId < 0 || isAnimating) return; // 如果正在显示动画，不允许切换
             setChatId((prevId) => (prevId + 1));
         }}>
             { buildingId === 0 && chatId === chatContent.length && <Header setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} /> }
-            <Unity className={`h-full w-full`} unityProvider={unityProvider} />
+            { isMobile ? <MobileVersion 
+                setLoadingProgression={setLoadingProgression}
+                setBuildingId={setBuildingId}
+                setBuildingData={setBuildingData}
+                setHoverBuildingId={setHoverBuildingId}
+                setImageLoaded={setImageLoaded}
+                message={message}
+            /> : <PCVersion 
+                setLoadingProgression={setLoadingProgression}
+                setBuildingId={setBuildingId}
+                setBuildingData={setBuildingData}
+                setHoverBuildingId={setHoverBuildingId}
+                setImageLoaded={setImageLoaded}
+                message={message}
+            />}
+            <AnimatePresence>{/*Loading Percentage For Unity*/}
+                {!loaderHidden && (
+                    <motion.div
+                        id="loader"
+                        className="absolute bg-black flex h-full items-center justify-center left-0 w-full top-0 z-[300]"
+                        initial={{ y: 0 }}
+                        animate={{ y: 0 }}
+                        exit={{ y: "100%" }}
+                        transition={{ duration: 1, ease: "easeInOut" }}
+                    >
+                        <span className="font-bold text-5xl text-white">
+                            {loadingPercentage}%
+                        </span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
             <AnimatePresence>
                 {   chatId < 3 &&
                     <motion.div 
@@ -298,7 +425,7 @@ const WorldMap = () => {
             </AnimatePresence>
             <AnimatePresence>
                 {
-                    showHandScroll &&
+                    /*showHandScroll &&
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 0.2 }}
@@ -311,24 +438,8 @@ const WorldMap = () => {
                         </div>
                         <Image className="animate-wiggle w-[40px]" alt="" width={328} height={481} src={`/assets/images/icons/hand-scroll.png`} />
                         <div>Scroll left/right to view full map</div>
-                    </motion.div>
+                    </motion.div>*/
                 }
-            </AnimatePresence>
-            <AnimatePresence>{/*Loading Percentage For Unity*/}
-                {!loaderHidden && (
-                    <motion.div
-                        id="loader"
-                        className="absolute bg-black flex h-full items-center justify-center left-0 w-full top-0 z-[100]"
-                        initial={{ y: 0 }}
-                        animate={{ y: 0 }}
-                        exit={{ y: "100%" }}
-                        transition={{ duration: 1, ease: "easeInOut" }}
-                    >
-                        <span className="font-bold text-5xl text-white">
-                            {loadingPercentage}%
-                        </span>
-                    </motion.div>
-                )}
             </AnimatePresence>
            {
                 buildings.map((value, key) => (
@@ -403,7 +514,8 @@ const WorldMap = () => {
                         {   imageLoaded &&
                             <button
                                 onClick={() => {
-                                    sendMessage(`b${buildingId}_0`, "UnClickBuilding");
+                                    //sendMessage(`b${buildingId}_0`, "UnClickBuilding");
+                                    setMessage({ id: `b${buildingId}_0`, content: "UnClickBuilding" });
                                 }}
                                 className="absolute bg-white duration-300 p-2 right-0 sm:right-4 rounded-full shadow-xl shadow-black/50 text-3xl top-4 sm:top-12 z-20 hover:bg-black hover:text-white">
                                 <CgClose />

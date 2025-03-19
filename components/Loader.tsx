@@ -37,7 +37,7 @@ const Loader = () => {
         {!isLoaded && (
             <motion.div
                 id="loader"
-                className="absolute flex h-full items-center justify-center left-0 w-full top-0 bg-black z-[110]"
+                className="absolute flex h-full items-center justify-center left-0 w-full top-0 bg-black z-[300]"
                 initial={{ y: 0 }}
                 animate={{ y: 0 }}
                 exit={{ y: "-100%" }}
