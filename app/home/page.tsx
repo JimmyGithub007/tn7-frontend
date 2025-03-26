@@ -94,7 +94,7 @@ const Home = () => {
             setTvData(prev =>
                 prev.map(item =>
                     item.id === parseInt(tvId)
-                        ? { ...item, x: parseInt(tvX) - (tvId == 2 ? -100 : 80), y: window.innerHeight - parseInt(tvY) - 50 } // Update the matching entry
+                        ? { ...item, x: parseInt(tvX) - (tvId == 2 ? -100 : 80), y: window.innerHeight - parseInt(tvY) - ( tvId == 1 ? 100 : 50 ) } // Update the matching entry
                         : item // Keep the rest unchanged
                 )
             );
@@ -269,7 +269,9 @@ const Home = () => {
             { hoverTvId > 0 && <div className="absolute hidden lg:block cursor-pointer w-full h-full opacity-0 z-[100] top-0 left-0" onClick={() => clickTV() }></div> }
             {
                 [1, 2, 3].map((value, key) => (
-                    <div key={key} className="absolute h-12 overflow-hidden w-full" style={{ left: tvData.find(e => e.id === value)?.x || 0, top: tvData.find(e => e.id === value)?.y || 0 }}>
+                    <div key={key} className="absolute h-12 overflow-hidden w-full flex justify-center lg:block" style={{ 
+                        left: isMobile ? 0 : tvData.find(e => e.id === value)?.x || 0, top: tvData.find(e => e.id === value)?.y || 0 
+                    }}>
                         <AnimatePresence>
                             {   hoverTvId === value && (
                                 <motion.div
