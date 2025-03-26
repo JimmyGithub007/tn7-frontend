@@ -28,7 +28,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
     if (!isOpenMenu) return;
 
     const targetMenus = ["Home", "TN7 Universe", "Comic", "LORE", "World Map", "Socials",
-      "X", "Discord", "Instagram", "FAQ"
+      "X", "Discord", "Instagram", "Discover More"
     ];
     const intervals: NodeJS.Timeout[] = [];
 
@@ -235,7 +235,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                     </Panel>
                   </Collapse>
                 </Panel>
-              </Collapse>*/}
+              </Collapse>
               <Link className={`py-4 ${pathname === "/home" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/home" onMouseEnter={() => handleMouseEnter(0, "Home")}>{menuText[0] || "Home"}</Link>
               <Divider />
               <Link className={`py-4 ${pathname === "/universe" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/universe" onMouseEnter={() => handleMouseEnter(1, "TN7 Universe")}>{menuText[1] || "TN7 Universe"}</Link>
@@ -244,6 +244,35 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
               <Link className={`pl-2 py-4 ${pathname === "/lore" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/lore" onMouseEnter={() => handleMouseEnter(3, "Lore")}>&#x2022;&nbsp;&nbsp;&nbsp;{menuText[3] || "Lore"}</Link>
               <Divider />
               <Link className={`pl-2 py-4 ${pathname === "/worldmap" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/worldmap" onMouseEnter={() => handleMouseEnter(4, "World Map")}>&#x2022;&nbsp;&nbsp;&nbsp;{menuText[4] || "World Map"}</Link>
+              <Divider />*/}
+              <Link className={`py-4 ${pathname === "/home" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/home" onMouseEnter={() => handleMouseEnter(0, "Home")}>{menuText[0] || "Home"}</Link>
+              <Divider />
+              <Collapse
+                ghost
+                expandIcon={({ isActive }) => (
+                  <IoIosArrowForward
+                    style={{ color: "white", fontSize: "1.5rem" }}
+                    className={`transition-transform duration-300 ${isActive ? "rotate-90" : "-rotate-90"}`}
+                  />
+                )}
+                expandIconPosition={"end"}
+                style={{ padding: "16px 0" }}
+              >
+                <Panel header={<div 
+                  onMouseEnter={() => handleMouseEnter(5, "Socials")}
+                  className={`target text-white text-md sm:text-xl ${opinionPro.className}`}>
+                    {menuText[1] || "TN7 Universe"}
+                  </div>} key="5"
+                >
+                  <div className={`flex flex-col pl-4 text-md sm:text-xl text-white ${opinionPro.className}`}>
+                    <Link className={`pb-4 ${pathname+"?"+searchParams.toString() === "/comics" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/comics" onMouseEnter={() => handleMouseEnter(2, "Comic")}>{menuText[2] || "Comic"}</Link>
+                    <Divider />
+                    <Link className={`py-4 ${pathname+"?"+searchParams.toString() === "/lore" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/lore" onMouseEnter={() => handleMouseEnter(3, "Lore")}>{menuText[3] || "Lore"}</Link>
+                    <Divider />
+                    <Link className={`pt-4 ${pathname+"?"+searchParams.toString() === "/worldmap" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white"}`} href="/worldmap" onMouseEnter={() => handleMouseEnter(4, "World Map")}>{menuText[4] || "World Map"}</Link>
+                  </div>
+                </Panel>
+              </Collapse>
               <Divider />
               <Collapse
                 ghost
@@ -272,7 +301,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                 </Panel>
               </Collapse>
               <Divider />
-              <Link className={`py-4 ${pathname === "/faqs" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/faqs" onMouseEnter={() => handleMouseEnter(9, "FAQ")}>{menuText[9] || "FAQ"}</Link>
+              <Link className={`py-4 ${pathname === "/discovermore" ? "text-yellow-400 hover:text-yellow-300" : "hover:text-white" }`} href="/discovermore" onMouseEnter={() => handleMouseEnter(9, "Discover More")}>{menuText[9] || "Discover More"}</Link>
               <Divider />
             </div>
             <div className={`flex flex-col text-sm ${opinionPro.className}`}>

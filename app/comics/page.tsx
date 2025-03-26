@@ -120,9 +120,7 @@ const Comics = () => {
                         exit={{ y: "100%" }}
                         transition={{ duration: 1, ease: "easeInOut" }}
                     >
-                        <div className="font-bold text-5xl text-white">
-                            <GlitchText text={`${loadingPercentage}%`} />
-                        </div>
+                        <GlitchText text={`${loadingPercentage}%`} />
                     </motion.div>
                 )}
             </AnimatePresence>

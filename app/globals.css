@@ -39,13 +39,13 @@
   padding: 0!important;
 }
 
-#cursor {
+/*#cursor {
   filter: drop-shadow(0 0 5px #0f0) drop-shadow(0 0 15px #0f0) drop-shadow(0 0 30px #0f0) hue-rotate(0deg);
 }
 
 * {
   cursor: none !important;
-}
+}*/
 
 /*glitch text animation - start*/
 .glitch {

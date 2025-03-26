@@ -137,8 +137,8 @@ const contents = [
     { id: "3", name: "NEW HELM", img: "city3", category: "cities" },
 
     { id: "1", name: "TEMPLE ON THE HILL", img: "b1", category: "locations" },
-    { id: "2", name: "SILVERCOIN DISTRICT", img: "b2", category: "locations" },
-    { id: "3", name: "THE LOWER DISTRICT ", img: "b3", category: "locations" },
+    { id: "2", name: "THE PINNACLE TOWERS", img: "b2", category: "locations" },
+    { id: "3", name: "SILVERCOIN DISTRICT ", img: "b3", category: "locations" },
     { id: "4", name: "THE WATERING HOLE", img: "b4", category: "locations" },
     { id: "5", name: "THE KOI AND LOTUS CLUB", img: "b5", category: "locations" },
     { id: "6", name: "THE CODEX", img: "b6", category: "locations" },
@@ -299,7 +299,7 @@ const Content = () => {
                                                 <div className={`flex ${ category === "locations" ? "flex-col" : "gap-2 flex-wrap" } ${opinionPro.className}`}>
                                                     {
                                                         details.find(e => e.category === category && e.id === loreId)?.children.map((value, key) => (
-                                                            <div key={key}>{ category === "locations" ? ( key === 0 ? "Location : " : "Appearance : " ) : "" }<Link className={`${category === "locations" && key === 1 ?  "cursor-not-allowed line-through" : "duration-300 hover:opacity-50 underline text-red-800"}`} href={category === "locations" && key === 1 ? "#" : value.url}>{value.name}</Link></div>
+                                                            <div key={key}>{ category === "locations" ? ( key === 0 ? "Location : " : "Appearance : " ) : "" }<Link className={`${category === "locations" && key === 1 ?  "cursor-not-allowed" : "duration-300 hover:opacity-50 underline text-red-800"}`} href={category === "locations" && key === 1 ? "#" : value.url}>{value.name}</Link></div>
                                                         ))
                                                     }
                                                 </div>

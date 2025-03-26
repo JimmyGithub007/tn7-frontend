@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className={impact.className} style={{ overflow: "hidden" }}>
         {children}
         {/*<Dialog />*/}
-        <MouseFollower />
+        {/*<MouseFollower />*/}
       </body>
     </html>
   </StoreProvider>);

@@ -59,7 +59,7 @@ const Collapse = ({ children, title }: { children: ReactNode, title: string }) =
     </div>
 }
 
-const Faqs = () => {
+const DiscoverMore = () => {
     return (<div className="bg-black flex justify-center min-h-screen relative overflow-x-hidden w-full">
         <Header />
         <div className="flex flex-col gap-8 px-12 py-36 2xl:w-[1280px] 2xl:px-0 text-white">
@@ -68,7 +68,7 @@ const Faqs = () => {
                 <div className={`${opinionPro.className} text-md sm:text-2xl`}>TN7 is an interactive content universe where storytelling and collaboration drive the experience. Anchored by our digital comic series, this world evolves with its community—unlocking new characters, locations, and narratives shaped by those who engage with it.<br /><br />
                 Have questions? Explore our FAQ below to learn more about how you can be part of TN7.</div>
             </div>
-            <div className="font-bold text-4xl sm:text-6xl text-center">FAQs</div>
+            <div className="font-bold text-2xl sm:text-3xl text-center">FAQs</div>
             {
                 /*quetions.map((q, k) => (
                     <div key={k} className="flex flex-col gap-4">
@@ -139,4 +139,4 @@ const Faqs = () => {
     </div>)
 }
 
-export default Faqs;
+export default DiscoverMore;

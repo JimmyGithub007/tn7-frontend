@@ -262,13 +262,11 @@ const Home = () => {
                         exit={{ y: "100%" }}
                         transition={{ duration: 1, ease: "easeInOut" }}
                     >
-                        <div className="font-bold text-5xl text-white">
-                            <GlitchText text={`${loadingPercentage}%`} />
-                        </div>
+                        <GlitchText text={`${loadingPercentage}%`} />
                     </motion.div>
                 )}
             </AnimatePresence>
-            { hoverTvId > 0 && <div className="absolute hidden lg:block cursor-pointer w-full h-full opacity-0 z-10" onClick={() => clickTV() }></div> }
+            { hoverTvId > 0 && <div className="absolute hidden lg:block cursor-pointer w-full h-full opacity-0 z-[100] top-0 left-0" onClick={() => clickTV() }></div> }
             {
                 [1, 2, 3].map((value, key) => (
                     <div key={key} className="absolute h-12 overflow-hidden w-full" style={{ left: tvData.find(e => e.id === value)?.x || 0, top: tvData.find(e => e.id === value)?.y || 0 }}>
