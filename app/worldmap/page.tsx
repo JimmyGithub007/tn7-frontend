@@ -481,13 +481,13 @@ const WorldMap = () => {
                         {/* Skeleton Loader */}
                         {!imageLoaded && (
                             <Image alt="placeholder" width={1808} height={971}
-                                className="absolute animate-pulse grayscale" src={`/assets/images/worldmap/webp/loadingFrame.webp`}
+                                className="absolute animate-pulse grayscale" src={`/assets/images/worldmap/webp/${isMobile ? "mobile/" : ""}loadingFrame.webp`}
                                 priority
                             />
                         )}
                         {/* Lazy Loaded Image */}
                         <Image
-                            src={`/assets/images/worldmap/webp/${buildings.find(b => b.id === buildingId)?.img}.webp`}
+                            src={`/assets/images/worldmap/webp/${isMobile ? "mobile/" : ""}${buildings.find(b => b.id === buildingId)?.img}.webp`}
                             alt={buildings.find(b => b.id === buildingId)?.name || "Building"}
                             layout="responsive"
                             width={1808}
@@ -497,7 +497,7 @@ const WorldMap = () => {
                             loading="lazy" // Enable lazy loading
                             onError={() => console.error("Failed to load image.")}
                         />
-                        {   imageLoaded && <div className={`absolute flex flex-col justify-center h-[73%] italic sm:gap-2 left-[8%] top-[22%] text-white w-[85%] sm:w-[45%]`}>
+                        {   imageLoaded && <div className={`absolute flex flex-col justify-center h-[73%] italic sm:gap-2 left-[8%] top-[10%] lg:top-[22%] text-white w-[45%]`}>
                                 <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl">{buildings.find(b => b.id === buildingId)?.name}</div>
                                 <div className={`text-xs/4 sm:text-md md:text-lg lg:text-xl ${opinionPro.className}`} dangerouslySetInnerHTML={{ __html: buildings.find(b => b.id === buildingId)?.content || "<p></p>" }} />
                                 <Link href={{ pathname: "/lore", query: { category: "locations", id: buildingId } }}>
@@ -515,7 +515,7 @@ const WorldMap = () => {
                                     //sendMessage(`b${buildingId}_0`, "UnClickBuilding");
                                     setMessage({ id: `b${buildingId}_0`, content: "UnClickBuilding" });
                                 }}
-                                className="absolute bg-white duration-300 p-2 right-0 sm:right-4 rounded-full shadow-xl shadow-black/50 text-3xl top-4 sm:top-12 z-20 hover:bg-black hover:text-white">
+                                className="absolute bg-white duration-300 p-2 right-0 sm:right-4 rounded-full shadow-xl shadow-black/50 text-3xl -top-4 lg:top-12 z-20 hover:bg-black hover:text-white">
                                 <CgClose />
                             </button>
                         }
