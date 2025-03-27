@@ -273,6 +273,11 @@ const WorldMap = () => {
             }
         }, 50); // 控制每次变化的速度 (50ms)
     };
+
+    const clickBuilding = (buildingId: any) => {
+        setBuildingId(buildingId);
+        setImageLoaded(false);
+    }
     
     useEffect(() => {
       if (hoverBuildingId > 0) {
@@ -410,6 +415,7 @@ const WorldMap = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+            { hoverBuildingId > 0 && <div className="absolute hidden lg:block cursor-pointer w-full h-full opacity-0 z-[100] top-0 left-0" onClick={() => clickBuilding(hoverBuildingId) }></div> }
             <AnimatePresence>
                 {   chatId < 3 &&
                     <motion.div 
