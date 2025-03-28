@@ -143,11 +143,11 @@ const privacy2 = `<html><head><meta content="text/html; charset=UTF-8" http-equi
 
 <p class="c2"><span class="c4">We may keep your personal information or data for as long as it is necessary to fulfil the purpose(s) listed above for which it was collected till it is reasonable to assume that such keeping no longer serves the purpose(s). You may request us to permanently delete your personal information or data, but please remember that we can&rsquo;t do this if any law or regulation requires us to keep it, or if we need it to be able to provide our goods and services that you still wish to receive.<br></span></p>
 
-<li style="padding-left:48px;display:flex;gap: 10px;" class="c4"><span>5.</span><span>your rights</span></li>
+<li style="padding-left:48px;display:flex;gap: 10px;" class="c4"><span>6.</span><span>Your Rights</span></li>
 
 <p class="c2 c12"><span class="c4">You can access, update and correct your personal information or data, ask questions and withdraw your consent (or cancel your withdrawal of your consent) for us to collect, use, share and/or process your personal information or data for any or all of the purposes listed above by submitting your request through the relevant Socials or the &ldquo;contact us&rdquo; page on our Platform.</span></p><p class="c2 c12"><span class="c4">We may not be able to give you access to some of your information or data. If this is the case, we will tell you why, unless we are not required or allowed to tell you by law. </span></p><p class="c2 c12"><span class="c4">If you have requested to withdraw your consent, we will aim to respond to you within 30 days. We will let you know if we need more time to process your request.</span></p><p class="c2 c12"><span class="c4">Whilst we respect your decision to withdraw your consent, please note that depending on the nature and scope of your request, we may not be able to continue to provide some products or services to you.<br></span></p>
 
-<li style="padding-left:48px;display:flex;gap: 10px;" class="c4"><span>5.</span><span>Our policy on consent</span></li>
+<li style="padding-left:48px;display:flex;gap: 10px;" class="c4"><span>7.</span><span>Our policy on consent</span></li>
 
 <p class="c2"><span class="c4">We generally do not collect information or data about you unless:</span></p>
 
@@ -164,7 +164,7 @@ const privacy2 = `<html><head><meta content="text/html; charset=UTF-8" http-equi
 
 <p class="c2"><span class="c4">If you are an Authorised Representative, you hereby confirm that (a) you are authorised to give us the relevant information or data, (b) such information or data provided is accurate, and (c) we can collect, use, share, transfer and keep these information or data as set out in this Privacy Notice.</span></p><p class="c2"><span class="c4">Of course, we will seek your (or your Authorised Representative&rsquo;s) consent before collecting any additional information or data about you and before using such information or data for a purpose which has not been notified to you. <br></span></p>
 
-<li style="padding-left:48px;display:flex;gap: 10px;" class="c4"><span>5.</span><span>Changes to this Privacy Notice</span></li>
+<li style="padding-left:48px;display:flex;gap: 10px;" class="c4"><span>8.</span><span>Changes to this Privacy Notice</span></li>
 
 <p class="c2"><span class="c4">Sometimes, we might need to revise this Privacy Notice. If we do, we&rsquo;ll put the updated version on our Platform. Your continued use of our products and services constitutes your acknowledgement and acceptance of any such revisions.</span></p><p class="c3"><span class="c4">&nbsp;</span></p><p class="c3"><span class="c4">Thank you for reading till the end. Please enjoy TN7!</span></p><p class="c3"><span class="c5">&nbsp;</span></p><p class="c3"><span class="c8 c7">Last updated on: 26th March 2025</span></p><p class="c3"><span class="c5">&nbsp;</span></p><p class="c11"><span class="c9">&nbsp;</span></p><p class="c17"><span class="c9"></span></p></body></html>`;
 

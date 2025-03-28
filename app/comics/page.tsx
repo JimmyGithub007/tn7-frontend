@@ -94,7 +94,7 @@ const Comics = () => {
                 //url = "/comics/pk";
                 break;
             case 2:
-                url = "/comics/azuki";
+                //url = "/comics/azuki";
                 break;
             case 3:
                 //url = "/comics/thepathofvengeance";
@@ -107,7 +107,7 @@ const Comics = () => {
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
             <Header />
-            { hoverComicId > 0 && <div className={`absolute hidden lg:block w-full h-full opacity-0 ${hoverComicId === 2 ? "cursor-pointer" : "cursor-not-allowed"}`} onClick={() => clickComic(hoverComicId) }></div> }
+            { hoverComicId > 0 && <div className={`absolute hidden lg:block w-full h-full opacity-0 ${hoverComicId === 0 ? "cursor-pointer" : "cursor-not-allowed"}`} onClick={() => clickComic(hoverComicId) }></div> }
             <Unity className={`h-full w-full`} unityProvider={unityProvider} />
             <Footer />
             <AnimatePresence>{/*Loading Percentage For Unity*/}
