@@ -13,9 +13,9 @@ const Footer = () => {
         <div className="text-white hidden sm:block z-[100]">
             {   pathname === "/home" ? 
                 <div className="fixed bottom-4 flex gap-4 left-8 text-2xl">
-                    <a href="https://x.com/tn7_viu"><BsTwitterX className="cursor-pointer duration-300 hover:opacity-50" /></a>
-                    <a href="https://discord.gg/ynEgRUF2UA"><BsDiscord className="cursor-pointer duration-300 hover:opacity-50" /></a>
-                    <a href="https://www.instagram.com/tn7_viu"><BsInstagram className="cursor-pointer duration-300 hover:opacity-50" /></a>
+                    <a href="https://x.com/tn7_viu" target="_blank"><BsTwitterX className="cursor-pointer duration-300 hover:opacity-50" /></a>
+                    <a href="https://discord.gg/ynEgRUF2UA" target="_blank"><BsDiscord className="cursor-pointer duration-300 hover:opacity-50" /></a>
+                    <a href="https://www.instagram.com/tn7_viu" target="_blank"><BsInstagram className="cursor-pointer duration-300 hover:opacity-50" /></a>
                 </div> :
                 <Link className="fixed bottom-2 duration-300 flex items-center left-8 text-2xl hover:opacity-50" href={`/home`}>
                     <IoIosArrowBack /> BACK

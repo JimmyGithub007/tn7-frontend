@@ -12,15 +12,20 @@ interface versionProps {
     handleHoverTV: (tvData: any) => void;
     handleClickTV: (tvId: any) => void;
     setLoadingProgression: (state: number) => void;
+    message: { id: string, content: string };
 }
 
-const PCVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV, setLoadingProgression }) => {
-    const { unityProvider, loadingProgression, addEventListener, removeEventListener } = useUnityContext({
+const PCVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV, setLoadingProgression, message }) => {
+    const { unityProvider, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
         loaderUrl: "unity/build/HomeScene.loader.js",
         dataUrl: "unity/build/HomeScene.data.unityweb",
         frameworkUrl: "unity/build/HomeScene.framework.js.unityweb",
         codeUrl: "unity/build/HomeScene.wasm.unityweb",
     });
+
+    useEffect(() => {
+        if(message.id !== "" && message.content !== "") sendMessage(message.id, message.content);
+    }, [message]);
 
     useEffect(() => {
         addEventListener("ReactHoverTV", handleHoverTV);
@@ -43,13 +48,17 @@ const PCVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV, setLo
     return (<Unity className={`h-full w-full`} unityProvider={unityProvider} />);
 }
 
-const MobileVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV, setLoadingProgression }) => {
-    const { unityProvider, loadingProgression, addEventListener, removeEventListener } = useUnityContext({
+const MobileVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV, setLoadingProgression, message }) => {
+    const { unityProvider, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
         loaderUrl: "unity/build/MobileVersionHomeScene.loader.js",
         dataUrl: "unity/build/MobileVersionHomeScene.data.unityweb",
         frameworkUrl: "unity/build/MobileVersionHomeScene.framework.js.unityweb",
         codeUrl: "unity/build/MobileVersionHomeScene.wasm.unityweb",
     });
+
+    useEffect(() => {
+        if(message.id !== "" && message.content !== "") sendMessage(message.id, message.content);
+    }, [message]);
 
     useEffect(() => {
         addEventListener("ReactHoverTV", handleHoverTV);
@@ -81,6 +90,8 @@ const Home = () => {
     const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
     const [ hoverTvId, setHoverTvId ] = useState<number>(0);
     const [ isMobile, setIsMobile ] = useState(false);
+    const [ message, setMessage ] = useState<{ id: string, content: string }>({ id: "", content: "" });
+    const [ isMenuOpen, setIsMenuOpen ] = useState<boolean>(false);
 
     const [ tvData, setTvData ] = useState<{ id: number, name: string, x: number, y: number }[]>([
         { id: 1, name: "", x: 0, y: 0 },
@@ -139,6 +150,13 @@ const Home = () => {
         }
 
         router.push(url);
+    }
+
+    const startHome = () => {
+        const timeout = setTimeout(() => {
+            setMessage({ id: "Home", content: "StartHome" });
+        }, 500);
+        return () => clearTimeout(timeout);
     }
 
     //random text - start
@@ -224,10 +242,21 @@ const Home = () => {
 
     useEffect(() => {
         if (loadingPercentage === 100) {
-            const timeout = setTimeout(() => setLoaderHidden(true), 200); // 确保动画有时间完成
+            const timeout = setTimeout(() => {
+                startHome();
+                setLoaderHidden(true);
+            }, 200); // 确保动画有时间完成
             return () => clearTimeout(timeout);
         }
     }, [loadingPercentage]);
+
+    useEffect(() => {
+        if(isMenuOpen) {
+            setMessage({ id: "Home", content: "StopHome" });
+        } else {
+            setMessage({ id: "Home", content: "StartHome" });
+        }
+    }, [isMenuOpen]);
 
     useEffect(() => {
         const checkRatio = () => {
@@ -248,9 +277,16 @@ const Home = () => {
 
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
-            <Header />
-            {   isMobile ? <MobileVersion handleHoverTV={handleHoverTV} handleClickTV={handleClickTV} setLoadingProgression={setLoadingProgression} /> : 
-                <PCVersion handleHoverTV={handleHoverTV} handleClickTV={handleClickTV} setLoadingProgression={setLoadingProgression} />
+            <Header isOpenMenuParent={isMenuOpen} setIsOpenMenuParent={setIsMenuOpen} />
+            {   isMobile ? <MobileVersion handleHoverTV={handleHoverTV} handleClickTV={handleClickTV} 
+                                setLoadingProgression={setLoadingProgression} 
+                                message={message} 
+                            /> : 
+                <PCVersion handleHoverTV={handleHoverTV} 
+                    handleClickTV={handleClickTV} 
+                    setLoadingProgression={setLoadingProgression} 
+                    message={message} 
+                />
             }
             <AnimatePresence>{/*Loading Percentage For Unity*/}
                 {!loaderHidden && (

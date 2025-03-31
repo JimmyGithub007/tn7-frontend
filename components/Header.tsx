@@ -292,11 +292,11 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                   </div>} key="5"
                 >
                   <div className={`flex flex-col pl-4 text-md sm:text-xl text-white ${opinionPro.className}`}>
-                    <a href="https://x.com/tn7_viu" className="flex gap-2 items-center pb-4 hover:text-white" onMouseEnter={() => handleMouseEnter(6, "X")}><BsTwitterX /> {menuText[6] || "X"}</a>
+                    <a href="https://x.com/tn7_viu" target="_blank" className="flex gap-2 items-center pb-4 hover:text-white" onMouseEnter={() => handleMouseEnter(6, "X")}><BsTwitterX /> {menuText[6] || "X"}</a>
                     <Divider />
-                    <a href="https://discord.gg/ynEgRUF2UA" className="flex gap-2 items-center py-4 hover:text-white" onMouseEnter={() => handleMouseEnter(7, "Discord")}><BsDiscord /> {menuText[7] || "Discord"}</a>
+                    <a href="https://discord.gg/ynEgRUF2UA" target="_blank" className="flex gap-2 items-center py-4 hover:text-white" onMouseEnter={() => handleMouseEnter(7, "Discord")}><BsDiscord /> {menuText[7] || "Discord"}</a>
                     <Divider />
-                    <a href="https://www.instagram.com/tn7_viu" className="flex gap-2 items-center pt-4 hover:text-white" onMouseEnter={() => handleMouseEnter(8, "Instagram")}><BsInstagram /> {menuText[8] || "Instagram"}</a>
+                    <a href="https://www.instagram.com/tn7_viu" target="_blank" className="flex gap-2 items-center pt-4 hover:text-white" onMouseEnter={() => handleMouseEnter(8, "Instagram")}><BsInstagram /> {menuText[8] || "Instagram"}</a>
                   </div>
                 </Panel>
               </Collapse>
