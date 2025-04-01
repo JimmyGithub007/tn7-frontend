@@ -10,10 +10,13 @@ import Image from 'next/image';
 import { Footer, Header, Loader, ProgressiveImage } from '@/components';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { setJumpPage } from '@/store/slice/pageSlice';
 
 const universes = [
     { id: 1, name: "COMICS", image: "u1", url: "/comics", available: true },
-    { id: 2, name: "TN7 LORE", image: "u2", url: "/lore?category=cities&id=0", available: true },
+    { id: 2, name: "LORE", image: "u2", url: "/lore?category=cities&id=0", available: true },
     { id: 3, name: "WORLD MAP", image: "u3", url: "/worldmap", available: true },
     { id: 4, name: "PUBLIC ENTRIES", image: "u4", url: "/publicentries", available: false },
     { id: 5, name: "VIDEOS", image: "u5", url: "/videos", available: false }
@@ -21,6 +24,8 @@ const universes = [
 
 const Universe = () => {
     const router = useRouter();
+    const dispatch = useDispatch();
+    const jumpPage = useSelector((state: RootState) => state.page.jumpPage);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const [loadingPercentage, setLoadingPercentage] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -55,10 +60,23 @@ const Universe = () => {
         };
     }, []);
 
+    useEffect(() => {
+        dispatch(setJumpPage(false));
+    }, []);
+
     return (
         <div className="fixed flex justify-center h-screen items-center w-full">
             <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/universe/webp/Background.webp`} priority />
             <Loader />
+            <AnimatePresence>
+                {   jumpPage && (
+                    <motion.div
+                        className="absolute bg-black h-full left-0 w-full top-0 z-[300]"
+                        initial={{ y: "-100%" }}
+                        animate={{ y: 0 }}
+                        transition={{ duration: 0.2, ease: "easeInOut" }} />
+                )}
+            </AnimatePresence>
             {isLoaded && (
                 <>
                     <Header />
@@ -106,7 +124,15 @@ const Universe = () => {
                                     whileInView={{ opacity: 1 }}
                                     transition={{ duration: 0.5, delay: key * 0.1 }}
                                     viewport={{ once: true }}
-                                    onClick={() => value.available && router.push(value.url)}
+                                    onClick={() => {
+                                        if(value.available) {
+                                            dispatch(setJumpPage(true));
+                                            const timeout = setTimeout(() => {
+                                                router.push(value.url);
+                                            }, 200);
+                                            return () => clearTimeout(timeout);
+                                        }
+                                    }}
                                     className={`${value.available ? "cursor-pointer" : "cursor-not-allowed"} relative h-full w-full`}>
                                     <ProgressiveImage
                                         className=""

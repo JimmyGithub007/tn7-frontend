@@ -4,12 +4,15 @@ import { Suspense, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Footer, Header, Loader, ProgressiveImage } from "@/components";
 import { TbArrowBackUp } from "react-icons/tb";
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { opinionPro } from "@/components/Font";
 
 import Image from "next/image";
 import Link from "next/link";
 import parse from "html-react-parser";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { setJumpPage } from "@/store/slice/pageSlice";
 
 const details = [
     {
@@ -364,9 +367,25 @@ const Content = () => {
 }
 
 const Lore = () => {
+    const dispatch = useDispatch();
+    const jumpPage = useSelector((state: RootState) => state.page.jumpPage);
+
+    useEffect(() => {
+        dispatch(setJumpPage(false));
+    }, []);
+
     return (<div className="fixed h-screen w-full">
         <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/lore/Background.png`} priority />
         <Loader />
+        <AnimatePresence>
+            {   jumpPage && (
+                <motion.div
+                    className="absolute bg-black h-full left-0 w-full top-0 z-[300]"
+                    initial={{ y: "-100%" }}
+                    animate={{ y: 0 }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }} />
+            )}
+        </AnimatePresence>
         <Header />
         <Suspense fallback={
             <div className="absolute flex h-full items-center justify-center left-0 w-full top-0 bg-black z-[100]">

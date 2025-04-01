@@ -7,10 +7,13 @@ import { useRouter } from "next/navigation";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
 import { setUnityHover } from "@/store/slice/mouseSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { setJumpPage } from "@/store/slice/pageSlice";
 
 const Comics = () => {
     const router = useRouter();
+    const jumpPage = useSelector((state: RootState) => state.page.jumpPage);
 
     const { unityProvider, isLoaded, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
         loaderUrl: "unity/build/ComicTimeLineScene.loader.js",
@@ -104,6 +107,10 @@ const Comics = () => {
         if(url != "") router.push(url);
     }
 
+    useEffect(() => {
+        dispatch(setJumpPage(false));
+    }, []);
+
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
             <Header />
@@ -120,8 +127,17 @@ const Comics = () => {
                         exit={{ y: "100%" }}
                         transition={{ duration: 1, ease: "easeInOut" }}
                     >
-                        <GlitchText text={`${loadingPercentage}%`} />
+                        { loadingPercentage > 0 && <GlitchText text={`${loadingPercentage}%`} /> }
                     </motion.div>
+                )}
+            </AnimatePresence>
+            <AnimatePresence>
+                {   jumpPage && (
+                    <motion.div
+                        className="absolute bg-black h-full left-0 w-full top-0 z-[300]"
+                        initial={{ y: "-100%" }}
+                        animate={{ y: 0 }}
+                        transition={{ duration: 0.2, ease: "easeInOut" }} />
                 )}
             </AnimatePresence>
         </div>

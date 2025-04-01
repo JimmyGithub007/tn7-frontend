@@ -4,20 +4,16 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import GlitchText from "./GlitchText";
 
-const Loader = () => {
+interface LoaderProps {
+    setIsLoadedParent?: (value: boolean) => void;
+}
+
+const Loader = ({ setIsLoadedParent }: LoaderProps) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [loadingPercentage, setLoadingPercentage] = useState(0);
 
     useEffect(() => {
-        if (!isLoaded) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "";
-        }
-
-        return () => {
-            document.body.style.overflow = "";
-        };
+        setTimeout(() => setIsLoadedParent?.(isLoaded), 1000);
     }, [isLoaded]);
 
     useEffect(() => {
@@ -32,7 +28,7 @@ const Loader = () => {
                 return prev + 5; // Increase percentage every interval
             });
         }, 100); // 100 ms interval for smoother progress
-    }, []);
+    }, [setIsLoaded]);
 
     return (<AnimatePresence>
         {!isLoaded && (
@@ -44,7 +40,7 @@ const Loader = () => {
                 exit={{ y: "-100%" }}
                 transition={{ duration: 1, ease: "easeInOut" }}
             >
-                <GlitchText text={`${loadingPercentage}%`} />
+                { loadingPercentage > 0 && <GlitchText text={`${loadingPercentage}%`} /> }
             </motion.div>
         )}
     </AnimatePresence>)

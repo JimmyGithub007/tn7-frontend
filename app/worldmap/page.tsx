@@ -14,8 +14,11 @@ import { opinionPro } from "@/components/Font";
 
 import Image from "next/image";
 import Link from "next/link";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUnityHover } from "@/store/slice/mouseSlice";
+import { useRouter } from "next/navigation";
+import { RootState } from "@/store";
+import { setJumpPage } from "@/store/slice/pageSlice";
 
 //const lilita_one = Lilita_One({ subsets: ["latin"], weight: "400" });
 
@@ -197,6 +200,9 @@ const PCVersion: React.FC<versionProps> = ({ setLoadingProgression, setBuildingI
 }
 
 const WorldMap = () => {
+    const router = useRouter();
+    const dispatch = useDispatch();
+    const jumpPage = useSelector((state: RootState) => state.page.jumpPage);
     const [ loadingProgression, setLoadingProgression ] = useState<number>(0);
     const [ loadingPercentage, setLoadingPercentage ] = useState<number>(0);
     const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
@@ -275,8 +281,7 @@ const WorldMap = () => {
     };
 
     const clickBuilding = (buildingId: any) => {
-        setBuildingId(buildingId);
-        setImageLoaded(false);
+        setMessage({ id: `b${buildingId}_0`, content: "WebGLClickBuilding" });
     }
     
     useEffect(() => {
@@ -380,6 +385,10 @@ const WorldMap = () => {
         }
     }, [isMenuOpen])
 
+    useEffect(() => {
+        dispatch(setJumpPage(false));
+    }, []);
+
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={() => {
             if (chatId === chatContent.length || chatId < 0 || isAnimating) return; // 如果正在显示动画，不允许切换
@@ -402,7 +411,7 @@ const WorldMap = () => {
                 message={message}
             />}
             <AnimatePresence>{/*Loading Percentage For Unity*/}
-                {!loaderHidden && (
+                {   !loaderHidden && (
                     <motion.div
                         id="loader"
                         className="absolute bg-black flex h-full items-center justify-center left-0 w-full top-0 z-[300]"
@@ -411,11 +420,20 @@ const WorldMap = () => {
                         exit={{ y: "100%" }}
                         transition={{ duration: 1, ease: "easeInOut" }}
                     >
-                        <GlitchText text={`${loadingPercentage}%`} />
+                        { loadingPercentage > 0 && <GlitchText text={`${loadingPercentage}%`} /> }
                     </motion.div>
                 )}
             </AnimatePresence>
-            { hoverBuildingId > 0 && <div className="absolute hidden lg:block cursor-pointer w-full h-full opacity-0 z-[100] top-0 left-0" onClick={() => clickBuilding(hoverBuildingId) }></div> }
+            <AnimatePresence>
+                {   jumpPage && (
+                    <motion.div
+                        className="absolute bg-black h-full left-0 w-full top-0 z-[300]"
+                        initial={{ y: "-100%" }}
+                        animate={{ y: 0 }}
+                        transition={{ duration: 0.2, ease: "easeInOut" }} />
+                )}
+            </AnimatePresence>
+            { buildingId === 0 && hoverBuildingId > 0 && <div className="absolute hidden lg:block cursor-pointer w-full h-full opacity-0 z-[100] top-0 left-0" onClick={() => clickBuilding(hoverBuildingId) }></div> }
             <AnimatePresence>
                 {   chatId < 3 &&
                     <motion.div 
@@ -425,24 +443,6 @@ const WorldMap = () => {
                         className="absolute backdrop-blur-xl bg-black/50 h-full top-0 left-0 w-full z-10">
 
                     </motion.div >
-                }
-            </AnimatePresence>
-            <AnimatePresence>
-                {
-                    /*showHandScroll &&
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 0.2 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute bottom-12 flex flex-col gap-2 items-center left-[calc(50%-105px)] text-white text-center w-[210px] z-[10]"
-                    >
-                        <div className="relative text-xl">
-                            <FaArrowLeft className="absolute animate-left-arrow -left-12" />
-                            <FaArrowRight className="absolute animate-right-arrow -right-12" />
-                        </div>
-                        <Image className="animate-wiggle w-[40px]" alt="" width={328} height={481} src={`/assets/images/icons/hand-scroll.png`} />
-                        <div>Scroll left/right to view full map</div>
-                    </motion.div>*/
                 }
             </AnimatePresence>
            {
@@ -506,13 +506,20 @@ const WorldMap = () => {
                         {   imageLoaded && <div className={`absolute flex flex-col justify-center h-[73%] italic sm:gap-2 left-[8%] top-[10%] lg:top-[22%] text-white w-[45%]`}>
                                 <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl">{buildings.find(b => b.id === buildingId)?.name}</div>
                                 <div className={`text-xs/4 sm:text-md md:text-lg lg:text-xl ${opinionPro.className}`} dangerouslySetInnerHTML={{ __html: buildings.find(b => b.id === buildingId)?.content || "<p></p>" }} />
-                                <Link href={{ pathname: "/lore", query: { category: "locations", id: buildingId } }}>
+
                                     <button
+                                        onClick={() => {
+                                            dispatch(setJumpPage(true));
+                                            const timeout = setTimeout(() => {
+                                                router.push(`/lore?category=locations&id=${buildingId}`);
+                                            }, 200);
+                                            return () => clearTimeout(timeout);
+                                        }}
                                         className={`duration-300 flex group hover:opacity-50 items-center text-sm sm:text-md md:text-lg lg:text-xl underline ${opinionPro.className}`}>
                                         READ MORE
                                         <IoIosArrowRoundForward className="duration-200 -rotate-45 group-hover:rotate-0 text-2xl sm:text-3xl md:text-4xl" />
                                     </button>
-                                </Link>
+                                
                             </div>  
                         }
                         {   imageLoaded &&
@@ -521,7 +528,7 @@ const WorldMap = () => {
                                     //sendMessage(`b${buildingId}_0`, "UnClickBuilding");
                                     setMessage({ id: `b${buildingId}_0`, content: "UnClickBuilding" });
                                 }}
-                                className="absolute bg-white duration-300 p-2 right-0 sm:right-4 rounded-full shadow-xl shadow-black/50 text-3xl -top-4 lg:top-12 z-20 hover:bg-black hover:text-white">
+                                className="absolute bg-white duration-300 p-2 right-0 sm:right-2 rounded-full shadow-xl shadow-black/50 text-3xl -top-4 lg:top-16 z-20 hover:bg-black hover:text-white">
                                 <CgClose />
                             </button>
                         }

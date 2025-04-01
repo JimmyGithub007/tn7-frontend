@@ -1,9 +1,14 @@
 "use client";
 
-import { MaskText, Header } from "@/components";
+import { MaskText, Header, Loader } from "@/components";
 import { opinionPro } from "@/components/Font";
+import { RootState } from "@/store";
+import { setJumpPage } from "@/store/slice/pageSlice";
+import { motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
+import { useDispatch, useSelector } from "react-redux";
 
 const quetions = [
     {
@@ -60,7 +65,25 @@ const Collapse = ({ children, title }: { children: ReactNode, title: string }) =
 }
 
 const DiscoverMore = () => {
-    return (<div className="bg-black flex justify-center min-h-screen relative overflow-x-hidden w-full">
+    const dispatch = useDispatch();
+    const jumpPage = useSelector((state: RootState) => state.page.jumpPage);
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        dispatch(setJumpPage(false));
+    }, []);
+
+    return (<div className={`bg-black flex justify-center relative w-full ${isLoaded ? "overflow-y-auto" : "overflow-y-hidden h-screen"}`}>
+        <Loader setIsLoadedParent={setIsLoaded} />
+        <AnimatePresence>
+            {   jumpPage && (
+                <motion.div
+                    className="absolute bg-black h-full left-0 w-full top-0 z-[300]"
+                    initial={{ y: "-100%" }}
+                    animate={{ y: 0 }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }} />
+            )}
+        </AnimatePresence>
         <Header />
         <div className="flex flex-col gap-8 px-12 py-36 2xl:w-[1280px] 2xl:px-0 text-white">
             <div className="flex flex-col gap-4 text-center">

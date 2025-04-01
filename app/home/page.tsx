@@ -5,8 +5,10 @@ import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Footer, GlitchText, Header } from "@/components";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUnityHover } from "@/store/slice/mouseSlice";
+import { RootState } from "@/store";
+import { setJumpPage } from "@/store/slice/pageSlice";
 
 interface versionProps {
     handleHoverTV: (tvData: any) => void;
@@ -17,10 +19,10 @@ interface versionProps {
 
 const PCVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV, setLoadingProgression, message }) => {
     const { unityProvider, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
-        loaderUrl: "unity/build/HomeScene.loader.js",
-        dataUrl: "unity/build/HomeScene.data.unityweb",
-        frameworkUrl: "unity/build/HomeScene.framework.js.unityweb",
-        codeUrl: "unity/build/HomeScene.wasm.unityweb",
+        loaderUrl: "/unity/build/HomeScene.loader.js",
+        dataUrl: "/unity/build/HomeScene.data.unityweb",
+        frameworkUrl: "/unity/build/HomeScene.framework.js.unityweb",
+        codeUrl: "/unity/build/HomeScene.wasm.unityweb",
     });
 
     useEffect(() => {
@@ -84,7 +86,7 @@ const MobileVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV, s
 const Home = () => {
     const router = useRouter();
     const dispatch = useDispatch();
-
+    const jumpPage = useSelector((state: RootState) => state.page.jumpPage);
     const [ loadingProgression, setLoadingProgression ] = useState<number>(0);
     const [ loadingPercentage, setLoadingPercentage ] = useState<number>(0);
     const [ loaderHidden, setLoaderHidden ] = useState<boolean>(false);
@@ -130,7 +132,13 @@ const Home = () => {
                 url = "";
         }
 
-        router.push(url);
+        dispatch(setJumpPage(true));
+
+        const timeout = setTimeout(() => {
+            router.push(url);
+        }, 200);
+        
+        return () => clearTimeout(timeout);
     }, []);
 
     const clickTV = () => {
@@ -149,7 +157,13 @@ const Home = () => {
                 url = "";
         }
 
-        router.push(url);
+        dispatch(setJumpPage(true));
+
+        const timeout = setTimeout(() => {
+            router.push(url);
+        }, 200);
+        
+        return () => clearTimeout(timeout);
     }
 
     const startHome = () => {
@@ -275,6 +289,10 @@ const Home = () => {
         };
     }, []);
 
+    useEffect(() => {
+        dispatch(setJumpPage(false));
+    }, []);
+
     return (
         <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
             <Header isOpenMenuParent={isMenuOpen} setIsOpenMenuParent={setIsMenuOpen} />
@@ -298,8 +316,17 @@ const Home = () => {
                         exit={{ y: "100%" }}
                         transition={{ duration: 1, ease: "easeInOut" }}
                     >
-                        <GlitchText text={`${loadingPercentage}%`} />
+                        { loadingPercentage > 0 && <GlitchText text={`${loadingPercentage}%`} /> }
                     </motion.div>
+                )}
+            </AnimatePresence>
+            <AnimatePresence>
+                {   jumpPage && (
+                    <motion.div
+                        className="absolute bg-black h-full left-0 w-full top-0 z-[300]"
+                        initial={{ y: "-100%" }}
+                        animate={{ y: 0 }}
+                        transition={{ duration: 0.2, ease: "easeInOut" }} />
                 )}
             </AnimatePresence>
             { hoverTvId > 0 && <div className="absolute hidden lg:block cursor-pointer w-full h-full opacity-0 z-[100] top-0 left-0" onClick={() => clickTV() }></div> }
