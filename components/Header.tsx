@@ -32,7 +32,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
   useEffect(() => {
     if (!isOpenMenu) return;
 
-    const targetMenus = ["Home", "TN7 Universe", "LORE", "Comic", "World Map", "Socials",
+    const targetMenus = ["Home", "TN7 Universe", "Comic", "Lore", "World Map", "Socials",
       "X", "Discord", "Instagram", "Discover More"
     ];
     const intervals: NodeJS.Timeout[] = [];
@@ -162,39 +162,39 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                 >
                   <div className={`flex flex-col pl-4 text-md sm:text-xl text-white ${opinionPro.className}`}>
                     <button
-                      className={`pb-4 text-left ${pathname === "/lore"
+                      className={`pb-4 text-left ${pathname === "/comics"
                           ? "text-yellow-400 hover:text-yellow-300"
                           : "hover:text-white"
                         }`}
                         onClick={() => {
-                          if(pathname === "/lore") return;
-                          dispatch(setJumpPage(true));
-                          const timeout = setTimeout(() => {
-                            router.push(`/lore`);
-                          }, 200);
-                          return () => clearTimeout(timeout);
-                        }}
-                        onMouseEnter={() => handleMouseEnter(2, "Lore")}
-                    >
-                      {menuText[2] || "Lore"}
-                    </button>
-                    <Divider />
-                    <button
-                      className={`py-4 text-left ${pathname === "/comics"
-                          ? "text-yellow-400 hover:text-yellow-300"
-                          : "hover:text-white"
-                        }`}
-                      onClick={() => {
                           if(pathname === "/comics") return;
                           dispatch(setJumpPage(true));
                           const timeout = setTimeout(() => {
                             router.push(`/comics`);
                           }, 200);
                           return () => clearTimeout(timeout);
-                      }}
-                      onMouseEnter={() => handleMouseEnter(3, "Comic")}
+                        }}
+                        onMouseEnter={() => handleMouseEnter(2, "Comic")}
                     >
-                      {menuText[3] || "Comic"}
+                      {menuText[2] || "Comic"}
+                    </button>
+                    <Divider />
+                    <button
+                      className={`py-4 text-left ${pathname === "/lore"
+                          ? "text-yellow-400 hover:text-yellow-300"
+                          : "hover:text-white"
+                        }`}
+                      onClick={() => {
+                          if(pathname === "/lore") return;
+                          dispatch(setJumpPage(true));
+                          const timeout = setTimeout(() => {
+                            router.push(`/lore`);
+                          }, 200);
+                          return () => clearTimeout(timeout);
+                      }}
+                      onMouseEnter={() => handleMouseEnter(3, "Lore")}
+                    >
+                      {menuText[3] || "Lore"}
                     </button>
                     <Divider />
                     <button
@@ -265,8 +265,26 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
             </div>
             <div className={`flex flex-col text-sm ${opinionPro.className}`}>
               <div className="flex gap-2">
-                <Link className="duration-300 hover:opacity-50" href={`/termsofuse`}>TERMS OF USE</Link> |
-                <Link className="duration-300 hover:opacity-50" href={`/privacy`}>PRIVACY NOTICE</Link>
+                <button 
+                  onClick={() => {
+                    if(pathname === "/termsofuse") return;
+                    //dispatch(setJumpPage(true));
+                    //const timeout = setTimeout(() => {
+                      router.push(`/termsofuse`);
+                    //}, 200);
+                    //return () => clearTimeout(timeout);
+                  }}
+                  className="duration-300 hover:opacity-50">TERMS OF USE</button> |
+                <button
+                  onClick={() => {
+                    if (pathname === "/privacy") return;
+                    //dispatch(setJumpPage(true));
+                    //const timeout = setTimeout(() => {
+                      router.push(`/privacy`);
+                    //}, 200);
+                    //return () => clearTimeout(timeout);
+                  }}
+                  className="duration-300 hover:opacity-50">PRIVACY NOTICE</button>
               </div>
               <div>TN7 © 2024 - 2025</div>
             </div>
