@@ -447,7 +447,7 @@ const WorldMap = () => {
             </AnimatePresence>
            {
                 buildings.map((value, key) => (
-                    <div key={key} className="absolute h-12 overflow-hidden w-full sm:block hidden" style={{ left: buildingData.find(e => e.id === value.id)?.x || 0, top: buildingData.find(e => e.id === value.id)?.y || 0 }}>
+                    <div key={key} className="absolute h-12 overflow-hidden w-full lg:block hidden" style={{ left: buildingData.find(e => e.id === value.id)?.x || 0, top: buildingData.find(e => e.id === value.id)?.y || 0 }}>
                         <AnimatePresence>
                             {   hoverBuildingId === value.id && buildingId == 0 && (
                                 <motion.div
@@ -503,7 +503,7 @@ const WorldMap = () => {
                             loading="lazy" // Enable lazy loading
                             onError={() => console.error("Failed to load image.")}
                         />
-                        {   imageLoaded && <div className={`absolute flex flex-col justify-center h-[73%] italic sm:gap-2 left-[8%] top-[10%] lg:top-[22%] text-white w-[53%] sm:w-[45%]`}>
+                        {   imageLoaded && <div className={`absolute flex flex-col justify-center h-[73%] italic sm:gap-2 left-[8%] top-[12%] lg:top-[22%] text-white w-[53%] sm:w-[45%]`}>
                                 <div className="text-md sm:text-xl md:text-3xl lg:text-4xl">{buildings.find(b => b.id === buildingId)?.name}</div>
                                 <div className={`text-xs/4 sm:text-md md:text-lg lg:text-xl ${opinionPro.className}`} dangerouslySetInnerHTML={{ __html: buildings.find(b => b.id === buildingId)?.content || "<p></p>" }} />
 
