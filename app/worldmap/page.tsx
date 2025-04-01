@@ -447,7 +447,7 @@ const WorldMap = () => {
             </AnimatePresence>
            {
                 buildings.map((value, key) => (
-                    <div key={key} className="absolute h-12 overflow-hidden w-full" style={{ left: buildingData.find(e => e.id === value.id)?.x || 0, top: buildingData.find(e => e.id === value.id)?.y || 0 }}>
+                    <div key={key} className="absolute h-12 overflow-hidden w-full sm:block hidden" style={{ left: buildingData.find(e => e.id === value.id)?.x || 0, top: buildingData.find(e => e.id === value.id)?.y || 0 }}>
                         <AnimatePresence>
                             {   hoverBuildingId === value.id && buildingId == 0 && (
                                 <motion.div
@@ -559,7 +559,7 @@ const WorldMap = () => {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="absolute bg-white cursor-pointer p-2 rounded-full right-4 sm:right-8 shadow-xl shadow-black/50 text-xl sm:text-3xl text-black top-12 hover:bg-black hover:text-white"
+                                className="absolute bg-white cursor-pointer p-2 rounded-full right-4 sm:right-8 shadow-xl shadow-black/50 text-xl sm:text-3xl text-black top-0 lg:top-4 hover:bg-black hover:text-white"
                                 onClick={() => {
                                     setChatId(-1);
                                     setTimeout(() => {
