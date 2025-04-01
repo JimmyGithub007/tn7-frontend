@@ -503,24 +503,30 @@ const WorldMap = () => {
                             loading="lazy" // Enable lazy loading
                             onError={() => console.error("Failed to load image.")}
                         />
-                        {   imageLoaded && <div className={`absolute flex flex-col justify-center h-[73%] italic sm:gap-2 left-[8%] top-[12%] lg:top-[22%] text-white w-[53%] sm:w-[45%]`}>
-                                <div className="text-md sm:text-xl md:text-3xl lg:text-4xl">{buildings.find(b => b.id === buildingId)?.name}</div>
-                                <div className={`text-xs/4 sm:text-md md:text-lg lg:text-xl ${opinionPro.className}`} dangerouslySetInnerHTML={{ __html: buildings.find(b => b.id === buildingId)?.content || "<p></p>" }} />
+                        {   imageLoaded && <AnimatePresence>
+                                <motion.div 
+                                    initial={{ opacity: 0, x: "-5%" }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 1}}
+                                    className={`absolute flex flex-col justify-center h-[73%] italic sm:gap-2 left-[8%] top-[12%] lg:top-[22%] text-white w-[53%] sm:w-[45%]`}>
+                                    <div className="text-md sm:text-xl md:text-3xl lg:text-4xl">{buildings.find(b => b.id === buildingId)?.name}</div>
+                                    <div className={`text-xs/4 sm:text-md md:text-lg lg:text-xl ${opinionPro.className}`} dangerouslySetInnerHTML={{ __html: buildings.find(b => b.id === buildingId)?.content || "<p></p>" }} />
 
-                                    <button
-                                        onClick={() => {
-                                            dispatch(setJumpPage(true));
-                                            const timeout = setTimeout(() => {
-                                                router.push(`/lore?category=locations&id=${buildingId}`);
-                                            }, 200);
-                                            return () => clearTimeout(timeout);
-                                        }}
-                                        className={`duration-300 flex group hover:opacity-50 items-center text-xs sm:text-md md:text-lg lg:text-xl underline ${opinionPro.className}`}>
-                                        READ MORE
-                                        <IoIosArrowRoundForward className="duration-200 -rotate-45 group-hover:rotate-0 text-xl sm:text-3xl md:text-4xl" />
-                                    </button>
-                                
-                            </div>  
+                                        <button
+                                            onClick={() => {
+                                                dispatch(setJumpPage(true));
+                                                const timeout = setTimeout(() => {
+                                                    router.push(`/lore?category=locations&id=${buildingId}`);
+                                                }, 200);
+                                                return () => clearTimeout(timeout);
+                                            }}
+                                            className={`duration-300 flex group hover:opacity-50 items-center text-xs sm:text-md md:text-lg lg:text-xl underline ${opinionPro.className}`}>
+                                            READ MORE
+                                            <IoIosArrowRoundForward className="duration-200 -rotate-45 group-hover:rotate-0 text-xl sm:text-3xl md:text-4xl" />
+                                        </button>
+                                    
+                                </motion.div> 
+                        </AnimatePresence> 
                         }
                         {   imageLoaded &&
                             <button
