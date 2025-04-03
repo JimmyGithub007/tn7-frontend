@@ -247,7 +247,7 @@ const Home = () => {
                     }
                     return prev + 1; // 模拟平滑增加
                 });
-            }, 200); // 每 200ms 增加 1%
+            }, 300); // 每 200ms 增加 1%
             return () => clearInterval(interval);
         } else if (loadingProgression < 0.9) {
             setLoadingPercentage(Math.round(loadingProgression * 100));
@@ -259,7 +259,7 @@ const Home = () => {
             const timeout = setTimeout(() => {
                 startHome();
                 setLoaderHidden(true);
-            }, 200); // 确保动画有时间完成
+            }, 500); // 确保动画有时间完成
             return () => clearTimeout(timeout);
         }
     }, [loadingPercentage]);
