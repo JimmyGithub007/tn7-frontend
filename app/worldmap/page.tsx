@@ -1,24 +1,20 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
 //import { Lilita_One } from "next/font/google";
 import { Footer, GlitchText, Header } from "@/components";
 import { CgClose } from "react-icons/cg";
-import { BsSkipForward } from "react-icons/bs";
 import { IoIosArrowRoundForward } from "react-icons/io";
 import { TbPlayerTrackNextFilled } from "react-icons/tb";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { opinionPro } from "@/components/Font";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { setUnityHover } from "@/store/slice/mouseSlice";
 import { useRouter } from "next/navigation";
 import { RootState } from "@/store";
 import { setJumpPage } from "@/store/slice/pageSlice";
+import dynamic from "next/dynamic";
 
 //const lilita_one = Lilita_One({ subsets: ["latin"], weight: "400" });
 
@@ -46,158 +42,15 @@ const buildings = [
     { id: 9, name:"THE ENERGY FIELD", img: "b9", content: "<p>The Energy Field, built by Akio Industries, extracts geothermal energy using massive drills that operate continuously. Rumors of a shrinking reservoir and declining output have led to heightened security around this vital resource.</p>" },
 ];
 
-interface versionProps {
-    setLoadingProgression: (state: number) => void;
-    setBuildingId: (state: number) => void;
-    setBuildingData: (state: ((prev: { id: number, name: string, x: number, y: number }[]) => { id: number, name: string, x: number, y: number }[]) | { id: number, name: string, x: number, y: number }[]) => void;
-    setHoverBuildingId: (state: number) => void;
-    setImageLoaded: (state: boolean) => void;
-    message: { id: string, content: string };
-}
+const MobileVersionWorldMapScene = dynamic(() => import('@/components/MobileVersionWorldMapScene'), {
+    ssr: false, // 只在客户端渲染，避免 SSR 报错
+    loading: () => <div>Loading Mobile Scene...</div>,
+});
 
-const MobileVersion: React.FC<versionProps> = ({ setLoadingProgression, setBuildingId, setBuildingData, setHoverBuildingId, setImageLoaded, message }) => {
-    const dispatch = useDispatch();
-    const { unityProvider, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
-        loaderUrl: "unity/build/MobileVersionWorldMapScene.loader.js",
-        dataUrl: "unity/build/MobileVersionWorldMapScene.data.unityweb",
-        frameworkUrl: "unity/build/MobileVersionWorldMapScene.framework.js.unityweb",
-        codeUrl: "unity/build/MobileVersionWorldMapScene.wasm.unityweb",
-    });
-
-    const handleClickBuilding = useCallback((buildingId: any) => {
-        setBuildingId(buildingId)
-        setImageLoaded(false)
-    }, []);
-
-    const handleHoverBuilding = useCallback((buildingData: any) => {
-        const [buildingId, buildingX, buildingY] = buildingData.split(",");
-        if(buildingId > 0) {
-            setBuildingData(prev =>
-                prev.map(item =>
-                    item.id === parseInt(buildingId)
-                        ? { ...item, x: parseInt(buildingX) - 100, y: window.innerHeight - parseInt(buildingY) - 100 } // Update the matching entry
-                        : item // Keep the rest unchanged
-                )
-            );
-        }
-        setHoverBuildingId(parseInt(buildingId))
-        dispatch(setUnityHover(parseInt(buildingId) > 0 ? true : false));
-    }, []);
-
-    const handleInitialBuilding = useCallback((buildingData: any) => {
-        const [buildingId, buildingX, buildingY] = buildingData.split(",");
-        setBuildingData(prev =>
-            prev.map(item =>
-                item.id === parseInt(buildingId)
-                    ? { ...item, x: parseInt(buildingX) - 100, y: window.innerHeight - parseInt(buildingY) - 100 } // Update the matching entry
-                    : item // Keep the rest unchanged
-            )
-        );
-    }, []);
-
-    useEffect(() => {
-        setLoadingProgression(loadingProgression);
-    }, [loadingProgression]);
-
-    useEffect(() => {
-        if(message.id !== "" && message.content !== "") sendMessage(message.id, message.content);
-    }, [message]);
-
-    useEffect(() => {
-        addEventListener("ReactClickBuilding", handleClickBuilding);
-        return () => {
-            removeEventListener("ReactClickBuilding", handleClickBuilding);
-        };
-    }, [addEventListener, removeEventListener, handleClickBuilding]);
-
-    useEffect(() => {
-        addEventListener("ReactHoverBuilding", handleHoverBuilding);
-        return () => {
-            removeEventListener("ReactHoverBuilding", handleHoverBuilding);
-        };
-    }, [addEventListener, removeEventListener, handleHoverBuilding]);
-
-    useEffect(() => {
-        addEventListener("ReactInitialBuilding", handleInitialBuilding);
-        return () => {
-            removeEventListener("ReactInitialBuilding", handleInitialBuilding);
-        };
-    }, [addEventListener, removeEventListener, handleInitialBuilding]);
-
-    return (<Unity className={`h-full w-full`} unityProvider={unityProvider} />);
-}
-
-const PCVersion: React.FC<versionProps> = ({ setLoadingProgression, setBuildingId, setBuildingData, setHoverBuildingId, setImageLoaded, message }) => {
-    const dispatch = useDispatch();
-    const { unityProvider, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
-        loaderUrl: "unity/build/WorldMapScene.loader.js",
-        dataUrl: "unity/build/WorldMapScene.data.unityweb",
-        frameworkUrl: "unity/build/WorldMapScene.framework.js.unityweb",
-        codeUrl: "unity/build/WorldMapScene.wasm.unityweb",
-    });
-
-    const handleClickBuilding = useCallback((buildingId: any) => {
-        setBuildingId(buildingId)
-        setImageLoaded(false)
-    }, []);
-
-    const handleHoverBuilding = useCallback((buildingData: any) => {
-        const [buildingId, buildingX, buildingY] = buildingData.split(",");
-        if(buildingId > 0) {
-            setBuildingData(prev =>
-                prev.map(item =>
-                    item.id === parseInt(buildingId)
-                        ? { ...item, x: parseInt(buildingX) - 100, y: window.innerHeight - parseInt(buildingY) - 100 } // Update the matching entry
-                        : item // Keep the rest unchanged
-                )
-            );
-        }
-        setHoverBuildingId(parseInt(buildingId))
-        dispatch(setUnityHover(parseInt(buildingId) > 0 ? true : false));
-    }, []);
-
-    const handleInitialBuilding = useCallback((buildingData: any) => {
-        const [buildingId, buildingX, buildingY] = buildingData.split(",");
-        setBuildingData(prev =>
-            prev.map(item =>
-                item.id === parseInt(buildingId)
-                    ? { ...item, x: parseInt(buildingX) - 100, y: window.innerHeight - parseInt(buildingY) - 100 } // Update the matching entry
-                    : item // Keep the rest unchanged
-            )
-        );
-    }, []);
-
-    useEffect(() => {
-        setLoadingProgression(loadingProgression);
-    }, [loadingProgression]);
-
-    useEffect(() => {
-        if(message.id !== "" && message.content !== "") sendMessage(message.id, message.content);
-    }, [message]);
-
-    useEffect(() => {
-        addEventListener("ReactClickBuilding", handleClickBuilding);
-        return () => {
-            removeEventListener("ReactClickBuilding", handleClickBuilding);
-        };
-    }, [addEventListener, removeEventListener, handleClickBuilding]);
-
-    useEffect(() => {
-        addEventListener("ReactHoverBuilding", handleHoverBuilding);
-        return () => {
-            removeEventListener("ReactHoverBuilding", handleHoverBuilding);
-        };
-    }, [addEventListener, removeEventListener, handleHoverBuilding]);
-
-    useEffect(() => {
-        addEventListener("ReactInitialBuilding", handleInitialBuilding);
-        return () => {
-            removeEventListener("ReactInitialBuilding", handleInitialBuilding);
-        };
-    }, [addEventListener, removeEventListener, handleInitialBuilding]);
-
-    return (<Unity className={`h-full w-full`} unityProvider={unityProvider} />);
-}
+const PCVersionWorldMapScene = dynamic(() => import('@/components/PCVersionWorldMapScene'), {
+    ssr: false, // 只在客户端渲染，避免 SSR 报错
+    loading: () => <div>Loading Mobile Scene...</div>,
+});
 
 const WorldMap = () => {
     const router = useRouter();
@@ -312,14 +165,14 @@ const WorldMap = () => {
 
     useEffect(() => {
         if (loadingPercentage === 100) {
-            const timeout = setTimeout(() => setLoaderHidden(true), 200); // 确保动画有时间完成
+            const timeout = setTimeout(() => setLoaderHidden(true), 2000); // 确保动画有时间完成
             return () => clearTimeout(timeout);
         }
     }, [loadingPercentage]);
 
     useEffect(() => {
         if (loadingProgression === 1) {
-            if(loadingPercentage < 90) {
+            if (loadingPercentage < 90) {
                 const interval = setInterval(() => {
                     setLoadingPercentage((prev) => {
                         if (prev >= 99) {
@@ -342,12 +195,24 @@ const WorldMap = () => {
                     }
                     return prev + 1; // 模拟平滑增加
                 });
-            }, 200); // 每 200ms 增加 1%
+            }, 350); // 每 200ms 增加 1%
             return () => clearInterval(interval);
         } else if (loadingProgression < 0.9) {
-            setLoadingPercentage(Math.round(loadingProgression * 100));
+            if (isMobile) {
+                const interval = setInterval(() => {
+                    setLoadingPercentage((prev) => {
+                        if (prev >= 99) {
+                            clearInterval(interval);
+                            return 100;
+                        }
+                        return prev + 1; // 模拟平滑增加
+                    });
+                }, 350); // 每 200ms 增加 1%
+            } else {
+                setLoadingPercentage(Math.round(loadingProgression * 100));
+            }
         }
-    }, [loadingProgression]);
+    }, [isMobile, loadingProgression]);
 
     useEffect(() => {
         if (chatId > -1 && chatId < chatContent.length) {
@@ -372,7 +237,7 @@ const WorldMap = () => {
             sessionStorage.setItem("isCompletedGuide", "true");
             const timeout = setTimeout(() => {
                 setMessage({ id: "World Map", content: "StartWorldMap" });
-            }, 1000);
+            }, 1500);
             return () => clearTimeout(timeout);
         }
     }, [chatId]); // 当 chatId 变化时触发
@@ -390,19 +255,24 @@ const WorldMap = () => {
     }, []);
 
     return (
-        <div className="bg-slate-100 h-screen w-full relative overflow-hidden" onClick={() => {
+        <div className="bg-black h-screen w-full relative overflow-hidden" onClick={() => {
             if (chatId === chatContent.length || chatId < 0 || isAnimating) return; // 如果正在显示动画，不允许切换
             setChatId((prevId) => (prevId + 1));
         }}>
             { buildingId === 0 && chatId === chatContent.length && <Header setIsOpenMenuParent={setIsMenuOpen} isOpenMenuParent={isMenuOpen} /> }
-            { isMobile ? <MobileVersion 
-                setLoadingProgression={setLoadingProgression}
-                setBuildingId={setBuildingId}
+            { isMobile ? <MobileVersionWorldMapScene 
+                onSceneReady={() => {
+                    setLoadingProgression(1);
+                }}
                 setBuildingData={setBuildingData}
                 setHoverBuildingId={setHoverBuildingId}
-                setImageLoaded={setImageLoaded}
-                message={message}
-            /> : <PCVersion 
+                buildingData={buildingData}
+                clickBuilding={(id) => {
+                    setBuildingId(id);
+                }}
+                buildingId={buildingId}
+                loadingPercentage={chatId === chatContent.length ? 100 : 0}
+            /> : <PCVersionWorldMapScene 
                 setLoadingProgression={setLoadingProgression}
                 setBuildingId={setBuildingId}
                 setBuildingData={setBuildingData}
@@ -420,7 +290,7 @@ const WorldMap = () => {
                         exit={{ y: "100%" }}
                         transition={{ duration: 1, ease: "easeInOut" }}
                     >
-                        { loadingPercentage > 0 && <GlitchText text={`${loadingPercentage}%`} /> }
+                        <GlitchText text={`${loadingPercentage}%`} />
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -435,12 +305,23 @@ const WorldMap = () => {
             </AnimatePresence>
             { buildingId === 0 && hoverBuildingId > 0 && <div className="absolute hidden lg:block cursor-pointer w-full h-full opacity-0 z-[100] top-0 left-0" onClick={() => clickBuilding(hoverBuildingId) }></div> }
             <AnimatePresence>
+                {   isMobile && chatId < chatContent.length &&
+                    <motion.div 
+                        initial={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 1 }}
+                        className="absolute h-full top-0 left-0 w-full z-[10]">
+
+                    </motion.div >
+                }
+            </AnimatePresence>
+            <AnimatePresence>
                 {   chatId < 3 &&
                     <motion.div 
                         initial={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 1 }}
-                        className="absolute backdrop-blur-xl bg-black/50 h-full top-0 left-0 w-full z-10">
+                        className="absolute backdrop-blur-xl bg-black/50 h-full top-0 left-0 w-full z-[10]">
 
                     </motion.div >
                 }
@@ -449,7 +330,7 @@ const WorldMap = () => {
                 buildings.map((value, key) => (
                     <div key={key} className="absolute h-12 overflow-hidden w-full lg:block hidden" style={{ left: buildingData.find(e => e.id === value.id)?.x || 0, top: buildingData.find(e => e.id === value.id)?.y || 0 }}>
                         <AnimatePresence>
-                            {   hoverBuildingId === value.id && buildingId == 0 && (
+                            {    hoverBuildingId === value.id && buildingId == 0 && (
                                 <motion.div
                                     className={`absolute font-bold text-3xl text-white`}
                                     initial={{ opacity: 0, y: "100%", rotate: 3 }}
@@ -467,13 +348,25 @@ const WorldMap = () => {
                     </div>
                 ))
            }
+            <AnimatePresence>
+                {   isMobile && buildingId > 0 && (
+                    <motion.div
+                        id="clickBG"
+                        className="absolute bg-black flex h-full left-0 w-full top-0 z-[199]"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 0.4 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.8, ease: "easeInOut" }}
+                    />
+                )}
+            </AnimatePresence>
             {/* Building Image Display */}
             <AnimatePresence>
                 {buildingId > 0 && (
                     <motion.div
                         key={buildingId}
                         initial={{ y: "20%", opacity: 0 }}
-                        animate={{ y: 0, opacity: 0.8 }}
+                        animate={{ y: 0, opacity: 0.9 }}
                         exit={{ y: "20%", opacity: 0 }}
                         transition={{ duration: 0.5 }}
                         className={`absolute z-[200] w-[100%] lg:w-[80%] lg:w-[900px] xl:[1024px] left-0 right-0
@@ -532,6 +425,7 @@ const WorldMap = () => {
                             <button
                                 onClick={() => {
                                     //sendMessage(`b${buildingId}_0`, "UnClickBuilding");
+                                    if(isMobile) setBuildingId(0);
                                     setMessage({ id: `b${buildingId}_0`, content: "UnClickBuilding" });
                                 }}
                                 className="absolute bg-white duration-300 p-2 right-0 sm:right-2 rounded-full shadow-xl shadow-black/50 text-3xl -top-4 lg:top-16 z-20 hover:bg-black hover:text-white">

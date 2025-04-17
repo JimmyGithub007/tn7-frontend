@@ -270,9 +270,10 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                     if(pathname === "/termsofuse") return;
                     //dispatch(setJumpPage(true));
                     //const timeout = setTimeout(() => {
-                      router.push(`/termsofuse`);
+                      //router.push(`/termsofuse`);
                     //}, 200);
                     //return () => clearTimeout(timeout);
+                    window.open('/termsofuse.html', '_blank', 'noopener,noreferrer');
                   }}
                   className="duration-300 hover:opacity-50">TERMS OF USE</button> |
                 <button
@@ -280,9 +281,10 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                     if (pathname === "/privacy") return;
                     //dispatch(setJumpPage(true));
                     //const timeout = setTimeout(() => {
-                      router.push(`/privacy`);
+                      //router.push(`/privacy`);
                     //}, 200);
                     //return () => clearTimeout(timeout);
+                    window.open('/privacy.html', '_blank', 'noopener,noreferrer');
                   }}
                   className="duration-300 hover:opacity-50">PRIVACY NOTICE</button>
               </div>

@@ -17,6 +17,14 @@
   }
 }
 
+body {
+  background-color: #000000;
+}
+
+canvas {
+  touch-action: none;
+}
+
 .filter-bar::-webkit-scrollbar {
   width: 4px; /* 滚动条宽度 */
 }

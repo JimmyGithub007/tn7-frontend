@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, use } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -9,6 +9,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUnityHover } from "@/store/slice/mouseSlice";
 import { RootState } from "@/store";
 import { setJumpPage } from "@/store/slice/pageSlice";
+
+import dynamic from 'next/dynamic';
+
+const MobileVersionHomeScene = dynamic(() => import('@/components/MobileVersionHomeScene'), {
+    ssr: false, // 只在客户端渲染，避免 SSR 报错
+    loading: () => <div className="bg-black"></div>,
+});
 
 interface versionProps {
     handleHoverTV: (tvData: any) => void;
@@ -23,39 +30,6 @@ const PCVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV, setLo
         dataUrl: "/unity/build/HomeScene.data.unityweb",
         frameworkUrl: "/unity/build/HomeScene.framework.js.unityweb",
         codeUrl: "/unity/build/HomeScene.wasm.unityweb",
-    });
-
-    useEffect(() => {
-        if(message.id !== "" && message.content !== "") sendMessage(message.id, message.content);
-    }, [message]);
-
-    useEffect(() => {
-        addEventListener("ReactHoverTV", handleHoverTV);
-        return () => {
-            removeEventListener("ReactHoverTV", handleHoverTV);
-        };
-    }, [addEventListener, removeEventListener, handleHoverTV]);
-
-    useEffect(() => {
-        addEventListener("ReactClickTV", handleClickTV);
-        return () => {
-            removeEventListener("ReactClickTV", handleClickTV);
-        };
-    }, [addEventListener, removeEventListener, handleClickTV]);
-
-    useEffect(() => {
-        setLoadingProgression(loadingProgression);
-    }, [loadingProgression]);
-
-    return (<Unity className={`h-full w-full`} unityProvider={unityProvider} />);
-}
-
-const MobileVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV, setLoadingProgression, message }) => {
-    const { unityProvider, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
-        loaderUrl: "unity/build/MobileVersionHomeScene.loader.js",
-        dataUrl: "unity/build/MobileVersionHomeScene.data.unityweb",
-        frameworkUrl: "unity/build/MobileVersionHomeScene.framework.js.unityweb",
-        codeUrl: "unity/build/MobileVersionHomeScene.wasm.unityweb",
     });
 
     useEffect(() => {
@@ -141,9 +115,9 @@ const Home = () => {
         return () => clearTimeout(timeout);
     }, []);
 
-    const clickTV = () => {
+    const clickTV = (tvId: number) => {
         let url = "";
-        switch (hoverTvId) {
+        switch (tvId) {
             case 1:
                 url = "/universe";
                 break;
@@ -247,19 +221,31 @@ const Home = () => {
                     }
                     return prev + 1; // 模拟平滑增加
                 });
-            }, 300); // 每 200ms 增加 1%
+            }, 150); // 每 200ms 增加 1%
             return () => clearInterval(interval);
         } else if (loadingProgression < 0.9) {
-            setLoadingPercentage(Math.round(loadingProgression * 100));
+            if (isMobile) {
+                const interval = setInterval(() => {
+                    setLoadingPercentage((prev) => {
+                        if (prev >= 99) {
+                            clearInterval(interval);
+                            return 100;
+                        }
+                        return prev + 1;
+                    });
+                }, 350);
+            } else {
+                setLoadingPercentage(Math.round(loadingProgression * 100));
+            }
         }
-    }, [loadingProgression]);
+    }, [isMobile, loadingProgression]);
 
     useEffect(() => {
         if (loadingPercentage === 100) {
             const timeout = setTimeout(() => {
                 startHome();
                 setLoaderHidden(true);
-            }, 500); // 确保动画有时间完成
+            }, 1500); // 确保动画有时间完成
             return () => clearTimeout(timeout);
         }
     }, [loadingPercentage]);
@@ -294,19 +280,22 @@ const Home = () => {
     }, []);
 
     return (
-        <div className="bg-slate-100 h-screen w-full relative overflow-hidden">
+        <div className="bg-black h-screen w-full relative overflow-hidden">
             <Header isOpenMenuParent={isMenuOpen} setIsOpenMenuParent={setIsMenuOpen} />
-            {   isMobile ? <MobileVersion handleHoverTV={handleHoverTV} handleClickTV={handleClickTV} 
-                                setLoadingProgression={setLoadingProgression} 
-                                message={message} 
-                            /> : 
+            {   isMobile ? <MobileVersionHomeScene
+                setHoverTvId={setHoverTvId}
+                setTvData={setTvData}
+                tvData={tvData}
+                clickTV={clickTV}
+                onSceneReady={() => setLoadingProgression(1) }
+            /> : 
                 <PCVersion handleHoverTV={handleHoverTV} 
                     handleClickTV={handleClickTV} 
                     setLoadingProgression={setLoadingProgression} 
                     message={message} 
                 />
             }
-            <AnimatePresence>{/*Loading Percentage For Unity*/}
+            <AnimatePresence>
                 {!loaderHidden && (
                     <motion.div
                         id="loader"
@@ -316,7 +305,7 @@ const Home = () => {
                         exit={{ y: "100%" }}
                         transition={{ duration: 1, ease: "easeInOut" }}
                     >
-                        { loadingPercentage > 0 && <GlitchText text={`${loadingPercentage}%`} /> }
+                        <GlitchText text={`${loadingPercentage}%`} />
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -329,10 +318,10 @@ const Home = () => {
                         transition={{ duration: 0.2, ease: "easeInOut" }} />
                 )}
             </AnimatePresence>
-            { hoverTvId > 0 && <div className="absolute hidden lg:block cursor-pointer w-full h-full opacity-0 z-[100] top-0 left-0" onClick={() => clickTV() }></div> }
+            { hoverTvId > 0 && <div className="absolute hidden lg:block cursor-pointer w-full h-full opacity-0 z-[100] top-0 left-0" onClick={() => clickTV(hoverTvId) }></div> }
             {
                 [1, 2, 3].map((value, key) => (
-                    <div key={key} className="absolute h-12 overflow-hidden w-full flex justify-center lg:block" style={{ 
+                    <div key={key} className="absolute h-12 overflow-hidden w-full flex justify-center hidden lg:block" style={{ 
                         left: isMobile ? 0 : tvData.find(e => e.id === value)?.x || 0, top: tvData.find(e => e.id === value)?.y || 0 
                     }}>
                         <AnimatePresence>

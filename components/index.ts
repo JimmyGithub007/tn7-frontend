@@ -7,6 +7,7 @@ import Loader from "./Loader";
 import Footer from "./Footer";
 import MouseFollower from "./MouseFollower";
 import GlitchText from "./GlitchText";
+
 export {
     WebGL,
     Header,
@@ -16,5 +17,5 @@ export {
     Loader,
     Footer,
     MouseFollower,
-    GlitchText
+    GlitchText,
 }

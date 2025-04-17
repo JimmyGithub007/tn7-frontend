@@ -40,7 +40,7 @@ const Loader = ({ setIsLoadedParent }: LoaderProps) => {
                 exit={{ y: "-100%" }}
                 transition={{ duration: 1, ease: "easeInOut" }}
             >
-                { loadingPercentage > 0 && <GlitchText text={`${loadingPercentage}%`} /> }
+                <GlitchText text={`${loadingPercentage}%`} />
             </motion.div>
         )}
     </AnimatePresence>)
