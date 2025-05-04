@@ -318,8 +318,8 @@ const Home = () => {
                         transition={{ duration: 0.2, ease: "easeInOut" }} />
                 )}
             </AnimatePresence>
-            { hoverTvId > 0 && <div className="absolute hidden lg:block cursor-pointer w-full h-full opacity-0 z-[100] top-0 left-0" onClick={() => clickTV(hoverTvId) }></div> }
-            {
+            {   !isMobile && hoverTvId > 0 && <div className="absolute cursor-pointer w-full h-full opacity-0 z-[100] top-0 left-0" onClick={() => clickTV(hoverTvId) }></div> }
+            {   !isMobile &&
                 [1, 2, 3].map((value, key) => (
                     <div key={key} className="absolute h-12 overflow-hidden w-full flex justify-center hidden lg:block" style={{ 
                         left: isMobile ? 0 : tvData.find(e => e.id === value)?.x || 0, top: tvData.find(e => e.id === value)?.y || 0 

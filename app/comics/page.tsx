@@ -19,7 +19,7 @@ const MobileVersionComicTimeLineScene = dynamic(() => import("@/components/Mobil
 const PCVersionComicTimeLineScene = dynamic(() => import("@/components/PCVersionComicTimeLineScene"), {
     ssr: false, // very important for components using Three.js or window
     loading: () => <div className="bg-black"></div>
-  });
+});
 
 const Comics = () => {
     const router = useRouter();

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { OrthographicCamera, Text, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
@@ -22,6 +22,74 @@ const buildings = [
 const MAP_WIDTH = 1920;
 const MAP_HEIGHT = 1080;
 const VIEWPORT_WIDTH = 500;
+
+const PARTICLE_COUNT = 500;
+
+export const SteamParticles = ({ position = [0, 0, 0], type="" }: { position: [ number, number, number ], type:string }) => {
+  const pointsRef = useRef<THREE.Points>(null);
+  const smokeTexture = useLoader(THREE.TextureLoader, '/assets/images/worldmap/smoke_01.png');
+
+  // 初始化粒子数据
+  const particles = useMemo(() => {
+    const positions = [];
+    const speeds = [];
+    const sizes = [];
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      // 位置随机分布在一个小圆形范围内
+      const x = (Math.random() - 0.5) * 40;
+      const y = Math.random() * 20;
+      const z = (Math.random() - 0.5) * 40;
+      positions.push(x, y, z);
+      speeds.push(0.2 + Math.random() * 0.2); // 上升速度
+      sizes.push(5 + Math.random() * 10); // 粒子大小
+    }
+
+    return { positions: new Float32Array(positions), speeds, sizes };
+  }, []);
+
+  useFrame(() => {
+    if (!pointsRef.current) return; // ✅ 安全判断
+    const positions = pointsRef.current.geometry.attributes.position.array as Float32Array;
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const idx = i * 3;
+      positions[idx + 1] += particles.speeds[i]; // y轴上升
+      positions[idx] += 0.15; // 使粒子向右飘动
+
+      // 超过一定高度就重置
+      if (positions[idx + 1] > 200) {
+        positions[idx + 1] = 0;
+        positions[idx] = (Math.random() - 0.5) * 40;
+        positions[idx + 2] = (Math.random() - 0.5) * 40;
+      }
+    }
+
+    pointsRef.current.geometry.attributes.position.needsUpdate = true;
+  });
+
+  return (
+    <points position={position} ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={particles.positions.length / 3}
+          array={particles.positions}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        map={smokeTexture}
+        color={type === "green" ? "#ccdc4b" : "#c6c6c6"}
+        size={type === "green" ? 100 : 50}
+        sizeAttenuation
+        transparent
+        opacity={0.1}
+        depthWrite={false}
+      />
+    </points>
+  );
+};
 
 const Fingers = () => {
     const [fingerFrameIndex, setFingerFrameIndex] = useState(0);
@@ -79,45 +147,20 @@ const BuildingHitbox = ({ setHoverBuildingId, setBuildingData, buildingData, cli
         setTargetZoom(1.5);
     };
 
-    // 加载 dot 动画帧
     const dotFrames = useLoader(THREE.TextureLoader, [
-        '/assets/images/home/dot/dot_1.png',
-        '/assets/images/home/dot/dot_2.png',
-        '/assets/images/home/dot/dot_3.png',
-        '/assets/images/home/dot/dot_4.png',
-        '/assets/images/home/dot/dot_5.png',
-        '/assets/images/home/dot/dot_6.png',
-        '/assets/images/home/dot/dot_7.png',
-        '/assets/images/home/dot/dot_8.png',
-        '/assets/images/home/dot/dot_9.png',
-        '/assets/images/home/dot/dot_10.png',
-        '/assets/images/home/dot/dot_9.png',
-        '/assets/images/home/dot/dot_8.png',
-        '/assets/images/home/dot/dot_7.png',
-        '/assets/images/home/dot/dot_6.png',
-        '/assets/images/home/dot/dot_5.png',
-        '/assets/images/home/dot/dot_4.png',
-        '/assets/images/home/dot/dot_3.png',
-        '/assets/images/home/dot/dot_2.png',
+        ...Array.from({ length: 10 }, (_, i) =>
+            `/assets/images/home/dot/dot_${i + 1}.png`
+        ),
+        ...Array.from({ length: 8 }, (_, i) =>
+            `/assets/images/home/dot/dot_${9 - i}.png`
+        ),
     ]);
 
     // 加载 outline 动画帧
     const outlineFrames = useLoader(THREE.TextureLoader, [
-        '/assets/images/home/dot/dot_outline_1.png',
-        '/assets/images/home/dot/dot_outline_2.png',
-        '/assets/images/home/dot/dot_outline_3.png',
-        '/assets/images/home/dot/dot_outline_4.png',
-        '/assets/images/home/dot/dot_outline_5.png',
-        '/assets/images/home/dot/dot_outline_6.png',
-        '/assets/images/home/dot/dot_outline_7.png',
-        '/assets/images/home/dot/dot_outline_8.png',
-        '/assets/images/home/dot/dot_outline_9.png',
-        '/assets/images/home/dot/dot_outline_10.png',
-        '/assets/images/home/dot/dot_outline_11.png',
-        '/assets/images/home/dot/dot_outline_12.png',
-        '/assets/images/home/dot/dot_outline_13.png',
-        '/assets/images/home/dot/dot_outline_14.png',
-        '/assets/images/home/dot/dot_outline_15.png',
+        ...Array.from({ length: 15 }, (_, i) =>
+            `/assets/images/home/dot/dot_outline_${i + 1}.png`
+        ),
     ]);
 
     const tvFrames = useLoader(THREE.TextureLoader, id === 9 ? [
@@ -216,22 +259,25 @@ const MapScene: React.FC<{
     cameraRef: any,
     buildingId: number,
     onSceneReady: () => void,
-    loadingPercentage: number
-}> = ({ setHoverBuildingId, setBuildingData, buildingData, clickBuilding, cameraRef, buildingId, onSceneReady, loadingPercentage }) => {
+    loadingPercentage: number,
+    isDragging: boolean,
+    setIsDragging: (isDragging: boolean) => void,
+}> = ({ setHoverBuildingId, setBuildingData, buildingData, clickBuilding, cameraRef, buildingId, onSceneReady, loadingPercentage, isDragging, setIsDragging }) => {
     const group = useRef<THREE.Group>(null);
     const word1Ref = useRef<THREE.Mesh>(null);
     const word2Ref = useRef<THREE.Mesh>(null);
     const word3Ref = useRef<THREE.Mesh>(null);
+    const whiteCloud1Ref = useRef<THREE.Mesh>(null);
+    const whiteCloud2Ref = useRef<THREE.Mesh>(null);
 
-    const [isDragging, setDragging] = useState(false);
     const [lastX, setLastX] = useState(0);
 
     const onPointerDown = (e: any) => {
-        setDragging(true);
+        setIsDragging(true);
         setLastX(e.clientX);
     };
 
-    const onPointerUp = () => setDragging(false);
+    const onPointerUp = () => setIsDragging(false);
 
     const onPointerMove = (e: any) => {
         if (isDragging && group.current) {
@@ -258,22 +304,23 @@ const MapScene: React.FC<{
             group.current.position.x = nextX;
       
             // Parallax logic: opposite direction, different speeds
-            if (word1Ref.current && word2Ref.current && word3Ref.current) {
+            if (word1Ref.current && word2Ref.current && word3Ref.current && whiteCloud1Ref.current && whiteCloud2Ref.current) {
                 word1Ref.current.position.x -= actualDelta * 0.1;
                 word2Ref.current.position.x -= actualDelta * 0.1;
                 word3Ref.current.position.x -= actualDelta * 0.1;
+                whiteCloud1Ref.current.position.x -= actualDelta * 0.2;
+                whiteCloud2Ref.current.position.x += actualDelta * 0.2;
             }
 
             setLastX(e.clientX);
         }
     };
 
-    const worldmapTexture = useLoader(THREE.TextureLoader, `/assets/images/worldmap/worldmap.png`);
-
     const riverFrames = useLoader(THREE.TextureLoader, [
-        ...Array.from({ length: 2 }, (_, i) =>
-            `/assets/images/worldmap/rivers/river (${i + 1}).png`
-        )
+        ...Array.from({ length: 1 }, (_, i) =>
+            `/assets/images/worldmap/rivers/river (${i + 1}).webp`
+        ),
+        `/assets/images/worldmap/rivers/river (2).webp`
     ]);
 
     const [riverFrameIndex, setRiverFrameIndex] = useState(0);
@@ -297,6 +344,9 @@ const MapScene: React.FC<{
     const word3Texture = useLoader(THREE.TextureLoader, `/assets/images/worldmap/word/newhelm.png`);
 
     const cloudTexture = useLoader(THREE.TextureLoader, `/assets/images/worldmap/cloud1.png`);
+    const wCloud01Texture = useLoader(THREE.TextureLoader, `/assets/images/worldmap/white_cloud_01.png`);
+    const wCloud02Texture = useLoader(THREE.TextureLoader, `/assets/images/worldmap/white_cloud_02.png`);
+    const vignetteTexture = useLoader(THREE.TextureLoader, `/assets/images/worldmap/vignette.png`);
 
     // 默认值
     const defaultZoom = 1;
@@ -329,10 +379,10 @@ const MapScene: React.FC<{
     }, [buildingId])
 
     useEffect(() => {
-        if (worldmapTexture && riverFrames && cloudTexture && word1Texture && word2Texture && word3Texture) {
+        if (riverFrames && cloudTexture && word1Texture && word2Texture && word3Texture) {
             onSceneReady();
         }
-    }, [worldmapTexture, riverFrames, cloudTexture, word1Texture, word2Texture, word3Texture]);
+    }, [riverFrames, cloudTexture, word1Texture, word2Texture, word3Texture]);
 
     return (
         <group
@@ -343,13 +393,12 @@ const MapScene: React.FC<{
         >
             <mesh position={[0, 0, 0]}>
                 <planeGeometry args={[MAP_WIDTH, MAP_HEIGHT]} />
-                <meshBasicMaterial map={worldmapTexture} transparent />
+                <meshBasicMaterial map={riverFrames[riverFrameIndex]} transparent />
             </mesh>
             <mesh position={[0, 0, 0]}>
                 <planeGeometry args={[MAP_WIDTH, MAP_HEIGHT]} />
-                <meshBasicMaterial map={riverFrames[riverFrameIndex]} transparent />
+                <meshBasicMaterial map={useLoader(THREE.TextureLoader, `/assets/images/worldmap/worldmap.png`)} transparent />
             </mesh>
-
             <mesh ref={word1Ref} position={[-480, 300, 0]}>
                 <planeGeometry args={[724*0.6, 67*0.6]} />
                 <meshBasicMaterial map={word1Texture} transparent opacity={0.4} />
@@ -377,6 +426,10 @@ const MapScene: React.FC<{
                     key={b.id} {...b} 
                 />
             ))}
+            <SteamParticles position={[580, -240, 2.03]} type="green" />
+            <SteamParticles position={[300, -240, 2.03]} type="gray" />
+            <SteamParticles position={[200, -100, 2.03]} type="gray" />
+            <SteamParticles position={[500, -100, 2.03]} type="gray" />
 
             <mesh position={[-600, -350, 2.03]}>
                 <planeGeometry args={[675, 313]} />
@@ -408,8 +461,31 @@ const MapScene: React.FC<{
                 <planeGeometry args={[MAP_WIDTH, MAP_HEIGHT]} />
                 <meshBasicMaterial map={cloudTexture} transparent opacity={0.5} />
             </mesh>
+            <mesh ref={whiteCloud1Ref} position={[0, 0, 2.04]}>
+                <planeGeometry args={[MAP_WIDTH, MAP_HEIGHT]} />
+                <meshBasicMaterial map={wCloud01Texture} transparent opacity={0.5} />
+            </mesh>
+            <mesh ref={whiteCloud2Ref} position={[0, 0, 2.04]}>
+                <planeGeometry args={[MAP_WIDTH, MAP_HEIGHT]} />
+                <meshBasicMaterial map={wCloud02Texture} transparent opacity={0.5} />
+            </mesh>
 
-            { loadingPercentage === 100 && <Fingers /> }
+            <mesh position={[-600, 0, 2.05]} rotation={[0, 0, -Math.PI / 2]}>
+                <planeGeometry args={[1920, 1068]} />
+                <meshBasicMaterial map={vignetteTexture} transparent />
+            </mesh>
+            <mesh position={[600, 0, 2.05]} rotation={[0, 0, Math.PI / 2]}>
+                <planeGeometry args={[1920, 1068]} />
+                <meshBasicMaterial map={vignetteTexture} transparent />
+            </mesh>
+            <mesh position={[0, 100, 2.05]} scale={[1, -1, 1]}>
+                <planeGeometry args={[1920, 1068]} />
+                <meshBasicMaterial map={vignetteTexture} transparent opacity={0.9} />
+            </mesh>
+            <mesh position={[0, -50, 2.05]}>
+                <planeGeometry args={[1920, 1068]} />
+                <meshBasicMaterial map={vignetteTexture} transparent opacity={0.9} />
+            </mesh>
         </group>
     );
 };
@@ -424,10 +500,23 @@ const MobileVersionWorldMapScene: React.FC<{
     loadingPercentage: number,
 }> = ({ setHoverBuildingId, setBuildingData, buildingData, clickBuilding, buildingId, onSceneReady, loadingPercentage }) => {
     const cameraRef = useRef<THREE.OrthographicCamera>(null!);
+    const [ isDragging, setIsDragging ] = useState(false);
     return (
         <Canvas orthographic camera={{ zoom: 1, position: [0, 0, 100] }}>
-            <color attach="background" args={['#e0e0e0']} />
-            <MapScene onSceneReady={onSceneReady} loadingPercentage={loadingPercentage} setHoverBuildingId={setHoverBuildingId} setBuildingData={setBuildingData} buildingData={buildingData} clickBuilding={clickBuilding} cameraRef={cameraRef} buildingId={buildingId} />
+            <color attach="background" args={['#000000']} />
+            <MapScene 
+                onSceneReady={onSceneReady} 
+                loadingPercentage={loadingPercentage} 
+                setHoverBuildingId={setHoverBuildingId} 
+                setBuildingData={setBuildingData} 
+                buildingData={buildingData} 
+                clickBuilding={clickBuilding} 
+                cameraRef={cameraRef} 
+                buildingId={buildingId}
+                setIsDragging={setIsDragging}
+                isDragging={isDragging}
+            />
+            { !isDragging && loadingPercentage === 100 && buildingId === 0 && <Fingers /> }
             <OrthographicCamera ref={cameraRef} makeDefault position={[0, 0, 100]} zoom={1} />
         </Canvas>
     );

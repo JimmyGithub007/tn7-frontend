@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { Canvas, useLoader } from '@react-three/fiber';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { OrthographicCamera, Text, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -15,7 +15,73 @@ const tvs = [
 const MAP_WIDTH = 1920;
 const MAP_HEIGHT = 1080;
 const VIEWPORT_WIDTH = 500;
-const ANIMATION_FPS = 16;
+
+const PARTICLE_COUNT = 100;
+
+export const SteamParticles = ({ position = [0, 0, 0] }: { position: [ number, number, number ] }) => {
+  const pointsRef = useRef<THREE.Points>(null);
+  const smokeTexture = useLoader(THREE.TextureLoader, '/assets/images/worldmap/smoke_01.png');
+
+  // 初始化粒子数据
+  const particles = useMemo(() => {
+    const positions = [];
+    const speeds = [];
+    const sizes = [];
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      // 位置随机分布在一个小圆形范围内
+      const x = (Math.random() - 0.5) * 40;
+      const y = Math.random() * 20;
+      const z = (Math.random() - 0.5) * 40;
+      positions.push(x, y, z);
+      speeds.push(0.2 + Math.random() * 0.5); // 上升速度
+      sizes.push(5 + Math.random() * 10); // 粒子大小
+    }
+
+    return { positions: new Float32Array(positions), speeds, sizes };
+  }, []);
+
+  useFrame(() => {
+    if (!pointsRef.current) return; // ✅ 安全判断
+    const positions = pointsRef.current.geometry.attributes.position.array as Float32Array;
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const idx = i * 3;
+      positions[idx + 1] += particles.speeds[i]; // y轴上升
+
+      // 超过一定高度就重置
+      if (positions[idx + 1] > 200) {
+        positions[idx + 1] = 0;
+        positions[idx] = (Math.random() - 0.5) * 40;
+        positions[idx + 2] = (Math.random() - 0.5) * 40;
+      }
+    }
+
+    pointsRef.current.geometry.attributes.position.needsUpdate = true;
+  });
+
+  return (
+    <points position={position} ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={particles.positions.length / 3}
+          array={particles.positions}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        map={smokeTexture}
+        color={0xffffff}
+        size={40}
+        sizeAttenuation
+        transparent
+        opacity={0.1}
+        depthWrite={false}
+      />
+    </points>
+  );
+};
 
 const Fingers = () => {
   const [fingerFrameIndex, setFingerFrameIndex] = useState(0);
@@ -60,7 +126,7 @@ const Map = ({ onSceneReady }: { onSceneReady: () => void }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       setFrameIndex((prev) => (prev + 1) % frames.length);
-    }, 1000 / ANIMATION_FPS);
+    }, 1000 / 16);
 
     return () => clearInterval(interval);
   }, [frames.length]);
@@ -81,28 +147,12 @@ const Map = ({ onSceneReady }: { onSceneReady: () => void }) => {
 
 const CCTV = () => {
   const frames = useLoader(THREE.TextureLoader, [
-    '/assets/images/home/cctv/cctv_1.png',
-    '/assets/images/home/cctv/cctv_2.png',
-    '/assets/images/home/cctv/cctv_3.png',
-    '/assets/images/home/cctv/cctv_4.png',
-    '/assets/images/home/cctv/cctv_5.png',
-    '/assets/images/home/cctv/cctv_6.png',
-    '/assets/images/home/cctv/cctv_7.png',
-    '/assets/images/home/cctv/cctv_8.png',
-    '/assets/images/home/cctv/cctv_9.png',
-    '/assets/images/home/cctv/cctv_10.png',
-    '/assets/images/home/cctv/cctv_11.png',
-    '/assets/images/home/cctv/cctv_12.png',
-    '/assets/images/home/cctv/cctv_11.png',
-    '/assets/images/home/cctv/cctv_10.png',
-    '/assets/images/home/cctv/cctv_9.png',
-    '/assets/images/home/cctv/cctv_8.png',
-    '/assets/images/home/cctv/cctv_7.png',
-    '/assets/images/home/cctv/cctv_6.png',
-    '/assets/images/home/cctv/cctv_5.png',
-    '/assets/images/home/cctv/cctv_4.png',
-    '/assets/images/home/cctv/cctv_3.png',
-    '/assets/images/home/cctv/cctv_2.png',
+    ...Array.from({ length: 12 }, (_, i) =>
+      `/assets/images/home/cctv/cctv_${i + 1}.png`
+    ),
+    ...Array.from({ length: 10 }, (_, i) =>
+      `/assets/images/home/cctv/cctv_${11 - i}.png`
+    ),
   ]);
 
   const [frameIndex, setFrameIndex] = useState(0);
@@ -110,7 +160,7 @@ const CCTV = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setFrameIndex((prev) => (prev + 1) % frames.length);
-    }, 1000 / ANIMATION_FPS);
+    }, 1000 / 10);
 
     return () => clearInterval(interval);
   }, [frames.length]);
@@ -139,43 +189,19 @@ const TvHitbox = ({ setHoverTvId, setTvData, tvData, clickTV, id, x, y, pX, pY, 
 
   // 加载 dot 动画帧
   const dotFrames = useLoader(THREE.TextureLoader, [
-    '/assets/images/home/dot/dot_1.png',
-    '/assets/images/home/dot/dot_2.png',
-    '/assets/images/home/dot/dot_3.png',
-    '/assets/images/home/dot/dot_4.png',
-    '/assets/images/home/dot/dot_5.png',
-    '/assets/images/home/dot/dot_6.png',
-    '/assets/images/home/dot/dot_7.png',
-    '/assets/images/home/dot/dot_8.png',
-    '/assets/images/home/dot/dot_9.png',
-    '/assets/images/home/dot/dot_10.png',
-    '/assets/images/home/dot/dot_9.png',
-    '/assets/images/home/dot/dot_8.png',
-    '/assets/images/home/dot/dot_7.png',
-    '/assets/images/home/dot/dot_6.png',
-    '/assets/images/home/dot/dot_5.png',
-    '/assets/images/home/dot/dot_4.png',
-    '/assets/images/home/dot/dot_3.png',
-    '/assets/images/home/dot/dot_2.png',
+    ...Array.from({ length: 10 }, (_, i) =>
+      `/assets/images/home/dot/dot_${i + 1}.png`
+    ),
+    ...Array.from({ length: 8 }, (_, i) =>
+      `/assets/images/home/dot/dot_${9 - i}.png`
+    ),
   ]);
 
   // 加载 outline 动画帧
   const outlineFrames = useLoader(THREE.TextureLoader, [
-    '/assets/images/home/dot/dot_outline_1.png',
-    '/assets/images/home/dot/dot_outline_2.png',
-    '/assets/images/home/dot/dot_outline_3.png',
-    '/assets/images/home/dot/dot_outline_4.png',
-    '/assets/images/home/dot/dot_outline_5.png',
-    '/assets/images/home/dot/dot_outline_6.png',
-    '/assets/images/home/dot/dot_outline_7.png',
-    '/assets/images/home/dot/dot_outline_8.png',
-    '/assets/images/home/dot/dot_outline_9.png',
-    '/assets/images/home/dot/dot_outline_10.png',
-    '/assets/images/home/dot/dot_outline_11.png',
-    '/assets/images/home/dot/dot_outline_12.png',
-    '/assets/images/home/dot/dot_outline_13.png',
-    '/assets/images/home/dot/dot_outline_14.png',
-    '/assets/images/home/dot/dot_outline_15.png',
+    ...Array.from({ length: 15 }, (_, i) =>
+      `/assets/images/home/dot/dot_outline_${i + 1}.png`
+    ),
   ]);
 
   const tvFrames = useLoader(THREE.TextureLoader, [
@@ -275,13 +301,13 @@ const TvHitbox = ({ setHoverTvId, setTvData, tvData, clickTV, id, x, y, pX, pY, 
 
       {/* dot 本体动画 */}
       <mesh position={[pX, pY, 2]}>
-        <planeGeometry args={[50, 50]} />
+        <planeGeometry args={[60, 60]} />
         <meshBasicMaterial map={dotFrames[dotFrameIndex]} transparent />
       </mesh>
 
       {/* outline 动画，略微放大一点点叠在底下或上面 */}
       <mesh position={[pX, pY, 2.01]}>
-        <planeGeometry args={[60, 60]} />
+        <planeGeometry args={[70, 70]} />
         <meshBasicMaterial map={outlineFrames[dotOutlineFrameIndex]} transparent />
       </mesh>
       {hovered && (
@@ -306,20 +332,20 @@ const MapScene: React.FC<{
   tvData: { id: number, name: string, x: number, y: number }[],
   clickTV: (tvId: number) => void,
   onSceneReady: () => void,
-}> = ({ setHoverTvId, setTvData, tvData, clickTV, onSceneReady }) => {
+  isDragging: boolean,
+  setIsDragging: (isDragging: boolean) => void,
+}> = ({ setHoverTvId, setTvData, tvData, clickTV, onSceneReady, isDragging, setIsDragging }) => {
   const group = useRef<THREE.Group>(null);
   const ventsRef = useRef<THREE.Mesh>(null);
   const chairRef = useRef<THREE.Mesh>(null);
-
-  const [isDragging, setDragging] = useState(false);
   const [lastX, setLastX] = useState(0);
 
   const onPointerDown = (e: any) => {
-    setDragging(true);
+    setIsDragging(true);
     setLastX(e.clientX);
   };
 
-  const onPointerUp = () => setDragging(false);
+  const onPointerUp = () => setIsDragging(false);
 
   const onPointerMove = (e: any) => {
     if (isDragging && group.current) {
@@ -360,6 +386,8 @@ const MapScene: React.FC<{
   const ventsTexture = useLoader(THREE.TextureLoader, `/assets/images/home/vents.png`);
   const chairTexture = useLoader(THREE.TextureLoader, `/assets/images/home/chair.png`);
 
+  const vignetteTexture = useLoader(THREE.TextureLoader, `/assets/images/worldmap/vignette.png`);
+
   const [ mapReady, setMapReady ] = useState<boolean>(false);
 
   useEffect(() => {
@@ -380,20 +408,31 @@ const MapScene: React.FC<{
         <TvHitbox setHoverTvId={setHoverTvId} setTvData={setTvData} tvData={tvData} clickTV={clickTV} key={b.id} {...b} />
       ))}
       <CCTV />
-      
-      {/* vents - further back */}
       <mesh ref={ventsRef} position={[0, 0, 2.02]}>
         <planeGeometry args={[MAP_WIDTH, MAP_HEIGHT]} />
         <meshBasicMaterial map={ventsTexture} transparent />
       </mesh>
-
-      {/* chair - closer */}
-      <mesh ref={chairRef} position={[0, -320, 2.03]}>
-        <planeGeometry args={[162, 216]} />
+      <mesh ref={chairRef} position={[0, -430, 2.03]}>
+        <planeGeometry args={[162*1.05, 216*1.05]} />
         <meshBasicMaterial map={chairTexture} transparent />
       </mesh>
-
-      <Fingers />
+      <SteamParticles position={[-360, -320, 2.04]} />
+      <mesh position={[-600, 0, 2.05]} rotation={[0, 0, -Math.PI / 2]}>
+        <planeGeometry args={[1920, 1068]} />
+        <meshBasicMaterial map={vignetteTexture} transparent />
+      </mesh>
+      <mesh position={[600, 0, 2.05]} rotation={[0, 0, Math.PI / 2]}>
+        <planeGeometry args={[1920, 1068]} />
+        <meshBasicMaterial map={vignetteTexture} transparent />
+      </mesh>
+      <mesh position={[0, 100, 2.05]} scale={[1, -1, 1]}>
+        <planeGeometry args={[1920, 1068]} />
+        <meshBasicMaterial map={vignetteTexture} transparent opacity={0.9} />
+      </mesh>
+      <mesh position={[0, -50, 2.05]}>
+        <planeGeometry args={[1920, 1068]} />
+        <meshBasicMaterial map={vignetteTexture} transparent opacity={0.9} />
+      </mesh>
     </group>
   );
 };
@@ -405,10 +444,12 @@ const MobileVersionHomeScene: React.FC<{
   clickTV: (tvId: number) => void,
   onSceneReady: () => void,
 }> = ({ setHoverTvId, setTvData, tvData, clickTV, onSceneReady }) => {
+  const [ isDragging, setIsDragging ] = useState(false);
   return (
     <Canvas orthographic camera={{ zoom: 1, position: [0, 0, 100] }}>
-      <color attach="background" args={['#e0e0e0']} />
-      <MapScene setHoverTvId={setHoverTvId} setTvData={setTvData} tvData={tvData} clickTV={clickTV} onSceneReady={onSceneReady} />
+      <color attach="background" args={['#000000']} />
+      <MapScene setHoverTvId={setHoverTvId} setTvData={setTvData} tvData={tvData} clickTV={clickTV} onSceneReady={onSceneReady} setIsDragging={setIsDragging} isDragging={isDragging} />
+      { !isDragging && <Fingers /> }
       <OrthographicCamera makeDefault position={[0, 0, 100]} />
     </Canvas>
   );
