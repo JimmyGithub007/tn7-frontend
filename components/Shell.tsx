@@ -5,13 +5,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { MdDashboard, MdShoppingCart, MdListAlt, MdPeople, MdSettings, MdManageAccounts, MdLeaderboard } from "react-icons/md";
 import { TbLogs } from "react-icons/tb";
 import { BiLogOut, BiUser } from "react-icons/bi";
-import { Button } from "@mui/material";
+import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
+import axios from "axios";
 
 const menuItems = [
     //{ label: "Dashboard", href: "/cms/dashboard", icon: <MdDashboard size={22} /> },
     { label: "User", href: "/cms/user", icon: <MdPeople size={22} /> },
     { label: "Role", href: "/cms/role", icon: <MdManageAccounts size={22} /> },
-    //{ label: "Log", href: "/cms/audit-log", icon: <TbLogs size={22} /> },
+    { label: "Log", href: "/cms/activity-log", icon: <TbLogs size={22} /> },
     { label: "Lore", href: "/cms/lore", icon: <MdListAlt size={22} /> },
     { label: "Entry", href: "/cms/entry", icon: <MdListAlt size={22} /> },
     { label: "Lunex", href: "/cms/lunex", icon: <MdLeaderboard size={22} /> },
@@ -19,8 +20,9 @@ const menuItems = [
 
 const Shell = ({ children }: { children: React.ReactNode }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const pathname = usePathname();
     const [userEmail, setUserEmail] = useState<string | null>(null);
+    const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+    const pathname = usePathname();
     const router = useRouter();
 
     // Get user email from localStorage (or you can fetch from API if you have user info endpoint)
@@ -31,12 +33,29 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
         }
     }, []);
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user_email');
-        localStorage.removeItem('roles');
-        localStorage.removeItem('permissions');
-        router.push('/cms/login');
+    const handleLogout = async () => {
+        try {
+            const token = localStorage.getItem('token')
+            await axios.post(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/logout`,
+                {},
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                    }
+                }
+            );
+    
+            localStorage.removeItem('token');
+            localStorage.removeItem('user_email');
+            localStorage.removeItem('roles');
+            localStorage.removeItem('permissions');
+            router.push('/cms/login');
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
     };
 
     return (
@@ -89,7 +108,7 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
                         <span className="mr-4 text-gray-700 text-sm">{userEmail}</span>
                     )}
                     <button
-                        onClick={handleLogout}
+                        onClick={() => setLogoutDialogOpen(true)}
                         className="duration-150 flex items-center text-gray-700 text-sm rounded-3xl px-4 py-2 bg-gray-200 hover:bg-gray-300 shadow-sm"
                     >
                         Logout
@@ -108,6 +127,32 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
                     onClick={() => setIsMobileMenuOpen(false)}
                 />
             )}
+            <Dialog
+                open={logoutDialogOpen}
+                onClose={() => setLogoutDialogOpen(false)}
+            >
+                <DialogTitle>Confirm Logout</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to logout?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setLogoutDialogOpen(false)} color="primary">
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            setLogoutDialogOpen(false);
+                            handleLogout();
+                        }}
+                        color="primary"
+                        variant="contained"
+                    >
+                        Logout
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     )
 }
