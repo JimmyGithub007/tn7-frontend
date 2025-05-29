@@ -2,9 +2,13 @@
 
 import { useEffect, useState } from "react";
 import CustomTable, { Column } from "@/components/CustomTable";
-import { Button, Drawer, TextField, MenuItem, FormControl, InputLabel, Select, Stepper, StepLabel, Step } from "@mui/material";
+import { Button, Drawer, TextField, MenuItem, FormControl, InputLabel, Select } from "@mui/material";
 import axios from "axios";
 import Shell from "@/components/Shell";
+import { MdCancel } from "react-icons/md";
+import { FaClipboardList } from "react-icons/fa6";
+import { FaCheckCircle } from "react-icons/fa";
+import { TbCancel } from "react-icons/tb";
 
 interface Entry {
     id: string;
@@ -184,17 +188,20 @@ const EntryPage = () => {
                 <h1 className="text-2xl font-semibold">Entry Management</h1>
             </div>
             <div className="grid grid-cols-3 gap-4 my-4">
-                <div className="bg-white flex flex-col items-center justify-center h-36 p-4 rounded-lg shadow-sm">
+                <div className="bg-white flex flex-col items-center justify-center h-36 p-4 rounded-lg shadow-sm relative overflow-hidden">
                     <span>Pending</span>
                     <span className="text-4xl font-bold">0</span>
+                    <FaClipboardList size={100} className="absolute -bottom-4 -right-4 text-slate-100" />
                 </div>
-                <div className="bg-white flex flex-col items-center justify-center h-36 p-4 rounded-lg shadow-sm">
+                <div className="bg-white flex flex-col items-center justify-center h-36 p-4 rounded-lg shadow-sm relative overflow-hidden">
                     <span>Approved</span>
                     <span className="text-4xl font-bold">0</span>
+                    <FaCheckCircle size={100} className="absolute -bottom-4 -right-4 text-slate-100" />
                 </div>
-                <div className="bg-white flex flex-col items-center justify-center h-36 p-4 rounded-lg shadow-sm">
+                <div className="bg-white flex flex-col items-center justify-center h-36 p-4 rounded-lg shadow-sm relative overflow-hidden">
                     <span>Rejected</span>
                     <span className="text-4xl font-bold">0</span>
+                    <TbCancel size={120} className="absolute -bottom-6 -right-6 text-slate-100" />
                 </div>
             </div>
             <CustomTable columns={columns} data={entries} pagination={true} />

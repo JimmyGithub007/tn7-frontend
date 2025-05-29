@@ -485,6 +485,27 @@ const UserPage = () => {
             )
         },
         {
+            id: "nfts",
+            name: "NFTs",
+            sortable: true,
+            align: "right",
+            render: () => 0
+        },
+        {
+            id: "points",
+            name: "Points",
+            sortable: true,
+            align: "right",
+            render: () => 0
+        },
+        {
+            id: "points",
+            name: "Points",
+            sortable: true,
+            align: "right",
+            render: () => 0
+        },
+        {
             id: "created_at",
             name: "Created At",
             sortable: true,
