@@ -5,7 +5,7 @@ import { BiEdit, BiTrash } from "react-icons/bi";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { useDropzone } from "react-dropzone";
 import { useRouter } from "next/navigation";
-import { Drawer, TextField, Button, FormControl, InputLabel, Select, MenuItem, Chip } from "@mui/material";
+import { Drawer, TextField, Button, FormControl, InputLabel, Select, MenuItem, Chip, CircularProgress } from "@mui/material";
 
 import Shell from "@/components/Shell";
 import axios from "axios";
@@ -67,21 +67,13 @@ const LoreManagementPage = () => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isCreatingLoreItem, setIsCreatingLoreItem] = useState(false);
+    const [saving, setSaving] = useState(false);
 
     const loresColumns: Column[] = [
-        { id: "title", name: "Title", sortable: true, align: "left" },
-        { 
-            id: "status", 
-            name: "Status", 
-            sortable: true, 
-            align: "center",
-            render: (value) => <Chip size="small" variant="outlined" label={value == "active" ? 'Active' : 'Inactive'} color={value == "active" ? 'success' : 'error'} />
-        },
-        { id: "sorted_index", name: "Sorted Index", sortable: true, align: "right" },
         {
             id: 'actions',
             name: 'Actions',
-            align: 'right',
+            align: 'left',
             sortable: false,
             actions: [
                 {
@@ -97,10 +89,39 @@ const LoreManagementPage = () => {
                     icon: <BiTrash />
                 }
             ]
-        }
+        },
+        { id: "title", name: "Title", sortable: true, align: "left" },
+        { 
+            id: "status", 
+            name: "Status", 
+            sortable: true, 
+            align: "center",
+            render: (value) => <Chip size="small" variant="outlined" label={value == "active" ? 'Active' : 'Inactive'} color={value == "active" ? 'success' : 'error'} />
+        },
+        { id: "sorted_index", name: "Sorted Index", sortable: true, align: "right" },
     ];
 
     const loreItemsColumns: Column[] = [
+        {
+            id: 'actions',
+            name: 'Actions',
+            align: 'left',
+            sortable: false,
+            actions: [
+                {
+                    label: 'Edit',
+                    onClick: (row) => handleEditLoreItem(row),
+                    className: 'bg-blue-500 hover:bg-blue-600 text-white',
+                    icon: <BiEdit />
+                },
+                {
+                    label: 'Delete',
+                    onClick: (row) => handleDeleteLoreItem(row),
+                    className: 'bg-red-500 hover:bg-red-600 text-white',
+                    icon: <BiTrash />
+                }
+            ]
+        },
         { id: "title", name: "Title", sortable: true, align: "left" },
         { id: "category", name: "Category", sortable: true, align: "left" },
         {
@@ -123,26 +144,6 @@ const LoreManagementPage = () => {
             render: (value) => <Chip size="small" variant="outlined" label={value == "active" ? 'Active' : 'Inactive'} color={value == "active" ? 'success' : 'error'} />
         },
         { id: "sorted_index", name: "Sorted Index", sortable: true, align: "right" },
-        {
-            id: 'actions',
-            name: 'Actions',
-            align: 'right',
-            sortable: false,
-            actions: [
-                {
-                    label: 'Edit',
-                    onClick: (row) => handleEditLoreItem(row),
-                    className: 'bg-blue-500 hover:bg-blue-600 text-white',
-                    icon: <BiEdit />
-                },
-                {
-                    label: 'Delete',
-                    onClick: (row) => handleDeleteLoreItem(row),
-                    className: 'bg-red-500 hover:bg-red-600 text-white',
-                    icon: <BiTrash />
-                }
-            ]
-        }
     ];
 
     const handleEdit = (row: any) => {
@@ -223,6 +224,7 @@ const LoreManagementPage = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setSaving(true);
         try {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -256,6 +258,8 @@ const LoreManagementPage = () => {
         } catch (error) {
             console.error('Error saving lore:', error);
             alert('Failed to save lore');
+        } finally {
+            setSaving(false);
         }
     }
 
@@ -276,6 +280,7 @@ const LoreManagementPage = () => {
 
     const handleLoreItemSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setSaving(true);
         try {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -336,6 +341,8 @@ const LoreManagementPage = () => {
         } catch (error) {
             console.error('Error saving lore item:', error);
             alert('Failed to save lore item');
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -507,13 +514,15 @@ const LoreManagementPage = () => {
                             onChange={(e) => setFormData({ ...formData, sorted_index: Number(e.target.value) })}
                             required
                         />
-                        <div className="flex justify-end gap-2 mt-6">
+                        <div className="flex gap-2 mt-6">
                             <Button
                                 variant="outlined"
                                 onClick={() => {
                                     setOpen(false);
                                     resetForm();
                                 }}
+                                disabled={saving}
+                                className="w-full"
                             >
                                 Cancel
                             </Button>
@@ -521,8 +530,10 @@ const LoreManagementPage = () => {
                                 type="submit"
                                 variant="contained"
                                 color="primary"
+                                disabled={saving}
+                                className="w-full"
                             >
-                                Update
+                                {saving ? <CircularProgress size={20} /> : "Save"}
                             </Button>
                         </div>
                     </form>
@@ -608,22 +619,26 @@ const LoreManagementPage = () => {
                             onChange={(e) => setLoreItemFormData({ ...loreItemFormData, sorted_index: Number(e.target.value) })}
                             required
                         />
-                        <div className="flex justify-end gap-2 mt-6">
+                        <div className="flex gap-2 mt-6">
                             <Button
+                                className="w-full"
                                 variant="outlined"
                                 onClick={() => {
                                     setOpen(false);
                                     resetLoreItemForm();
                                 }}
+                                disabled={saving}
                             >
                                 Cancel
                             </Button>
                             <Button
+                                className="w-full"
                                 type="submit"
                                 variant="contained"
                                 color="primary"
+                                disabled={saving}
                             >
-                                Update
+                                {saving ? <CircularProgress size={20} /> : "Save"}
                             </Button>
                         </div>
                     </form>

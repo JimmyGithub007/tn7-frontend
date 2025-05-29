@@ -157,16 +157,10 @@ const EntryPage = () => {
 
     // 表格列定义
     const columns: Column[] = [
-        { id: "entry_no", name: "Entry No", sortable: true, align: "left" },
-        { id: "title", name: "Title", sortable: true, align: "left" },
-        { id: "author", name: "Author", sortable: false, align: "left", render: (value) => value?.name || "-" },
-        { id: "category", name: "Category", sortable: false, align: "left", render: (value) => value?.name || "-" },
-        { id: "status", name: "Status", sortable: true, align: "center", render: (value: number) => statusMap[value as keyof typeof statusMap] },
-        { id: "created_at", name: "Created At", sortable: true, align: "center", render: (value) => new Date(value).toLocaleString() },
         {
             id: "actions",
             name: "Actions",
-            align: "center",
+            align: "left",
             sortable: false,
             actions: [
                 {
@@ -175,7 +169,13 @@ const EntryPage = () => {
                     className: "bg-blue-500 hover:bg-blue-600 text-white"
                 }
             ]
-        }
+        },
+        { id: "entry_no", name: "Entry No", sortable: true, align: "left" },
+        { id: "title", name: "Title", sortable: true, align: "left" },
+        { id: "author", name: "Author", sortable: false, align: "left", render: (value) => value?.name || "-" },
+        { id: "category", name: "Category", sortable: false, align: "left", render: (value) => value?.name || "-" },
+        { id: "status", name: "Status", sortable: true, align: "center", render: (value: number) => statusMap[value as keyof typeof statusMap] },
+        { id: "created_at", name: "Created At", sortable: true, align: "center", render: (value) => new Date(value).toLocaleString() },
     ];
 
     return (

@@ -1,17 +1,20 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { Button, Drawer, TextField, FormControl, InputLabel, Select, MenuItem, Divider, Chip, Card, InputAdornment, Tooltip } from "@mui/material"
+import { useEffect, useState, useCallback } from "react"
+import { Button, Drawer, TextField, FormControl, InputLabel, Select, MenuItem, InputAdornment, Tooltip, Chip, CircularProgress } from "@mui/material"
 import { useRouter } from 'next/navigation'
-import { MdAdd, MdDelete, MdEdit, MdOutlinePassword } from "react-icons/md"
+import { MdAdd, MdDelete, MdEdit, MdOutlinePassword, MdCloudUpload } from "react-icons/md"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { IoCloudUploadOutline, IoShareSocial } from "react-icons/io5"
+import { FaDiscord, FaGlobe, FaInstagram, FaTwitter } from "react-icons/fa"
 import CustomTable, { Column } from "@/components/CustomTable"
 import Shell from "@/components/Shell"
 import axios from 'axios'
-import { useForm, Controller } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { IoShareOutline, IoShareSocial } from "react-icons/io5"
-import { FaDiscord, FaGlobe, FaInstagram, FaTwitter } from "react-icons/fa"
+import { useSnackbar } from 'notistack';
+import { useDropzone } from 'react-dropzone';
+import { IoIosImages } from "react-icons/io"
 
 interface Role {
     id: string,
@@ -28,15 +31,19 @@ interface User {
     social_media?: { category: string, url: string }[]
     bio?: string | null,
     user_no?: string | null,
+    profile_picture?: string | null,
 }
 
 const UserPage = () => {
+    const { enqueueSnackbar } = useSnackbar();
     const [users, setUsers] = useState<User[]>([])
     const [roles, setRoles] = useState<Role[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [open, setOpen] = useState(false)
     const [editingUser, setEditingUser] = useState<User | null>(null)
+    const [imageFile, setImageFile] = useState<File | null>(null)
+    const [imagePreview, setImagePreview] = useState<string | null>(null)
     const router = useRouter()
 
     const userSchema = z.object({
@@ -59,6 +66,7 @@ const UserPage = () => {
         discord: z.string().optional(),
         website: z.string().optional(),
         bio: z.string().max(1000, "Bio is too long").optional(),
+        profile_picture: z.any().optional(),
     }).refine((data) => {
         if (!editingUser) {
             return !!(data.password);
@@ -206,8 +214,26 @@ const UserPage = () => {
         setOpen(true)
     }
 
+    const onDrop = useCallback((acceptedFiles: File[]) => {
+        if (acceptedFiles && acceptedFiles[0]) {
+            setImageFile(acceptedFiles[0]);
+            setImagePreview(URL.createObjectURL(acceptedFiles[0]));
+        }
+    }, []);
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop,
+        accept: {
+            'image/*': ['.jpeg', '.jpg', '.png', '.gif']
+        },
+        maxFiles: 1,
+        maxSize: 5242880, // 5MB
+    });
+
     const handleEdit = (user: User) => {
         setEditingUser(user)
+        setImagePreview(user?.profile_picture ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${user.profile_picture}` : null);
+        setImageFile(null);
         reset({
             name: user.name,
             email: user.email || '',
@@ -235,17 +261,20 @@ const UserPage = () => {
                 return
             }
 
-            // Prepare data for submission
-            const submitData = {
-                name: data.name,
-                email: data.email,
-                wallet_address: data.wallet_address,
-                roles: data.roles,
-                instagram: data.instagram,
-                twitter: data.twitter,
-                discord: data.discord,
-                website: data.website,
-                bio: data.bio
+            const form = new FormData();
+            form.append('name', data.name);
+            form.append('email', data.email);
+            form.append('wallet_address', data.wallet_address || '');
+            form.append('roles', JSON.stringify(data.roles));
+            form.append('instagram', data.instagram || '');
+            form.append('twitter', data.twitter || '');
+            form.append('discord', data.discord || '');
+            form.append('website', data.website || '');
+            form.append('bio', data.bio || '');
+
+            if (imageFile) {
+                const blob = new Blob([imageFile], { type: imageFile.type });
+                form.append('profile_picture', blob, imageFile.name);
             }
 
             // Add password for new user
@@ -254,60 +283,62 @@ const UserPage = () => {
                     setError('Password is required for new users')
                     return
                 }
-                Object.assign(submitData, {
-                    password: data.password
-                })
+                form.append('password', data.password);
             }
 
             // Only include password fields if they are all filled
             if (data.current_password && data.new_password && data.new_password_confirmation) {
-                Object.assign(submitData, {
-                    current_password: data.current_password,
-                    new_password: data.new_password,
-                    new_password_confirmation: data.new_password_confirmation
-                })
+                form.append('current_password', data.current_password);
+                form.append('new_password', data.new_password);
+                form.append('new_password_confirmation', data.new_password_confirmation);
             }
 
             if (editingUser) {
                 // Update existing user
-                const response = await axios.put(
+                const response = await axios.post(
                     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${editingUser.id}`,
-                    submitData,
+                    form,
                     {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Accept': 'application/json',
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'multipart/form-data'
                         }
                     }
                 )
                 setUsers(users.map(user => user.id === editingUser.id ? response.data : user))
+                enqueueSnackbar('User updated successfully', { variant: 'success' });
             } else {
                 // Create new user
                 const response = await axios.post(
                     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users`,
-                    submitData,
+                    form,
                     {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Accept': 'application/json',
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'multipart/form-data'
                         }
                     }
                 )
                 setUsers([...users, response.data])
+                enqueueSnackbar('User created successfully', { variant: 'success' });
             }
 
             setOpen(false)
             reset()
+            setImageFile(null);
+            setImagePreview(null);
             setError(null)
         } catch (error: any) {
             console.error('Error saving user:', error)
             if (error.response?.status === 422) {
                 if (error.response.data.message === 'Current password is incorrect') {
                     setError(error.response.data.message)
+                    enqueueSnackbar(error.response.data.message, { variant: 'error' });
                 } else {
                     setError(error.response.data.message)
+                    enqueueSnackbar(error.response.data.message, { variant: 'error' });
                 }
             } else if (error.response?.status === 401) {
                 setError('Authentication failed. Please login again.')
@@ -315,6 +346,7 @@ const UserPage = () => {
                 router.push('/cms/login')
             } else {
                 setError('Failed to save user. Please try again.')
+                enqueueSnackbar('Failed to save user. Please try again.', { variant: 'error' });
             }
         }
     }
@@ -339,6 +371,7 @@ const UserPage = () => {
             })
             setUsers(users.filter(user => user.id !== userId))
             setError(null)
+            enqueueSnackbar('User deleted successfully', { variant: 'success' });
         } catch (error: any) {
             console.error('Error deleting user:', error)
             if (error.response?.status === 401) {
@@ -347,6 +380,7 @@ const UserPage = () => {
                 router.push('/cms/login')
             } else {
                 setError('Failed to delete user. Please try again.')
+                enqueueSnackbar('Failed to delete user. Please try again.', { variant: 'error' });
             }
         }
     }
@@ -357,6 +391,47 @@ const UserPage = () => {
     }, [])
 
     const userColumns: Column[] = [
+        {
+            id: "actions",
+            name: "Actions",
+            align: "left",
+            sortable: false,
+            actions: [
+                {
+                    label: "Edit",
+                    onClick: (row) => handleEdit(row),
+                    className: "bg-blue-500 hover:bg-blue-600 text-white",
+                    icon: <MdEdit />
+                },
+                {
+                    label: "Delete",
+                    onClick: (row) => handleDelete(row.id),
+                    className: "bg-red-500 hover:bg-red-600 text-white",
+                    icon: <MdDelete />
+                }
+            ]
+        },
+        {
+            id: "profile_picture",
+            name: "Profile",
+            sortable: false,
+            align: "center",
+            render: (value) => (
+                <div className="w-10 h-10 rounded-full overflow-hidden">
+                    {value ? (
+                        <img 
+                            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${value}`} 
+                            alt="Profile" 
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-gray-400 text-xs">No image</span>
+                        </div>
+                    )}
+                </div>
+            )
+        },
         { id: "user_no", name: "User No", sortable: true, align: "left",
             render: (value) => (
                 <div className="text-sm text-gray-500">
@@ -423,26 +498,6 @@ const UserPage = () => {
             align: "right",
             render: (value) => new Date(value).toLocaleDateString()
         },
-        {
-            id: "actions",
-            name: "Actions",
-            align: "center",
-            sortable: false,
-            actions: [
-                {
-                    label: "Edit",
-                    onClick: (row) => handleEdit(row),
-                    className: "bg-blue-500 hover:bg-blue-600 text-white",
-                    icon: <MdEdit />
-                },
-                {
-                    label: "Delete",
-                    onClick: (row) => handleDelete(row.id),
-                    className: "bg-red-500 hover:bg-red-600 text-white",
-                    icon: <MdDelete />
-                }
-            ]
-        }
     ];
 
     return (
@@ -465,6 +520,8 @@ const UserPage = () => {
                 onClose={() => {
                     setOpen(false)
                     reset()
+                    setImageFile(null);
+                    setImagePreview(null);
                 }}
             >
                 <div className="w-[400px] p-6">
@@ -472,6 +529,22 @@ const UserPage = () => {
                         {editingUser ? 'Edit User #'+editingUser?.user_no : 'Create User'}
                     </h2>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                        <div className="text-lg font-semibold flex items-center gap-2"><IoIosImages className="text-2xl" /> Profile Picture</div>
+                        <div {...getRootProps()} className={`border-2 border-dashed rounded p-4 text-center cursor-pointer ${isDragActive ? 'border-blue-500' : 'border-gray-300'}`}>
+                            <input {...getInputProps()} />
+                            {isDragActive ? (
+                                <p>Drop the image here ...</p>
+                            ) : (
+                                <p>Drag &apos;n&apos; drop an image here, or click to select</p>
+                            )}
+                            {imagePreview ? (
+                                <div className="mt-2">
+                                    <img src={imagePreview} alt="Preview" className="mx-auto w-32 h-32 object-cover rounded" />
+                                </div>
+                            ) : (
+                                <IoCloudUploadOutline className="text-gray-500 w-32 h-32 mx-auto" />
+                            )}
+                        </div>
                         <Controller
                             name="name"
                             control={control}
@@ -705,7 +778,7 @@ const UserPage = () => {
                                 color="primary"
                                 disabled={isSubmitting}
                             >
-                                {editingUser ? 'Update' : 'Create'}
+                                {isSubmitting ? <CircularProgress size={20} /> : "Save"}
                             </Button>
                         </div>
                     </form>

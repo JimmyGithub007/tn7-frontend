@@ -99,14 +99,16 @@ const CustomTable = ({ columns, data, pagination = true, loading = false }: Cust
 
     return (
         <div className="w-full">
-            <TableContainer component={Paper} className="rounded-xl shadow w-full">
+            <TableContainer component={Paper} className="rounded-xl shadow w-full overflow-x-auto">
                 <Table className="w-full">
                     <TableHead className="bg-gray-50 text-gray-700 uppercase">
                         <TableRow>
                             {
                                 columns.map((col: Column, key: number) => (
                                     <TableCell 
-                                        className={`${col.sortable && "cursor-pointer hover:bg-gray-100"} px-6 py-3 w-full whitespace-nowrap`} 
+                                        className={`${col.sortable && "cursor-pointer hover:bg-gray-100"} px-6 py-3 whitespace-nowrap ${
+                                            col.actions ? 'sticky left-0 z-10 bg-gray-50 w-[200px]' : 'w-full'
+                                        }`} 
                                         key={key} 
                                         onClick={() => { col.sortable && handleSort(col.id) }}
                                     >
@@ -145,7 +147,9 @@ const CustomTable = ({ columns, data, pagination = true, loading = false }: Cust
                                     {
                                         columns.map((col: Column, k2: number) => (
                                             <TableCell 
-                                                className={`px-6 py-4 w-full`} 
+                                                className={`px-6 py-4 ${
+                                                    col.actions ? 'sticky left-0 z-10 bg-white w-[200px]' : 'w-full'
+                                                }`} 
                                                 align={col.align}
                                                 key={k2}
                                             >

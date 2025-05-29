@@ -6,9 +6,11 @@ import { StoreProvider } from "@/store/StoreProvider";
 
 import { impact, opinionPro } from "@/components/Font";
 import { MouseFollower } from "@/components";
+import { Providers } from "@/components/Providers";
+import { NotistackProvider } from '@/components/NotistackProvider';
+
 import "./globals.css";
 import Script from 'next/script'
-import { Providers } from "@/components/Providers";
 
 //const archivo_black = Archivo_Black({ subsets: ["latin"], weight: "400" });
 
@@ -73,9 +75,11 @@ export default function RootLayout({
         />
       </head>
       <body className={impact.className} style={{ overflow: "hidden" }}>
-        <Providers>
-          {children}
-        </Providers>
+        <NotistackProvider>
+          <Providers>
+            {children}
+          </Providers>
+        </NotistackProvider>
         {/*<Dialog />*/}
         {/*<MouseFollower />*/}
       </body>
