@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { MdDashboard, MdShoppingCart, MdListAlt, MdPeople, MdSettings, MdManageAccounts } from "react-icons/md";
+import { MdDashboard, MdShoppingCart, MdListAlt, MdPeople, MdSettings, MdManageAccounts, MdLeaderboard } from "react-icons/md";
 import { TbLogs } from "react-icons/tb";
 import { BiLogOut, BiUser } from "react-icons/bi";
 import { Button } from "@mui/material";
@@ -14,6 +14,7 @@ const menuItems = [
     //{ label: "Log", href: "/cms/audit-log", icon: <TbLogs size={22} /> },
     { label: "Lore", href: "/cms/lore", icon: <MdListAlt size={22} /> },
     { label: "Entry", href: "/cms/entry", icon: <MdListAlt size={22} /> },
+    { label: "Lunex", href: "/cms/lunex", icon: <MdLeaderboard size={22} /> },
 ];
 
 const Shell = ({ children }: { children: React.ReactNode }) => {

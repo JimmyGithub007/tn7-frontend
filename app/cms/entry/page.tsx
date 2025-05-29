@@ -2,9 +2,13 @@
 
 import { useEffect, useState } from "react";
 import CustomTable, { Column } from "@/components/CustomTable";
-import { Button, Drawer, TextField, MenuItem, FormControl, InputLabel, Select, Stepper, StepLabel, Step } from "@mui/material";
+import { Button, Drawer, TextField, MenuItem, FormControl, InputLabel, Select } from "@mui/material";
 import axios from "axios";
 import Shell from "@/components/Shell";
+import { MdCancel } from "react-icons/md";
+import { FaClipboardList } from "react-icons/fa6";
+import { FaCheckCircle } from "react-icons/fa";
+import { TbCancel } from "react-icons/tb";
 
 interface Entry {
     id: string;
@@ -157,16 +161,10 @@ const EntryPage = () => {
 
     // 表格列定义
     const columns: Column[] = [
-        { id: "entry_no", name: "Entry No", sortable: true, align: "left" },
-        { id: "title", name: "Title", sortable: true, align: "left" },
-        { id: "author", name: "Author", sortable: false, align: "left", render: (value) => value?.name || "-" },
-        { id: "category", name: "Category", sortable: false, align: "left", render: (value) => value?.name || "-" },
-        { id: "status", name: "Status", sortable: true, align: "center", render: (value: number) => statusMap[value as keyof typeof statusMap] },
-        { id: "created_at", name: "Created At", sortable: true, align: "center", render: (value) => new Date(value).toLocaleString() },
         {
             id: "actions",
             name: "Actions",
-            align: "center",
+            align: "left",
             sortable: false,
             actions: [
                 {
@@ -175,7 +173,13 @@ const EntryPage = () => {
                     className: "bg-blue-500 hover:bg-blue-600 text-white"
                 }
             ]
-        }
+        },
+        { id: "entry_no", name: "Entry No", sortable: true, align: "left" },
+        { id: "title", name: "Title", sortable: true, align: "left" },
+        { id: "author", name: "Author", sortable: false, align: "left", render: (value) => value?.name || "-" },
+        { id: "category", name: "Category", sortable: false, align: "left", render: (value) => value?.name || "-" },
+        { id: "status", name: "Status", sortable: true, align: "center", render: (value: number) => statusMap[value as keyof typeof statusMap] },
+        { id: "created_at", name: "Created At", sortable: true, align: "center", render: (value) => new Date(value).toLocaleString() },
     ];
 
     return (
@@ -184,17 +188,20 @@ const EntryPage = () => {
                 <h1 className="text-2xl font-semibold">Entry Management</h1>
             </div>
             <div className="grid grid-cols-3 gap-4 my-4">
-                <div className="bg-white flex flex-col items-center justify-center h-36 p-4 rounded-lg shadow-sm">
+                <div className="bg-white flex flex-col items-center justify-center h-36 p-4 rounded-lg shadow-sm relative overflow-hidden">
                     <span>Pending</span>
                     <span className="text-4xl font-bold">0</span>
+                    <FaClipboardList size={100} className="absolute -bottom-4 -right-4 text-slate-100" />
                 </div>
-                <div className="bg-white flex flex-col items-center justify-center h-36 p-4 rounded-lg shadow-sm">
+                <div className="bg-white flex flex-col items-center justify-center h-36 p-4 rounded-lg shadow-sm relative overflow-hidden">
                     <span>Approved</span>
                     <span className="text-4xl font-bold">0</span>
+                    <FaCheckCircle size={100} className="absolute -bottom-4 -right-4 text-slate-100" />
                 </div>
-                <div className="bg-white flex flex-col items-center justify-center h-36 p-4 rounded-lg shadow-sm">
+                <div className="bg-white flex flex-col items-center justify-center h-36 p-4 rounded-lg shadow-sm relative overflow-hidden">
                     <span>Rejected</span>
                     <span className="text-4xl font-bold">0</span>
+                    <TbCancel size={120} className="absolute -bottom-6 -right-6 text-slate-100" />
                 </div>
             </div>
             <CustomTable columns={columns} data={entries} pagination={true} />

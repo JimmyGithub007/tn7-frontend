@@ -6,6 +6,7 @@ import axios from "axios"
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Checkbox, FormControlLabel, FormGroup, CircularProgress, Typography, Divider, MenuItem, Drawer, List, ListItem, ListItemText, ListItemButton } from "@mui/material"
 import { MdAdd, MdEdit, MdDelete } from "react-icons/md"
 import CustomTable, { Column } from "@/components/CustomTable"
+import { useSnackbar } from 'notistack';
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL + "/api",
@@ -30,6 +31,7 @@ interface Role {
 }
 
 const RolePage = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,13 +102,15 @@ const RolePage = () => {
     try {
       if (editId) {
         await api.put(`/roles/${editId}`, { name: roleName, permissions: selectedPerms });
+        enqueueSnackbar('Role updated successfully', { variant: 'success' });
       } else {
         await api.post("/roles", { name: roleName, permissions: selectedPerms });
+        enqueueSnackbar('Role created successfully', { variant: 'success' });
       }
       await fetchData();
       handleClose();
     } catch (e: any) {
-      alert(e?.response?.data?.message || "Failed to save role");
+      enqueueSnackbar(e?.response?.data?.message || "Failed to save role", { variant: 'error' });
     }
     setSaving(false);
   }
@@ -117,8 +121,9 @@ const RolePage = () => {
     try {
       await api.delete(`/roles/${id}`);
       setRoles(roles.filter(r => r.id !== id));
+      enqueueSnackbar('Role deleted successfully', { variant: 'success' });
     } catch (e) {
-      alert("Failed to delete role");
+      enqueueSnackbar("Failed to delete role", { variant: 'error' });
     }
   }
 
@@ -162,6 +167,26 @@ const RolePage = () => {
 
   // CustomTable columns
   const columns: Column[] = [
+    {
+      id: "actions",
+      name: "Actions",
+      align: "left",
+      sortable: false,
+      actions: [
+        {
+          label: "Edit",
+          onClick: (row) => handleOpen(row),
+          className: "bg-blue-500 hover:bg-blue-600 text-white",
+          icon: <MdEdit />
+        },
+        {
+          label: "Delete",
+          onClick: (row) => handleDelete(row.id),
+          className: "bg-red-500 hover:bg-red-600 text-white",
+          icon: <MdDelete />
+        }
+      ]
+    },
     { id: "name", name: "Role Name", sortable: true, align: "left" },
     {
       id: "permissions",
@@ -178,26 +203,6 @@ const RolePage = () => {
         </div>
       )
     },
-    {
-      id: "actions",
-      name: "Actions",
-      align: "center",
-      sortable: false,
-      actions: [
-        {
-          label: "Edit",
-          onClick: (row) => handleOpen(row),
-          className: "bg-blue-500 hover:bg-blue-600 text-white",
-          icon: <MdEdit />
-        },
-        {
-          label: "Delete",
-          onClick: (row) => handleDelete(row.id),
-          className: "bg-red-500 hover:bg-red-600 text-white",
-          icon: <MdDelete />
-        }
-      ]
-    }
   ];
 
   return (
