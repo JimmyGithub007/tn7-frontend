@@ -8,6 +8,7 @@ import { impact, opinionPro } from "@/components/Font";
 import { Dialog, MouseFollower } from "@/components";
 import WalletProviders from "@/components/WalletProviders";
 import { NotistackProvider } from '@/components/NotistackProvider';
+import { unstable_noStore as noStore } from 'next/cache';
 
 import "./globals.css";
 import Script from 'next/script'
@@ -24,6 +25,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  noStore();
+
   return (<StoreProvider>
     <html lang="en" className={opinionPro.variable}>
     <head>

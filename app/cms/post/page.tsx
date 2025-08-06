@@ -13,16 +13,17 @@ import * as Emoji from "react-quill-emoji";
 import "react-quill-emoji/dist/quill-emoji.css";
 import { Quill } from "react-quill";
 import "./quill-custom.css";
+import { unstable_noStore as noStore } from 'next/cache';   
 
 // Dynamically import Quill to avoid SSR issues
-const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
-import 'react-quill/dist/quill.snow.css';
+//const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+//import 'react-quill/dist/quill.snow.css';
 import { setJumpPage } from "@/store/slice/pageSlice";
 import { useDispatch } from "react-redux";
 // Assuming a shared custom quill css exists or will be created
 // import "./quill-custom.css"; 
 
-Quill.register("modules/emoji", Emoji);
+//Quill.register("modules/emoji", Emoji);
 
 interface Post {
     id: number;
@@ -46,6 +47,8 @@ interface PostFormData {
 }
 
 const PostManagementPage = () => {
+    noStore();
+
     const dispatch = useDispatch();
     const router = useRouter();
     const [posts, setPosts] = useState<Post[]>([]);
@@ -280,13 +283,14 @@ const PostManagementPage = () => {
 
                         <div>
                             <InputLabel shrink>Body</InputLabel>
-                            <ReactQuill
+                            {/*<ReactQuill
                                 theme="snow"
                                 value={formData.body}
                                 onChange={(value) => setFormData({ ...formData, body: value })}
                                 modules={quillModules}
                                 className="quill-editor"
-                            />
+                            />*/}
+                            <textarea value={formData.body} onChange={(e) => setFormData({ ...formData, body: e.target.value })} className="w-full h-full" />
                         </div>
 
                         <FormControl fullWidth required>
@@ -330,7 +334,9 @@ const PostManagementPage = () => {
                                     }}
                                     renderTags={(value: readonly string[], getTagProps) =>
                                         value.map((option: string, index: number) => (
-                                            <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+                                            <div key={index}>
+                                                <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+                                            </div>
                                         ))
                                     }
                                     renderInput={(params) => (

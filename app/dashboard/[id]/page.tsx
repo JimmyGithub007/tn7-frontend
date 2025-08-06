@@ -710,7 +710,7 @@ const DashboardPage = () => {
                                         </div>
                                     ) : (<div className="flex flex-col items-center justify-center gap-2">
                                         <div className="text-white text-sm">WELCOME TO</div>
-                                        <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.name}'s UNIVERSE</div>
+                                        <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.name}&apos;s UNIVERSE</div>
                                     </div>)
                                 }
                                 <div className="flex gap-2">
