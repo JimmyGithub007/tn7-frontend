@@ -107,7 +107,7 @@ const RegisterPage = () => {
                         />
                     { errors.password2 && <div className="text-red-500 text-xs">*{errors.password2.message}</div> }
                     </div>
-                    {loading && (
+                    {!loading && (
                         <div className="flex flex-col w-full">
                             <ReCAPTCHA
                                 ref={recaptchaRef}
