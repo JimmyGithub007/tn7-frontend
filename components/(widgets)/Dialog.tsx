@@ -31,7 +31,7 @@ const Dialog = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 100 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-2xl overflow-hidden shadow-xl shadow-slate-800/50">
+                    className="rounded-2xl overflow-hidden shadow-xl shadow-slate-800/50">
                     { content }
                 </motion.div>
             </motion.div>

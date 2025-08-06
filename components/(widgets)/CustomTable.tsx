@@ -99,7 +99,7 @@ const CustomTable = ({ columns, data, pagination = true, loading = false }: Cust
 
     return (
         <div className="w-full">
-            <TableContainer component={Paper} className="rounded-xl shadow w-full overflow-x-auto">
+            <TableContainer component={Paper} className="rounded-xl shadow w-full overflow-x-auto filter-bar">
                 <Table className="w-full">
                     <TableHead className="bg-gray-50 text-gray-700 uppercase">
                         <TableRow>
@@ -167,10 +167,10 @@ const CustomTable = ({ columns, data, pagination = true, loading = false }: Cust
             {
                 pagination && <div className="flex justify-between pt-4">
                     <div className="flex gap-2">
-                        <button disabled={disableBtn1} className={`${disableBtn1 ? "bg-indigo-200 cursor-not-allowed" : "bg-indigo-500 cursor-pointer hover:bg-indigo-400"} p-1 rounded-full shadow-md`} onClick={() => setPageNum(pageNum-1) }>
+                        <button disabled={disableBtn1} className={`${disableBtn1 ? "bg-[#45b5d9]/50 cursor-not-allowed" : "bg-[#45b5d9] cursor-pointer hover:bg-[#45b5d9]/80"} duration-300 p-1 rounded-full shadow-md`} onClick={() => setPageNum(pageNum-1) }>
                             <BiChevronLeft className="text-2xl text-white" />
                         </button>
-                        <button disabled={disableBtn2} className={`${disableBtn2 ? "bg-indigo-200 cursor-not-allowed" : "bg-indigo-500 cursor-pointer hover:bg-indigo-400"} p-1 rounded-full shadow-md`} onClick={() => setPageNum(pageNum+1) }>
+                        <button disabled={disableBtn2} className={`${disableBtn2 ? "bg-[#45b5d9]/50 cursor-not-allowed" : "bg-[#45b5d9] cursor-pointer hover:bg-[#45b5d9]/80"} duration-300 p-1 rounded-full shadow-md`} onClick={() => setPageNum(pageNum+1) }>
                             <BiChevronRight className="text-2xl text-white" />
                         </button>                    
                     </div>

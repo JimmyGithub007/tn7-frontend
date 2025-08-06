@@ -9,7 +9,7 @@ import { Drawer, TextField, Button, FormControl, InputLabel, Select, MenuItem, C
 
 import Shell from "@/components/Shell";
 import axios from "axios";
-import CustomTable, { Column } from "@/components/CustomTable";
+import CustomTable, { Column } from "@/components/(widgets)/CustomTable";
 import dynamic from 'next/dynamic';
 
 // Import Quill dynamically to avoid SSR issues
@@ -17,6 +17,8 @@ const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 import 'react-quill/dist/quill.snow.css';
 import "./quill-custom.css";
 import { MdAdd } from "react-icons/md";
+import { setJumpPage } from "@/store/slice/pageSlice";
+import { useDispatch } from "react-redux";
 
 const tabs = [
     {
@@ -44,6 +46,7 @@ interface LoreItemFormData {
 }
 
 const LoreManagementPage = () => {
+    const dispatch = useDispatch();
     const router = useRouter();
     const [tabId, setTabId] = useState<number>(0);
     const [lores, setLores] = useState<any[]>([]);
@@ -79,7 +82,7 @@ const LoreManagementPage = () => {
                 {
                     label: 'Edit',
                     onClick: (row) => handleEdit(row),
-                    className: 'bg-blue-500 hover:bg-blue-600 text-white',
+                    className: 'bg-[#45b5d9] hover:bg-[#45b5d9]/80 duration-300 rounded-xl text-white shadow-md',
                     icon: <BiEdit />
                 },
                 {
@@ -173,7 +176,7 @@ const LoreManagementPage = () => {
     const handleDelete = async (row: any) => {
         if (window.confirm('Are you sure you want to delete this lore?')) {
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('cms_token');
                 if (!token) {
                     router.push('/cms/login');
                     return;
@@ -199,7 +202,7 @@ const LoreManagementPage = () => {
     const handleDeleteLoreItem = async (row: any) => {
         if (window.confirm('Are you sure you want to delete this lore item?')) {
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('cms_token');
                 if (!token) {
                     router.push('/cms/login');
                     return;
@@ -226,7 +229,7 @@ const LoreManagementPage = () => {
         e.preventDefault();
         setSaving(true);
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('cms_token');
             if (!token) {
                 router.push('/cms/login');
                 return;
@@ -282,7 +285,7 @@ const LoreManagementPage = () => {
         e.preventDefault();
         setSaving(true);
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('cms_token');
             if (!token) {
                 router.push('/cms/login');
                 return;
@@ -424,7 +427,7 @@ const LoreManagementPage = () => {
     }));
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('cms_token');
         if (!token) {
             router.push('/cms/login');
             return;
@@ -437,18 +440,19 @@ const LoreManagementPage = () => {
         }
     }, [tabId]);
 
+    useEffect(() => {
+        dispatch(setJumpPage(false))
+    }, [])
+
     return (<Shell>
         <div className="flex h-16 justify-between items-center">
             <h1 className="text-2xl font-semibold">Lore Management</h1>
             {tabId === 1 && (
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleCreateLoreItem}
-                    startIcon={<MdAdd />}
+                <button className={`bg-[#45b5d9] hover:bg-[#45b5d9]/80 duration-300 rounded-xl text-white px-4 py-2 text-sm shadow-lg flex items-center justify-center gap-2 z-10`}
+                    onClick={() => handleCreateLoreItem()}
                 >
-                    Add New Lore
-                </Button>
+                    <MdAdd /> Add New Lore
+                </button>
             )}
         </div>
         <div className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 mb-2">
@@ -515,26 +519,24 @@ const LoreManagementPage = () => {
                             required
                         />
                         <div className="flex gap-2 mt-6">
-                            <Button
-                                variant="outlined"
+                            <button
+                                type="button"
+                                className="w-full bg-white border border-gray-300 hover:bg-gray-50 duration-300 rounded-xl text-gray-500 px-4 py-2 text-sm shadow-lg flex items-center justify-center gap-2 z-10"
                                 onClick={() => {
                                     setOpen(false);
                                     resetForm();
                                 }}
                                 disabled={saving}
-                                className="w-full"
                             >
                                 Cancel
-                            </Button>
-                            <Button
+                            </button>
+                            <button
+                                className="w-full bg-[#45b5d9] hover:bg-[#45b5d9]/80 duration-300 rounded-xl text-white px-4 py-2 text-sm shadow-lg flex items-center justify-center gap-2 z-10"
                                 type="submit"
-                                variant="contained"
-                                color="primary"
                                 disabled={saving}
-                                className="w-full"
                             >
                                 {saving ? <CircularProgress size={20} /> : "Save"}
-                            </Button>
+                            </button>
                         </div>
                     </form>
                 ) : (
@@ -620,9 +622,9 @@ const LoreManagementPage = () => {
                             required
                         />
                         <div className="flex gap-2 mt-6">
-                            <Button
-                                className="w-full"
-                                variant="outlined"
+                            <button
+                                type="button"
+                                className="w-full bg-white border border-gray-300 hover:bg-gray-50 duration-300 rounded-xl text-gray-500 px-4 py-2 text-sm shadow-lg flex items-center justify-center gap-2 z-10"
                                 onClick={() => {
                                     setOpen(false);
                                     resetLoreItemForm();
@@ -630,16 +632,14 @@ const LoreManagementPage = () => {
                                 disabled={saving}
                             >
                                 Cancel
-                            </Button>
-                            <Button
-                                className="w-full"
+                            </button>
+                            <button
+                                className="w-full bg-[#45b5d9] hover:bg-[#45b5d9]/80 duration-300 rounded-xl text-white px-4 py-2 text-sm shadow-lg flex items-center justify-center gap-2 z-10"
                                 type="submit"
-                                variant="contained"
-                                color="primary"
                                 disabled={saving}
                             >
                                 {saving ? <CircularProgress size={20} /> : "Save"}
-                            </Button>
+                            </button>
                         </div>
                     </form>
                 )}

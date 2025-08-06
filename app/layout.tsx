@@ -5,8 +5,8 @@ import { StoreProvider } from "@/store/StoreProvider";
 //import { Dialog } from "@/components";
 
 import { impact, opinionPro } from "@/components/Font";
-import { MouseFollower } from "@/components";
-import { Providers } from "@/components/Providers";
+import { Dialog, MouseFollower } from "@/components";
+import WalletProviders from "@/components/WalletProviders";
 import { NotistackProvider } from '@/components/NotistackProvider';
 
 import "./globals.css";
@@ -76,11 +76,11 @@ export default function RootLayout({
       </head>
       <body className={impact.className} style={{ overflow: "hidden" }}>
         <NotistackProvider>
-          <Providers>
+          <WalletProviders>
             {children}
-          </Providers>
+          </WalletProviders>
         </NotistackProvider>
-        {/*<Dialog />*/}
+        <Dialog />
         {/*<MouseFollower />*/}
       </body>
     </html>
