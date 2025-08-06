@@ -27,6 +27,7 @@ canvas {
 
 .filter-bar::-webkit-scrollbar {
   width: 4px; /* 滚动条宽度 */
+  height: 4px;
 }
 
 .filter-bar::-webkit-scrollbar-thumb {

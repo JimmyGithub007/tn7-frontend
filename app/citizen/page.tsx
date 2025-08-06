@@ -13,6 +13,8 @@ import Lenis from '@studio-freight/lenis';
 
 import { Pixelify_Sans, Rubik_Distressed } from "next/font/google";
 import { RootState } from "@/store";
+import Header from "@/components/Header";
+import Loader from "@/components/Loader";
 
 const pixelify_sans = Pixelify_Sans({ subsets: ["latin"], weight: "400" });
 const rubik_distressed = Rubik_Distressed({ subsets: ["latin"], weight: "400" });
@@ -83,16 +85,16 @@ const Collapse = ({ icon, text, children }: { icon: string, text: string; childr
     const [isOpen, setIsOpen] = useReducer((state: boolean) => !state, false);
 
     return (
-        <div className="border-b-[1px]">
+        <div className="border-b-[1px] border-gray-700">
             <div
                 className="cursor-pointer flex justify-between items-center"
                 onClick={() => setIsOpen()}
             >
-                <div className="flex items-center gap-2 font-bold text-xs pb-2">
-                    <Image className="w-8" alt="icon" width={512} height={512} src={icon} />
+                <div className="flex items-center gap-2 font-bold text-xs pb-2 text-gray-300">
+                    <Image className="w-8 bg-white shadow-sm rounded-lg p-1" alt="icon" width={512} height={512} src={icon} />
                     {text}
                 </div>
-                <span className="font-bold">{isOpen ? "-" : "+"}</span>
+                <span className="font-bold text-gray-300">{isOpen ? "-" : "+"}</span>
             </div>
             <AnimatePresence>
                 {isOpen && (
@@ -208,15 +210,17 @@ const Citizen = () => {
         };
     }, [isOpen])*/
 
-    return (
-        <div className="bg-white min-h-screen overflow-hidden relative w-full">
+    return (<div className="bg-gray-800 fixed h-screen w-full">
+        <Header />
+        <Loader />
+        <div className="bg-gray-900 h-[calc(100vh-72.51px)] mt-[72.51px] overflow-hidden relative w-full">
             {/* Left Sidebar */}
-            <div className={`bg-white duration-200 filter-bar absolute lg:fixed flex flex-col gap-4 h-screen overflow-y-auto px-8 pb-12 top-0 w-full lg:w-96 z-50 ${isOpenSidebar ? "left-0" : "-left-full"}`}>
+            <div className={`bg-gray-800 duration-200 filter-bar absolute lg:fixed flex flex-col gap-4 h-screen overflow-y-auto px-8 pb-12 top-[72.51px] w-full lg:w-96 z-50 ${isOpenSidebar ? "left-0" : "-left-full"}`}>
                 <div className="flex items-center justify-between">
-                    <Image alt="logo" className="w-32" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} />
-                    <MdClose onClick={() => setIsOpenSidebar(false)} className="cursor-pointer text-5xl lg:hidden" />
+                    {/*<Image alt="logo" className="w-32" width={920} height={384} src={`/assets/images/TN7_Blurb.png`} />*/}
+                    <MdClose onClick={() => setIsOpenSidebar(false)} className="cursor-pointer text-5xl lg:hidden text-gray-300 hover:text-white transition-colors" />
                 </div>
-                <div className="flex font-bold gap-4 text-xl">
+                <div className="flex font-bold gap-4 text-xl text-gray-100">
                     FILTERS
                 </div>
                 <Collapse icon={`/assets/images/icons/background.png`} text="BACKGROUND">
@@ -227,10 +231,10 @@ const Citizen = () => {
                             onClick={() => handleFilterClick("background", bg)}
                         >
                             <div
-                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.background.includes(bg) ? "bg-red-800" : "bg-gray-300"
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.background.includes(bg) ? "bg-red-500" : "bg-gray-600"
                                     }`}
                             ></div>
-                            <span className="text-xs text-slate-800">{bg}</span>
+                            <span className="text-xs text-gray-300">{bg}</span>
                         </div>
                     ))}
                 </Collapse>
@@ -242,10 +246,10 @@ const Citizen = () => {
                             onClick={() => handleFilterClick("body", body)}
                         >
                             <div
-                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.body.includes(body) ? "bg-red-800" : "bg-gray-300"
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.body.includes(body) ? "bg-red-500" : "bg-gray-600"
                                     }`}
                             ></div>
-                            <span className="text-xs text-slate-800">{body}</span>
+                            <span className="text-xs text-gray-300">{body}</span>
                         </div>
                     ))}
                 </Collapse>
@@ -257,10 +261,10 @@ const Citizen = () => {
                             onClick={() => handleFilterClick("eyes", eyes)}
                         >
                             <div
-                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.eyes.includes(eyes) ? "bg-red-800" : "bg-gray-300"
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.eyes.includes(eyes) ? "bg-red-500" : "bg-gray-600"
                                     }`}
                             ></div>
-                            <span className="text-xs text-slate-800">{eyes}</span>
+                            <span className="text-xs text-gray-300">{eyes}</span>
                         </div>
                     ))}
                 </Collapse>
@@ -272,10 +276,10 @@ const Citizen = () => {
                             onClick={() => handleFilterClick("tattoo", tattoo)}
                         >
                             <div
-                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.tattoo.includes(tattoo) ? "bg-red-800" : "bg-gray-300"
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.tattoo.includes(tattoo) ? "bg-red-500" : "bg-gray-600"
                                     }`}
                             ></div>
-                            <span className="text-xs text-slate-800">{tattoo}</span>
+                            <span className="text-xs text-gray-300">{tattoo}</span>
                         </div>
                     ))}
                 </Collapse>
@@ -287,10 +291,10 @@ const Citizen = () => {
                             onClick={() => handleFilterClick("clothes", clothes)}
                         >
                             <div
-                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.clothes.includes(clothes) ? "bg-red-800" : "bg-gray-300"
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.clothes.includes(clothes) ? "bg-red-500" : "bg-gray-600"
                                     }`}
                             ></div>
-                            <span className="text-xs text-slate-800">{clothes}</span>
+                            <span className="text-xs text-gray-300">{clothes}</span>
                         </div>
                     ))}
                 </Collapse>
@@ -302,10 +306,10 @@ const Citizen = () => {
                             onClick={() => handleFilterClick("headgear", headgear)}
                         >
                             <div
-                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.headgear.includes(headgear) ? "bg-red-800" : "bg-gray-300"
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.headgear.includes(headgear) ? "bg-red-500" : "bg-gray-600"
                                     }`}
                             ></div>
-                            <span className="text-xs text-slate-800">{headgear}</span>
+                            <span className="text-xs text-gray-300">{headgear}</span>
                         </div>
                     ))}
                 </Collapse>
@@ -317,10 +321,10 @@ const Citizen = () => {
                             onClick={() => handleFilterClick("headgear", facegear)}
                         >
                             <div
-                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.facegear.includes(facegear) ? "bg-red-800" : "bg-gray-300"
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.facegear.includes(facegear) ? "bg-red-500" : "bg-gray-600"
                                     }`}
                             ></div>
-                            <span className="text-xs text-slate-800">{facegear}</span>
+                            <span className="text-xs text-gray-300">{facegear}</span>
                         </div>
                     ))}
                 </Collapse>
@@ -332,10 +336,10 @@ const Citizen = () => {
                             onClick={() => handleFilterClick("headgear", eyes_flare)}
                         >
                             <div
-                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.eyes_flare.includes(eyes_flare) ? "bg-red-800" : "bg-gray-300"
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.eyes_flare.includes(eyes_flare) ? "bg-red-500" : "bg-gray-600"
                                     }`}
                             ></div>
-                            <span className="text-xs text-slate-800">{eyes_flare}</span>
+                            <span className="text-xs text-gray-300">{eyes_flare}</span>
                         </div>
                     ))}
                 </Collapse>
@@ -347,10 +351,10 @@ const Citizen = () => {
                             onClick={() => handleFilterClick("hair", hair)}
                         >
                             <div
-                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.hair.includes(hair) ? "bg-red-800" : "bg-gray-300"
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.hair.includes(hair) ? "bg-red-500" : "bg-gray-600"
                                     }`}
                             ></div>
-                            <span className="text-xs text-slate-800">{hair}</span>
+                            <span className="text-xs text-gray-300">{hair}</span>
                         </div>
                     ))}
                 </Collapse>
@@ -362,29 +366,29 @@ const Citizen = () => {
                             onClick={() => handleFilterClick("weapon", weapon)}
                         >
                             <div
-                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.weapon.includes(weapon) ? "bg-red-800" : "bg-gray-300"
+                                className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters.weapon.includes(weapon) ? "bg-red-500" : "bg-gray-600"
                                     }`}
                             ></div>
-                            <span className="text-xs text-slate-800">{weapon}</span>
+                            <span className="text-xs text-gray-300">{weapon}</span>
                         </div>
                     ))}
                 </Collapse>
             </div>
 
             {/* Main Content */}
-            <div className={`duration-200 flex flex-col items-center w-full ${isOpenSidebar ? "lg:pl-96" : "pl-0"}`}>
+            <div className={`h-[calc(100vh-72.51px)] duration-200 flex flex-col items-center w-full overflow-y-auto filter-bar ${isOpenSidebar ? "lg:pl-96" : "pl-0"}`}>
                 <motion.div
                     initial={{ y: 0 }}
                     animate={{ y: isHeaderVisible ? 0 : -100 }}
                     transition={{ duration: 0.3 }}
-                    className={`bg-slate-50 flex justify-between p-4 shadow-sm shadow-slate-400/50 w-full`}>
-                    <BsArrowLeft onClick={() => setIsOpenSidebar(!isOpenSidebar)} className={`cursor-pointer duration-300 text-3xl ${!isOpenSidebar && "rotate-180"}`} />
+                    className={`bg-gray-800 flex justify-between p-4 shadow-lg shadow-black/50 w-full border-b border-gray-700`}>
+                    <BsArrowLeft onClick={() => setIsOpenSidebar(!isOpenSidebar)} className={`cursor-pointer duration-300 text-3xl text-gray-300 hover:text-white ${!isOpenSidebar && "rotate-180"}`} />
                 </motion.div>
                 <div className="flex flex-col gap-4 px-4 py-8 w-full">
                     <div className="flex items-center relative w-full">
-                        <BiSearch className="absolute left-0 text-slate-800 text-2xl" />
+                        <BiSearch className="absolute left-0 text-gray-400 text-2xl" />
                         <input
-                            className="border-b-2 pl-8 py-2 text-sm focus:outline-none focus:border-slate-800 transition-colors duration-300 w-full sm:w-80"
+                            className="border-b-2 border-gray-600 bg-gray-800 text-gray-100 pl-8 py-2 text-sm focus:outline-none focus:border-red-500 transition-colors duration-300 w-full sm:w-80 placeholder-gray-400"
                             placeholder="SEARCH TOKEN"
                         />
                     </div>
@@ -400,7 +404,7 @@ const Citizen = () => {
                                 onClick={() => {
                                     dispatch(setContent(
                                         <div className="flex flex-col lg:flex-row max-h-[calc(100vh-20px)] max-w-[500px] lg:max-w-[1024px] xl:max-w-[1280px] overflow-y-auto relative">
-                                            <button onClick={() => dispatch(setIsOpen(false))} className="absolute duration-200 p-2 right-4 rounded-full hover:bg-slate-50 hover:shadow-sm top-4 text-4xl">
+                                            <button onClick={() => dispatch(setIsOpen(false))} className="absolute duration-200 p-2 right-4 rounded-full hover:bg-gray-700 hover:shadow-sm top-4 text-4xl text-gray-300 hover:text-white">
                                                 <IoIosClose />
                                             </button>
                                             <Image
@@ -456,16 +460,16 @@ const Citizen = () => {
                             >
                                 <Image
                                     alt={c.code.toString()}
-                                    className="cursor-pointer duration-300 rounded-xl hover:scale-[1.05] sm:h-56 sm:w-56 shadow-md shadow-slate-800/50"
+                                    className="cursor-pointer duration-300 rounded-xl hover:scale-[1.05] sm:h-56 sm:w-56 shadow-lg shadow-black/50 hover:shadow-xl hover:shadow-red-500/20"
                                     width={1080}
                                     height={1080}
                                     src={`/assets/images/citizens/${c.code}.png`}
                                 />
-                                <div className={`flex items-center justify-between ${pixelify_sans.className}`}>
+                                <div className={`flex items-center justify-between ${pixelify_sans.className} text-gray-100`}>
                                     <span className="font-bold">No. {c.code}</span>
-                                    <div className="flex gap-2 items-center text-xs">
+                                    <div className="flex gap-2 items-center text-xs text-gray-300">
                                         1000
-                                        <BiLike className="" />
+                                        <BiLike className="text-red-500" />
                                     </div>
                                 </div>
                             </motion.div>
@@ -474,7 +478,7 @@ const Citizen = () => {
                 </div>
             </div>
         </div >
-    );
+    </div>);
 };
 
 export default Citizen;

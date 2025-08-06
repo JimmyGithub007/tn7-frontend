@@ -1,16 +1,16 @@
 "use client"
 
 import { useForm, SubmitHandler } from "react-hook-form"
-import { TextField, Button } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { motion } from "framer-motion"
+import { useAuth } from "@/hooks/useAuth"
 
+import CircularProgress from "@mui/material/CircularProgress"
 import Image from "next/image"
 import axios from "axios"
-import { zodResolver } from "@hookform/resolvers/zod"
 import z from "zod"
-import { motion } from "framer-motion"
-import CircularProgress from "@mui/material/CircularProgress"
 
 type Inputs = {
     email: string
@@ -18,6 +18,7 @@ type Inputs = {
 }
 
 const LoginPage = () => {
+    const { login } = useAuth({ type: "cms" });
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const {
@@ -38,28 +39,18 @@ const LoginPage = () => {
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         setLoading(true)
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/login`, data)
-            const { access_token, user } = response.data
-            
-            // Store the token
-            localStorage.setItem('token', access_token)
-            // Store user info
-            localStorage.setItem('user_email', user.email)
-            localStorage.setItem('roles', JSON.stringify(user.roles || []))
-            localStorage.setItem('permissions', JSON.stringify(user.permissions || []))
-            
-            // Redirect to user management page
-            router.push('/cms/user')
-        } catch (error) {
-            console.error('Login failed:', error)
-            alert('Login failed. Please check your credentials.')
+            await login(data.email, data.password);
+            router.push("/cms/user");
+        } catch (err: any) {
+            console.log(err);
+        } finally {
             setLoading(false);
         }
     }
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem("cms_token");
             if (token) {
                 router.push("/cms/user");
             }
@@ -67,42 +58,75 @@ const LoginPage = () => {
     }, [router]);
 
     return (
-        <div className={`bg-slate-50 flex flex-col items-center justify-center h-screen`} style={{ backgroundImage: `url(${`/assets/images/cms/cms-login-bg.jpg`})` }}>
-            <div className="absolute inset-0 backdrop-blur-md bg-white/20 filter-bar"></div>
+        <div className="fixed h-screen w-full overflow-hidden flex justify-center items-center">
+            <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/entry/entryBG.png`} priority />
             <Image alt="logo"
                 className="fixed left-8 top-0 w-20 sm:w-26 mx-auto"
                 width={920} height={384} src={`/assets/images/TN7_Blurb.png`} priority quality={50}
             />
-            <motion.div className="bg-white md:w-96 flex flex-col gap-8 p-8 rounded-lg shadow-md z-10"
+            <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-            >
-                <h1 className="text-4xl font-bold text-red-800 text-center">TN7 CMS</h1>
-                <h2 className="text-2xl font-bold text-gray-800 text-center">Sign in to your account</h2>
-                <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-                    <TextField 
-                        label="Email*" 
-                        type="email"
-                        {...register("email", { required: true })} 
-                        error={!!errors.email}
+                exit={{ opacity: 0, y: 20 }}
+                className="relative w-full sm:max-w-[400px] md:max-w-[500px] flex flex-col items-center justify-center">
+                <Image alt=""
+                    height={198} width={1425} src={`/assets/images/entry/entryContentTopCardFrame.png`}
+                    placeholder="blur"
+                    blurDataURL={`/assets/images/entry/entryContentTopCardFrame.png`}
+                />
+                <div className="relative text-white flex flex-col gap-4 items-center justify-center py-12 w-full text-white">
+                    <Image className="absolute left-0 top-0 w-full h-full" alt=""
+                        height={1272} width={1425} src={`/assets/images/entry/entryContentCenterCardFrame.png`}
+                        placeholder="blur"
+                        blurDataURL={`/assets/images/entry/entryContentCenterCardFrame.png`}
                     />
-                    {errors.email && <span className="text-red-500 text-xs">Email is required</span>}
-                    <TextField 
-                        label="Password*" 
-                        type="password"
-                        {...register("password", { required: true })} 
-                        error={!!errors.password}
-                    />
-                    {errors.password && <span className="text-red-500 text-xs">Password is required</span>}
-                    <Button type="submit" variant="contained" disabled={loading} startIcon={loading ? <CircularProgress size={18} color="inherit" /> : undefined}>
-                        {loading ? 'Logging in...' : 'Login'}
-                    </Button>
-                </form>
-                <div className="flex flex-col gap-2 text-xs text-center text-gray-400">
-                    <span className="">Please contact the admin to get access to the CMS</span>
-                    <span className="">© 2025 TN7. All rights reserved.</span>
+                    <div className="flex flex-col gap-4 w-[70%] overflow-y-auto px-2 max-h-[calc(100vh-100px)] z-10 filter-bar">
+                        <h1 className="text-4xl font-bold text-center">TN7 CMS</h1>                    
+                        <div className="text-2xl font-bold text-center">LOGIN</div>
+                        <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+                            <div className="flex flex-col w-full">
+                                <div>EMAIL*</div>
+                                <input
+                                    autoComplete="email"
+                                    disabled={loading}
+                                    type="email"
+                                    {...register('email', { required: 'Email is required' })}
+                                    className="w-full bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-md text-sm shadow-md"
+                                />
+                                { errors.email && <div className="text-red-500 text-xs">*{errors.email.message}</div> }
+                            </div>
+                            <div className="flex flex-col w-full">
+                                <div>PASSWORD*</div>
+                                <input
+                                    autoComplete="current-password"
+                                    disabled={loading}
+                                    type="password"
+                                    {...register('password', { required: 'Password is required' })}
+                                    className="w-full bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-md text-sm shadow-md"
+                                />
+                                { errors.password && <div className="text-red-500 text-xs">*{errors.password.message}</div> }
+                            </div>
+                            <button
+                                type="submit"
+                                className="w-full bg-[#45b5d9] hover:bg-[#45b5d9]/80 duration-300 rounded-xl text-white px-4 py-2 text-sm shadow-lg flex items-center justify-center gap-2 z-10"
+                                disabled={loading}
+                            >
+                                {loading ? 'LOGGING IN...' : 'LOGIN'}
+                                {loading && <CircularProgress size={20} />}
+                            </button>
+                        </form>
+                        <div className="flex flex-col gap-2 text-xs text-center">
+                            <span className="">Please contact the admin to get access to the CMS</span>
+                            <span className="">© 2025 TN7. All rights reserved.</span>
+                        </div>  
+                    </div>                  
                 </div>
+                <Image alt=""
+                    height={198} width={1425} src={`/assets/images/entry/entryContentBottomCardFrame.png`}
+                    placeholder="blur"
+                    blurDataURL={`/assets/images/entry/entryContentBottomCardFrame.png`}
+                />
             </motion.div>
         </div>
     )

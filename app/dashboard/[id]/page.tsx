@@ -1,6 +1,6 @@
 "use client";
 
-import { Header, Loader } from "@/components";
+import { EntryDialog, Header, Loader } from "@/components";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
@@ -26,6 +26,7 @@ import { RootState } from "@/store";
 import { MdAddCircle } from "react-icons/md";
 import { BiTrash } from "react-icons/bi";
 import { useAuth } from "@/hooks/useAuth";
+import { setJumpPage } from "@/store/slice/pageSlice";
 
 const pixelify_sans = Pixelify_Sans({ subsets: ["latin"], weight: "400" });
 const rubik_distressed = Rubik_Distressed({ subsets: ["latin"], weight: "400" });
@@ -82,6 +83,13 @@ type User = {
     }>;
     followers?: Array<any>;
     followings?: Array<any>;
+    entries_stats?: {
+        draft: number;
+        pending: number;
+        approved: number;
+        rejected: number;
+        total: number;
+    };
     // 你可以加更多字段
 };
 
@@ -108,7 +116,7 @@ const DashboardPage = () => {
     const dispatch = useDispatch();
     const router = useRouter();
     const editor = useCreateBlockNote();
-    const { isAuthenticated, user: authUser, loading: authLoading } = useAuth();
+    const { isAuthenticated, user: authUser, loading: authLoading } = useAuth({ type: "user" });
     const { id } = useParams();
     const [imgHeight, setImgHeight] = useState<number>(0);
     const [imgWidth, setImgWidth] = useState<number>(0);
@@ -256,51 +264,6 @@ const DashboardPage = () => {
         editor.replaceBlocks(editor.topLevelBlocks, []);
     };
 
-    const onSubmit = async (data: { title: string }, status?: string) => {
-        const contentJSON = editor.topLevelBlocks;
-        const payload = {
-            title: data.title,
-            content: contentJSON,
-            category: entryCategory,
-            file_type: fileType,
-            temp_file_path: tempFilePath,
-            status: status,
-        };
-
-        // If editing and no new file uploaded, keep the existing media
-        if (isEditing && editingEntry && !tempFilePath && editingEntry.media_url) {
-            payload.temp_file_path = null; // Don't send temp_file_path if keeping existing file
-        }
-
-        try {
-            const token = localStorage.getItem("token");
-            
-            if (isEditing && editingEntry) {
-                // Update existing entry
-                await axios.put(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/entries/${editingEntry.id}`,
-                    payload,
-                    { headers: { Authorization: token ? `Bearer ${token}` : "" } }
-                );
-            } else {
-                // Create new entry
-                await axios.post(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/entries/store`,
-                    payload,
-                    { headers: { Authorization: token ? `Bearer ${token}` : "" } }
-                );
-            }
-            
-            resetForm();
-            fetchUserEntries();
-        } catch (error) {
-            alert("Save failed, please try again!");
-            console.error("Failed to save entry:", error);
-        } finally {
-            setIsOpenEntryModal(false);
-        }
-    };
-
     const handleConnectInstagram = async () => {
         const clientId = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
         const redirectUri = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/callback/instagram`;
@@ -399,30 +362,6 @@ const DashboardPage = () => {
         fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/entries/${entry.id}`, { method: 'DELETE', headers: { Authorization: token ? `Bearer ${token}` : "" } }).then(() => {
             fetchUserEntries();
         });
-    }
-
-    const handleDelete = (entry: any) => {
-        dispatch(setContent(<div className="bg-black/50 backdrop-blur-lg flex flex-col items-center justify-center gap-4 rounded-lg w-[450px] h-[300px] relative">
-            <Image
-                className="absolute top-0 left-0 w-full h-full"
-                alt=""
-                height={581} width={1258} src={`/assets/images/share/smallFrame.png`}
-                placeholder="blur"
-                blurDataURL={`/assets/images/share/smallFrame.png`}
-            />
-            <div className="flex flex-col items-center justify-center gap-4 z-10 text-white">
-                <div className="text-4xl font-bold">DELETE POST?</div>
-                <div className="text-sm text-center">THIS ACTION CANNOT BE UNDONE. <br />YOU MAY CHOSE TO UNPUBLISH THE POST INSTEAD - <br />YOUR CURRENT WILL BE REMAINED IN YOUR PROFILE.</div>
-                <div className="flex justify-between items-center gap-4">
-                    <button onClick={() => dispatch(setIsOpen(false))} className="bg-gray-600 duration-300 hover:bg-gray-600/80 flex items-center justify-center rounded-xl text-md font-bold h-8 w-40 shadow-lg">NO</button>
-                    <button onClick={() => {
-                        dispatch(setIsOpen(false));
-                        handleDeleteConfirm(entry);
-                    } } className="bg-[#45b5d9] duration-300 hover:bg-[#45b5d9]/80 flex items-center justify-center rounded-xl text-md font-bold h-8 w-40 shadow-lg">YES</button>
-                </div>
-            </div>
-        </div>));
-        dispatch(setIsOpen(true));
     }
 
     const fetchUser = async () => {
@@ -748,18 +687,47 @@ const DashboardPage = () => {
                                     </div>
                                 </div>
                             */} 
-                            <div className="absolute top-0 left-0 flex flex-col items-center justify-center h-full w-full gap-2 z-10">
-                                <div className="text-white text-sm">WELCOME TO</div>
-                                <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.name}'s UNIVERSE</div>
+                            <div className="absolute top-0 left-0 flex flex-col items-center justify-center h-full w-full gap-4 z-10">
+                                {
+                                    authUser && authUser?.id === id ? (
+                                        <div className="flex items-center justify-center gap-8">
+                                            <div className="flex flex-col items-center justify-center gap-2">
+                                                <div className="text-white text-sm">Drafts</div> 
+                                                <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.entries_stats?.draft}</div>
+                                            </div>
+                                            <div className="flex flex-col items-center justify-center gap-2">
+                                                <div className="text-white text-sm">Pending</div> 
+                                                <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.entries_stats?.pending}</div>
+                                            </div>
+                                            <div className="flex flex-col items-center justify-center gap-2">
+                                                <div className="text-white text-sm">Approved</div> 
+                                                <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.entries_stats?.approved}</div>  
+                                            </div>
+                                            <div className="flex flex-col items-center justify-center gap-2">
+                                                <div className="text-white text-sm">Rejected</div> 
+                                                <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.entries_stats?.rejected}</div>  
+                                            </div>
+                                        </div>
+                                    ) : (<div className="flex flex-col items-center justify-center gap-2">
+                                        <div className="text-white text-sm">WELCOME TO</div>
+                                        <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.name}'s UNIVERSE</div>
+                                    </div>)
+                                }
                                 <div className="flex gap-2">
                                     {
                                         authUser && authUser?.id === id &&
                                         <button onClick={() => {
-                                            resetForm();
+                                            //resetForm();
                                             setIsOpenEntryModal(true);
                                         }} className="bg-[#45b5d9] duration-300 flex items-center hover:bg-[#45b5d9]/80 gap-2 rounded-xl text-sm font-bold text-white py-1 px-4 shadow-md"><MdAddCircle /> NEW ENTRY</button>
                                     }
-                                    <button onClick={() => {}} className="bg-[#45b5d9] duration-300 flex items-center hover:bg-[#45b5d9]/80 gap-2 rounded-xl text-sm font-bold text-white py-1 px-4 shadow-md">ENTER</button>
+                                    <button onClick={() => {
+                                        dispatch(setJumpPage(true));
+                                        const timeout = setTimeout(() => {
+                                            router.push(`/entry/stories/story`);
+                                        }, 200);
+                                        return () => clearTimeout(timeout);
+                                    }} className="bg-[#45b5d9] duration-300 flex items-center hover:bg-[#45b5d9]/80 gap-2 rounded-xl text-sm font-bold text-white py-1 px-4 shadow-md">ENTER</button>
                                 </div>
                             </div> 
                         </div>
@@ -772,149 +740,7 @@ const DashboardPage = () => {
                 blurDataURL={`/assets/images/entry/entryListBottomCardFrame.png`}
             />
         </div>
-        <AnimatePresence>
-            {isOpenEntryModal &&
-                <motion.div
-                    initial={{ opacity: 0, y: 100 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 100 }}
-                    transition={{ duration: 0.5 }}
-                    className="absolute bg-black/50 bottom-0 left-0 w-full h-full flex items-center justify-center z-50">
-                    <motion.div
-                        initial={{ opacity: 0, y: 100 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 100 }}
-                        transition={{ duration: 0.2, delay: 0.2 }}
-                        id="modal">
-                        <form onSubmit={handleSubmit((data) => onSubmit(data, 'draft'))} className="bg-[#1f1f1f] flex flex-col gap-4 p-4 rounded-xl w-[400px] shadow-lg relative">
-                            <div className="text-white text-lg font-bold text-center">
-                                {isEditing ? 'EDIT ENTRY' : 'NEW ENTRY'}
-                            </div>
-                            <input
-                                type="text"
-                                placeholder="Title"
-                                className="bg-black/20 backdrop-blur-sm text-white py-2 px-4 rounded-xl"
-                                {...register("title", { required: "Title is required" })}
-                            />
-                            {errors.title && <span className="text-red-400 text-xs">{errors.title.message as string}</span>}
-
-                            <div className="bg-white/20 backdrop-blur-sm text-white flex justify-center items-center rounded-lg w-full overflow-hidden relative">
-                                {/* 滑动的背景指示器 */}
-                                <motion.div
-                                    className="absolute top-0 left-0 h-full bg-white/30 rounded-lg"
-                                    initial={false}
-                                    animate={{
-                                        x: entryCategory === 'story' ? '0%' : '100%',
-                                        width: '50%'
-                                    }}
-                                    transition={{
-                                        type: "spring",
-                                        stiffness: 300,
-                                        damping: 30
-                                    }}
-                                />
-
-                                <button
-                                    className={`w-1/2 flex items-center justify-center relative z-10 transition-colors duration-200 py-2 ${entryCategory === 'story' ? 'text-white' : 'text-white/70'}`}
-                                    onClick={() => setEntryCategory('story')}
-                                    type="button"
-                                >
-                                    STORIES
-                                </button>
-                                <button
-                                    className={`w-1/2 flex items-center justify-center relative z-10 transition-colors duration-200 py-2 ${entryCategory === 'artwork' ? 'text-white' : 'text-white/70'}`}
-                                    onClick={() => setEntryCategory('artwork')}
-                                    type="button"
-                                >
-                                    ARTWORK
-                                </button>
-                            </div>
-                            <div className="flex flex-col gap-2 min-h-[388px] max-h-[calc(100vh-300px)] overflow-y-auto">
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    onChange={handleFileChange}
-                                    className="hidden"
-                                />
-                                <AnimatePresence>
-                                    {entryCategory === 'artwork' &&
-                                        <motion.div
-                                            key="artwork-panel"
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            transition={{ duration: 0.3 }}
-                                        >
-                                            <div className="pb-2">
-                                                {isUploading ? (
-                                                    <div className="h-[100px] flex items-center justify-center">
-                                                        <p className="text-white">Uploading...</p>
-                                                    </div>
-                                                ) : previewUrl ? (
-                                                    <div className="relative group">
-                                                        {fileType === 'image' ? (
-                                                            <Image src={previewUrl} alt="Preview" width={400} height={300} className="w-full h-auto max-h-[250px] object-contain rounded-lg" />
-                                                        ) : (
-                                                            <video src={previewUrl} controls className="w-full h-auto max-h-[250px] rounded-lg" />
-                                                        )}
-                                                        <button
-                                                            type="button"
-                                                            onClick={handleRemoveFile}
-                                                            className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                        >
-                                                            <IoClose size={20} />
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <div className="h-[100px] grid grid-cols-2 gap-2">
-                                                        <div onClick={() => handleUploadClick('image')} className="bg-white/20 cursor-pointer duration-300 flex flex-col gap-2 items-center justify-center rounded-xl hover:bg-white/30 shadow-md">
-                                                            <LuImageUp className="text-white text-2xl" />
-                                                            <div className="text-white text-sm">{isEditing ? 'CHANGE IMAGE' : 'UPLOAD IMAGE'}</div>
-                                                        </div>
-                                                        <div onClick={() => handleUploadClick('video')} className="bg-white/20 cursor-pointer duration-300 flex flex-col gap-2 items-center justify-center rounded-xl hover:bg-white/30 shadow-md">
-                                                            <RiVideoUploadLine className="text-white text-3xl" />
-                                                            <div className="text-white text-sm">{isEditing ? 'CHANGE VIDEO' : 'UPLOAD VIDEO'}</div>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                                {uploadError && <p className="text-red-500 text-xs mt-2">{uploadError}</p>}
-                                            </div>
-                                        </motion.div>
-                                    }
-                                </AnimatePresence>
-                                <BlockNoteView editor={editor} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 w-full p-4 z-10">
-                                <button
-                                    type="button"
-                                    onClick={handleSubmit((data) => onSubmit(data, 'draft'))}
-                                    disabled={isSubmitting || isUploading}
-                                    className="bg-white/20 backdrop-blur-sm duration-300 text-white flex justify-center items-center gap-4 h-8 w-20 rounded-lg w-full disabled:opacity-50 hover:bg-white/30"
-                                >
-                                    {isEditing ? 'UPDATE DRAFT' : 'SAVE AS DRAFT'}
-                                </button>
-                                <button
-                                    onClick={handleSubmit((data) => onSubmit(data, 'pending'))}
-                                    disabled={isSubmitting || isUploading}
-                                    className="bg-[#45b5d9] duration-300 text-white flex justify-center items-center gap-4 h-8 w-20 rounded-lg w-full disabled:opacity-50 hover:bg-[#45b5d9]/80"
-                                >
-                                    {isEditing ? 'UPDATE & SUBMIT' : 'SAVE AND SUBMIT'}
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setIsOpenEntryModal(false);
-                                        resetForm();
-                                    }}
-                                    className="bg-white/20 backdrop-blur-sm col-span-2  duration-300 text-white flex justify-center items-center gap-4 h-8 w-20 rounded-lg w-full hover:bg-white/30">
-                                    CLOSE
-                                </button>
-                            </div>
-                        </form>
-                    </motion.div>
-                </motion.div>
-            }
-        </AnimatePresence>
+        <EntryDialog isOpenEntryModal={isOpenEntryModal} setIsOpenEntryModal={setIsOpenEntryModal} entryId={"new"} />
     </div>);
 };
 

@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react"
 import Shell from "@/components/Shell"
-import CustomTable, { Column } from "@/components/CustomTable"
+import CustomTable, { Column } from "@/components/(widgets)/CustomTable"
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import { setJumpPage } from "@/store/slice/pageSlice"
+import { useDispatch } from "react-redux"
 
 interface ActivityLog {
     id: number
@@ -19,6 +21,7 @@ interface ActivityLog {
 }
 
 const ActivityLogPage = () => {
+    const dispatch = useDispatch();
     const [logs, setLogs] = useState<ActivityLog[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -124,6 +127,10 @@ const ActivityLogPage = () => {
             }
         }
     ];
+
+    useEffect(() => {
+        dispatch(setJumpPage(false))
+    }, [])
 
     return (
         <Shell>
