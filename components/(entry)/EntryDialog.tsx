@@ -11,6 +11,9 @@ import { useCreateBlockNote, SuggestionMenuController, getDefaultReactSlashMenuI
 import axios from "axios";
 import Image from "next/image";
 
+import "@blocknote/core/fonts/inter.css";
+import "@blocknote/mantine/style.css";
+
 // Uploads a file to the backend and returns the URL to the uploaded file
 const uploadFile = async (file: File): Promise<string> => {
     const formData = new FormData();
