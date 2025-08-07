@@ -1,32 +1,23 @@
 "use client";
 
 import { EntryDialog, Header, Loader } from "@/components";
-import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useState, useRef } from "react";
-import { TbArrowBackUp, TbEdit } from "react-icons/tb";
-import axios from "axios";
-import { FaCheck, FaInstagram, FaUser, FaXTwitter } from "react-icons/fa6";
-import { LuImageUp } from "react-icons/lu";
-import "@blocknote/core/fonts/inter.css";
-import { BlockNoteView } from "@blocknote/mantine";
-import "@blocknote/mantine/style.css";
-import { useCreateBlockNote } from "@blocknote/react";
-import { RiVideoUploadLine } from "react-icons/ri";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { TbEdit } from "react-icons/tb";
+import { FaCheck, FaInstagram, FaSpinner, FaUpload, FaUser, FaXTwitter } from "react-icons/fa6";
 import { AnimatePresence, motion } from "framer-motion";
 import { IoClose } from "react-icons/io5";
-import { useForm } from "react-hook-form";
-import { Chip } from "@mui/material";
 import { useRouter, useParams } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setContent, setIsOpen } from "@/store/slice/dialogSlice";
 import { IoIosClose } from "react-icons/io";
 import { Pixelify_Sans, Rubik_Distressed } from "next/font/google";
-import { RootState } from "@/store";
 import { MdAddCircle } from "react-icons/md";
-import { BiTrash } from "react-icons/bi";
 import { useAuth } from "@/hooks/useAuth";
 import { setJumpPage } from "@/store/slice/pageSlice";
+import { useDropzone } from 'react-dropzone';
+
+import Image from "next/image";
+import axios from "axios";
 
 const pixelify_sans = Pixelify_Sans({ subsets: ["latin"], weight: "400" });
 const rubik_distressed = Rubik_Distressed({ subsets: ["latin"], weight: "400" });
@@ -115,11 +106,8 @@ const DashboardPage = () => {
     const profileCard = useRef<HTMLDivElement>(null);
     const dispatch = useDispatch();
     const router = useRouter();
-    const editor = useCreateBlockNote();
     const { isAuthenticated, user: authUser, loading: authLoading } = useAuth({ type: "user" });
     const { id } = useParams();
-    const [imgHeight, setImgHeight] = useState<number>(0);
-    const [imgWidth, setImgWidth] = useState<number>(0);
     const [isMobile, setIsMobile] = useState<boolean>(false);
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
@@ -133,135 +121,15 @@ const DashboardPage = () => {
     const [profileCardWidth, setProfileCardWidth] = useState<number>(0);
     const [profileCardTop, setProfileCardTop] = useState<number>(0);
     // State for temporary file handling
-    const [tempFilePath, setTempFilePath] = useState<string | null>(null);
+    const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const [fileType, setFileType] = useState<'image' | 'video' | null>(null);
-
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
-    const { register, handleSubmit, reset, formState: { errors, isSubmitting }, setValue } = useForm({
-        defaultValues: {
-            title: "",
-        }
-    });
-
-    const [entries, setEntries] = useState<any[]>([]);
-
-    const fetchUserEntries = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/entries/user`, {}, {
-                headers: { Authorization: token ? `Bearer ${token}` : "" }
-            });
-            console.log(res.data);
-            setEntries(res.data);
-        } catch (error) {
-            console.error("Failed to fetch user entries:", error);
-        }
-    };
-
-    const handleUploadClick = (type: 'image' | 'video') => {
-        if (fileInputRef.current) {
-            fileInputRef.current.accept = type === 'image' ? 'image/*' : 'video/*';
-            fileInputRef.current.click();
-        }
-    };
-
-    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        setIsUploading(true);
-        setUploadError(null);
-        setFileType(file.type.startsWith('image') ? 'image' : 'video');
-
-        const formData = new FormData();
-        formData.append('file', file);
-
-        try {
-            const token = localStorage.getItem("token");
-            const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/upload/temp`,
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        Authorization: token ? `Bearer ${token}` : "",
-                    },
-                }
-            );
-
-            // Store both the temporary path and the full preview URL
-            setTempFilePath(response.data.temp_path);
-            setPreviewUrl(response.data.preview_url);
-
-        } catch (err) {
-            setUploadError("File upload failed. Please try again.");
-            console.error(err);
-        } finally {
-            setIsUploading(false);
-        }
-
-        if (event.target) {
-            event.target.value = '';
-        }
-    };
+    const [isOpenDialog, setIsOpenDialog] = useState(false);
 
     const handleRemoveFile = () => {
         // Here we just clear the frontend state. 
         // The backend will clean up the orphaned temp file later.
-        setTempFilePath(null);
+        setProfileImageFile(null);
         setPreviewUrl(null);
-        setFileType(null);
-    };
-
-    const handleEditEntry = async (entry: any) => {
-        try {
-            // Fetch the full entry data
-            const token = localStorage.getItem("token");
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/entries/${entry.id}`, {
-                headers: { Authorization: token ? `Bearer ${token}` : "" }
-            });
-            
-            const entryData = response.data;
-            
-            // Set editing state
-            setIsEditing(true);
-            setEditingEntry(entryData);
-            
-            // Set form values
-            setValue('title', entryData.title);
-            setEntryCategory(entryData.category || 'story');
-            
-            // Set file data if exists
-            if (entryData.media_url) {
-                setPreviewUrl(`${process.env.NEXT_PUBLIC_BACKEND_URL}/storage/${entryData.media_url}`);
-                setFileType(entryData.media_type);
-                // Don't set tempFilePath for existing files, as they're already stored
-            }
-            
-            // Set editor content
-            if (entryData.content) {
-                const content = typeof entryData.content === 'string' ? JSON.parse(entryData.content) : entryData.content;
-                editor.replaceBlocks(editor.topLevelBlocks, content);
-            }
-            
-            setIsOpenEntryModal(true);
-        } catch (error) {
-            console.error("Failed to fetch entry for editing:", error);
-            alert("Failed to load entry for editing");
-        }
-    };
-
-    const resetForm = () => {
-        setIsEditing(false);
-        setEditingEntry(null);
-        setTempFilePath(null);
-        setPreviewUrl(null);
-        setFileType(null);
-        setEntryCategory('story');
-        reset();
-        editor.replaceBlocks(editor.topLevelBlocks, []);
     };
 
     const handleConnectInstagram = async () => {
@@ -332,23 +200,6 @@ const DashboardPage = () => {
         }
     };
 
-    const calculateImgHeight = () => {
-        if (window.innerWidth < 640) {
-            setIsMobile(true);
-
-            const maxH = (window.innerWidth * 2260 / 1379);
-            const H = Math.min(window.innerHeight - 120, maxH);
-            setImgHeight(H);
-            setImgWidth(H * 1379 / 2260);
-        } else {
-            setIsMobile(false);
-            const maxW = ((window.innerHeight - 80) * 2260 / 1379);
-            const W = Math.min(window.innerWidth * 0.8, maxW);
-            setImgHeight(W * 1379 / 2260);
-            setImgWidth(W);
-        }
-    };
-
     const handleFollow = async () => {
         const token = localStorage.getItem("token");
         const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/follow`, {
@@ -357,12 +208,53 @@ const DashboardPage = () => {
         fetchUser();
     };
 
-    const handleDeleteConfirm = (entry: any) => {
-        const token = localStorage.getItem("token");
-        fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/entries/${entry.id}`, { method: 'DELETE', headers: { Authorization: token ? `Bearer ${token}` : "" } }).then(() => {
-            fetchUserEntries();
-        });
-    }
+    const onDrop = useCallback((acceptedFiles: File[]) => {
+        if (acceptedFiles && acceptedFiles[0]) {
+            setProfileImageFile(acceptedFiles[0]);
+            setPreviewUrl(URL.createObjectURL(acceptedFiles[0]));
+        }
+    }, []);
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop,
+        accept: {
+            'image/*': ['.jpeg', '.jpg', '.png', '.gif']
+        },
+        maxFiles: 1,
+        maxSize: 5242880, // 5MB
+    });
+
+    const handleProfilePictureUpload = async () => {
+        if (!profileImageFile) return;
+
+        setIsUploading(true);
+        setUploadError(null);
+
+        const formData = new FormData();
+        formData.append('file', profileImageFile);
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/upload/profile-picture`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: token ? `Bearer ${token}` : "",
+                    },
+                }
+            );
+            setIsOpenDialog(false);
+            handleRemoveFile();
+            fetchUser();
+        } catch (err) {
+            setUploadError("File upload failed. Please try again.");
+            console.error(err);
+        } finally {
+            setIsUploading(false);
+        }
+    };
 
     const fetchUser = async () => {
         try {
@@ -393,19 +285,6 @@ const DashboardPage = () => {
     /*useEffect(() => {
         fetchUserEntries();
     }, []);*/
-
-    useEffect(() => {
-        // 初始化时计算高度
-        calculateImgHeight();
-
-        // 监听 resize 事件
-        window.addEventListener("resize", calculateImgHeight);
-
-        // 清除监听器
-        return () => {
-            window.removeEventListener("resize", calculateImgHeight);
-        };
-    }, []);
 
     // calculate profile card width and top for profile image
     useEffect(() => {
@@ -443,7 +322,7 @@ const DashboardPage = () => {
                 blurDataURL={`/assets/images/entry/entryListTopCardFrame.png`}
             />
             <div className="relative flex flex-col items-center justify-center h-[calc(100vh-200px)] max-h-[600px] py-8"
-                //style={{ height: imgHeight, width: imgWidth }}
+            //style={{ height: imgHeight, width: imgWidth }}
             >
                 <Image className="absolute left-0 top-0 w-full h-full" alt=""
                     height={1272} width={1425} src={`/assets/images/entry/entryListCenterCardFrame.png`}
@@ -474,7 +353,9 @@ const DashboardPage = () => {
                                 /> : <div className="flex items-center justify-center">
                                     <div className="text-white text-2xl font-bold">NO PROFILE PICTURE</div>
                                 </div>}
-                                <button disabled={true} className="absolute cursor-not-allowed duration-300 top-2 right-2 bg-white rounded-full p-1 shadow-md hover:opacity-80 text-black">
+                                <button onClick={() => {
+                                    setIsOpenDialog(true);
+                                }} className="absolute duration-300 top-2 right-2 bg-white rounded-full p-1 shadow-md hover:opacity-80 text-black">
                                     <TbEdit className="text-2xl" />
                                 </button>
                             </div>
@@ -573,7 +454,7 @@ const DashboardPage = () => {
                             </div>
                         </div>
                         <div className="flex flex-col gap-4">
-                        <div className="bg-[#45b5d9]/80 flex items-center justify-center rounded-xl text-md font-bold h-8 w-36 text-white">CHARACTERS</div>
+                            <div className="bg-[#45b5d9]/80 flex items-center justify-center rounded-xl text-md font-bold h-8 w-36 text-white">CHARACTERS</div>
                             <div className="flex gap-4 overflow-x-auto overflow-y-hidden filter-bar">
                                 <button onClick={() => router.push('/citizen')} className="bg-[#45b5d9] duration-300 flex hover:bg-[#45b5d9]/80 min-w-[100px] h-[100px] items-center justify-center text-white text-center text-sm rounded-lg shadow-md">
                                     GET YOUR <br /> CHARACTERS
@@ -686,26 +567,26 @@ const DashboardPage = () => {
                                         )}
                                     </div>
                                 </div>
-                            */} 
+                            */}
                             <div className="absolute top-0 left-0 flex flex-col items-center justify-center h-full w-full gap-4 z-10">
                                 {
                                     authUser && authUser?.id === id ? (
                                         <div className="flex items-center justify-center gap-8">
                                             <div className="flex flex-col items-center justify-center gap-2">
-                                                <div className="text-white text-sm">Drafts</div> 
+                                                <div className="text-white text-sm">Drafts</div>
                                                 <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.entries_stats?.draft}</div>
                                             </div>
                                             <div className="flex flex-col items-center justify-center gap-2">
-                                                <div className="text-white text-sm">Pending</div> 
+                                                <div className="text-white text-sm">Pending</div>
                                                 <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.entries_stats?.pending}</div>
                                             </div>
                                             <div className="flex flex-col items-center justify-center gap-2">
-                                                <div className="text-white text-sm">Approved</div> 
-                                                <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.entries_stats?.approved}</div>  
+                                                <div className="text-white text-sm">Approved</div>
+                                                <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.entries_stats?.approved}</div>
                                             </div>
                                             <div className="flex flex-col items-center justify-center gap-2">
-                                                <div className="text-white text-sm">Rejected</div> 
-                                                <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.entries_stats?.rejected}</div>  
+                                                <div className="text-white text-sm">Rejected</div>
+                                                <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.entries_stats?.rejected}</div>
                                             </div>
                                         </div>
                                     ) : (<div className="flex flex-col items-center justify-center gap-2">
@@ -724,12 +605,12 @@ const DashboardPage = () => {
                                     <button onClick={() => {
                                         dispatch(setJumpPage(true));
                                         const timeout = setTimeout(() => {
-                                            router.push(`/entry/stories/story`);
+                                            router.push(`/entry/private/story`);
                                         }, 200);
                                         return () => clearTimeout(timeout);
                                     }} className="bg-[#45b5d9] duration-300 flex items-center hover:bg-[#45b5d9]/80 gap-2 rounded-xl text-sm font-bold text-white py-1 px-4 shadow-md">ENTER</button>
                                 </div>
-                            </div> 
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -741,6 +622,60 @@ const DashboardPage = () => {
             />
         </div>
         <EntryDialog isOpenEntryModal={isOpenEntryModal} setIsOpenEntryModal={setIsOpenEntryModal} entryId={"new"} />
+        <AnimatePresence>
+            {isOpenDialog && (
+                <motion.div
+                    initial={{ opacity: 0, y: 100 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 100 }}
+                    transition={{ duration: 0.3 }}
+                    className={`fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-black/50 backdrop-blur-md text-white`}
+                >
+                    <div className="flex flex-col gap-4 bg-white/20 backdrop-blur-sm rounded-2xl p-4 group relative">
+                        <div {...getRootProps()} className={`duration-300 flex flex-col items-center overflow-hidden justify-center h-60 w-60 border-2 border-dashed rounded-md text-center cursor-pointer ${isDragActive ? 'opacity-50' : 'hover:opacity-50'}`}>
+                            <input {...getInputProps()} />
+                            {isUploading ? (
+                                <div className="flex items-center justify-center gap-2">
+                                    <FaSpinner className="animate-spin text-2xl" />
+                                    Uploading...
+                                </div>
+                            ) : (
+                                previewUrl ? (
+                                    <Image src={previewUrl} alt="Preview" width={400} height={300} className="w-full h-auto max-h-[250px] object-contain rounded-lg" />
+                                ) : (
+                                    <div className={`flex flex-col items-center justify-center gap-2`}>
+                                        <FaUpload className="text-2xl" />
+                                        UPLOAD YOUR <br /> PROFILE PICTURE
+                                    </div>
+                                )
+                            )}
+                        </div>
+                        {previewUrl && (
+                            <button type="button" onClick={() => handleProfilePictureUpload()} className="bg-[#45b5d9] duration-300 flex items-center hover:bg-[#45b5d9]/80 justify-center text-white gap-4 h-8 w-full rounded-lg shadow-md mt-4">
+                                UPLOAD
+                            </button>
+                        )}
+                        {previewUrl && (
+                            <button
+                                type="button"
+                                onClick={handleRemoveFile}
+                                className="absolute duration-300 top-6 right-6 bg-black/50 hover:bg-black/70 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                                <IoClose size={20} />
+                            </button>
+                        )}
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setIsOpenDialog(false);
+                                handleRemoveFile();
+                            }} className="bg-white/20 backdrop-blur-sm duration-300 flex hover:bg-white/30 items-center justify-center text-white gap-4 h-8 w-full rounded-lg shadow-md">
+                            CLOSE
+                        </button>
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     </div>);
 };
 

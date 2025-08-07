@@ -10,6 +10,8 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { setJumpPage } from '@/store/slice/pageSlice';
 import { useDispatch } from 'react-redux';
+import { useSnackbar } from 'notistack';
+import { FaUserLock } from 'react-icons/fa6';
 
 type LoginForm = {
     email: string;
@@ -17,6 +19,8 @@ type LoginForm = {
 };
 
 const LoginPage = () => {
+    const { enqueueSnackbar } = useSnackbar();
+    
     const router = useRouter();
     const dispatch = useDispatch();
     const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();
@@ -28,9 +32,10 @@ const LoginPage = () => {
         setLoading(true);
         try {
             await login(data.email, data.password);
+            enqueueSnackbar('Login successful', { variant: 'success' });
             redirectToDashboard();
         } catch (err: any) {
-            console.log(err);
+            enqueueSnackbar(err.response.data.message, { variant: 'error' });
         } finally {
             setLoading(false);
         }
@@ -57,7 +62,7 @@ const LoginPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             exit={{ opacity: 0, y: 20 }}
-            className="relative w-full sm:max-w-[400px] md:max-w-[500px] flex flex-col items-center justify-center">
+            className="relative w-full sm:max-w-[300px] md:max-w-[400px] flex flex-col items-center justify-center">
             <Image alt=""
                 height={198} width={1425} src={`/assets/images/entry/entryContentTopCardFrame.png`}
                 placeholder="blur"
@@ -69,8 +74,15 @@ const LoginPage = () => {
                     placeholder="blur"
                     blurDataURL={`/assets/images/entry/entryContentCenterCardFrame.png`}
                 />
-                <div className="flex flex-col gap-4 w-[70%] overflow-y-auto px-2 max-h-[calc(100vh-100px)] z-10 filter-bar">
-                    <div className="text-2xl font-bold text-center">LOGIN</div>
+                <div className="flex flex-col items-center gap-4 w-[80%] overflow-y-auto px-2 py-4 max-h-[calc(100vh-100px)] z-10 filter-bar">
+                    <div className="flex items-center gap-2">
+                        <FaUserLock className="text-5xl text-white" />
+                        <div className="bg-white w-2 h-10"></div>
+                        <div className="flex flex-col items-start">
+                            <span className="text-xl font-bold">LOGIN</span>
+                            <span className="text-sm text-gray-400">Enter your account details</span>
+                        </div>
+                    </div>
                     <div className="flex flex-col w-full">
                         <div>EMAIL*</div>
                         <input
