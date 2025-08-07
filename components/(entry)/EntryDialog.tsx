@@ -37,10 +37,7 @@ const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpe
     const editor = useCreateBlockNote({
         uploadFile,
         initialContent: [
-            {
-                type: "paragraph",
-                content: "Start writing your story...",
-            },
+            {}
         ],
     });
 
