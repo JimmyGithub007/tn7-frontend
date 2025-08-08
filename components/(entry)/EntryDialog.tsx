@@ -194,8 +194,20 @@ const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpe
             }
         };
 
-        if (isOpenEntryModal && entryId !== "new") {
-            handleEditEntry(entryId);
+        if (isOpenEntryModal) {
+            if (entryId !== "new") {
+                handleEditEntry(entryId);
+            } else {
+                setIsEditing(false);
+                setEntryCategory('story');
+                setTempFilePath(null);
+                setPreviewUrl(null);
+                setFileType(null);
+                reset();
+                editor.replaceBlocks(editor.topLevelBlocks, [
+                    {}
+                ]);
+            }
         }
     }, [isOpenEntryModal, entryId]);
 
