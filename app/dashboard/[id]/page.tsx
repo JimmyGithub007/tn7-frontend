@@ -235,10 +235,11 @@ const DashboardPage = () => {
 
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.post(
+            await axios.post(
                 `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/upload/profile-picture`,
                 formData,
                 {
+                    withCredentials: true,
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: token ? `Bearer ${token}` : "",
