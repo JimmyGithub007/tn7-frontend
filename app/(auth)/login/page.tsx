@@ -74,9 +74,8 @@ const LoginPage = () => {
                     placeholder="blur"
                     blurDataURL={`/assets/images/entry/entryContentCenterCardFrame.png`}
                 />
-                <div className="flex flex-col items-center gap-4 w-[80%] overflow-y-auto px-2 py-4 max-h-[calc(100vh-100px)] z-10 filter-bar">
+                <div className="flex flex-col gap-4 w-[80%] overflow-y-auto px-2 py-4 max-h-[calc(100vh-100px)] z-10 filter-bar">
                     <div className="flex items-center gap-2">
-                        <FaUserLock className="text-5xl text-white" />
                         <div className="bg-white w-2 h-10"></div>
                         <div className="flex flex-col items-start">
                             <span className="text-xl font-bold">LOGIN</span>

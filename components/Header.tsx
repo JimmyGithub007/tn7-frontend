@@ -529,7 +529,12 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
           onClick={() => {
             dispatch(setJumpPage(true));
             const timeout = setTimeout(() => {
-              router.push(`/${pathname === "/login" ? "register" : "login"}`);
+              const targetPath = pathname === "/login" ? "register" : "login";
+              if (pathname === "/home") {
+                window.location.href = `/${targetPath}`;
+              } else {
+                router.push(`/${targetPath}`);
+              }
             }, 200);
             return () => clearTimeout(timeout);
           }}
