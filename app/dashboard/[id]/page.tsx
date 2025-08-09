@@ -15,6 +15,7 @@ import { MdAddCircle } from "react-icons/md";
 import { useAuth } from "@/hooks/useAuth";
 import { setJumpPage } from "@/store/slice/pageSlice";
 import { useDropzone } from 'react-dropzone';
+import { AnimatedCounter } from  'react-animated-counter';
 
 import Image from "next/image";
 import axios from "axios";
@@ -239,7 +240,6 @@ const DashboardPage = () => {
                 `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/upload/profile-picture`,
                 formData,
                 {
-                    withCredentials: true,
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: token ? `Bearer ${token}` : "",
@@ -283,10 +283,6 @@ const DashboardPage = () => {
         if (id) fetchUser();//fetch user info according to id
     }, [id]);
 
-    /*useEffect(() => {
-        fetchUserEntries();
-    }, []);*/
-
     // calculate profile card width and top for profile image
     useEffect(() => {
         // 初始化时计算宽度
@@ -322,20 +318,12 @@ const DashboardPage = () => {
                 placeholder="blur"
                 blurDataURL={`/assets/images/entry/entryListTopCardFrame.png`}
             />
-            <div className="relative flex flex-col items-center justify-center h-[calc(100vh-200px)] max-h-[600px] py-8"
-            //style={{ height: imgHeight, width: imgWidth }}
-            >
+            <div className="relative flex flex-col items-center justify-center h-[calc(100vh-200px)] max-h-[600px] py-8">
                 <Image className="absolute left-0 top-0 w-full h-full" alt=""
                     height={1272} width={1425} src={`/assets/images/entry/entryListCenterCardFrame.png`}
                     placeholder="blur"
                     blurDataURL={`/assets/images/entry/entryListCenterCardFrame.png`}
                 />
-
-                {/*<Image className="absolute invisible sm:visible" alt=""
-                    height={1379} width={2260} src={`/assets/images/entry/entryFrameHorizontal.png`}
-                    placeholder="blur"
-                    blurDataURL={`/assets/images/entry/entryFrameHorizontal.png`}
-                />*/}
                 <div className="gap-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 w-[85%] z-10 overflow-y-auto filter-bar">
                     <div ref={profileCard} className="col-span-1 relative w-full min-h-[600px] h-full">
                         <Image className="absolute top-0 left-0 w-full h-full" alt=""
@@ -350,7 +338,7 @@ const DashboardPage = () => {
                                 {user?.profile_picture ? <Image className="w-full h-full object-cover hover:scale-105 duration-300" alt=""
                                     height={2276} width={1258} src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${user.profile_picture}`}
                                     placeholder="blur"
-                                    blurDataURL={`${process.env.NEXT_PUBLIC_BACKEND_URL}${user.profile_picture}`}
+                                    blurDataURL={`/assets/images/share/webp/profilePictureBlur.webp`}
                                 /> : <div className="flex items-center justify-center">
                                     <div className="text-white text-2xl font-bold">NO PROFILE PICTURE</div>
                                 </div>}
@@ -360,7 +348,12 @@ const DashboardPage = () => {
                                     <TbEdit className="text-2xl" />
                                 </button>
                             </div>
-                            <div className="bg-[#45b5d9]/80 flex items-center justify-center rounded-xl text-md font-bold h-8 w-full text-white">RANK #</div>
+                            <div className="bg-[#45b5d9]/80 flex items-center justify-center rounded-xl text-md font-bold h-8 w-full text-white">
+                                <div className="flex items-center gap-2">
+                                    <div>RANK #</div>
+                                    <AnimatedCounter value={1000} color="white" fontSize="16px" includeCommas={true} includeDecimals={false} />
+                                </div>
+                            </div>
                             <div className="text-center text-lg md:text-xl font-bold text-white">{user?.name}</div>
                             {authUser && authUser?.id !== id &&
                                 <button onClick={handleFollow} className={`bg-white/20 backdrop-blur-sm duration-300 flex hover:bg-white/30 items-center justify-center text-white gap-2 h-8 px-4 rounded-2xl shadow-md text-xs`}>
@@ -370,13 +363,13 @@ const DashboardPage = () => {
                                 </button>
                             }
                             <div className="grid grid-cols-2 gap-4 text-white text-sm">
-                                <div className="flex flex-col items-center justify-center">
+                                <div className="flex flex-col gap-2 items-center justify-center">
                                     <div>FOLLOWERS</div>
-                                    <div>{user?.followers?.length}</div>
+                                    <AnimatedCounter value={user?.followers?.length} color="white" fontSize="14px" includeCommas={true} includeDecimals={false} />
                                 </div>
-                                <div className="flex flex-col items-center justify-center">
+                                <div className="flex flex-col gap-2 items-center justify-center">
                                     <div>FOLLOWING</div>
-                                    <div>{user?.followings?.length}</div>
+                                    <AnimatedCounter value={user?.followings?.length} color="white" fontSize="14px" includeCommas={true} includeDecimals={false} />
                                 </div>
                             </div>
                             <div className="flex flex-col items-center gap-3 w-full">
@@ -433,7 +426,7 @@ const DashboardPage = () => {
                                 />
                                 <div className="text-white text-lg font-bold">LUNEX POINTS</div>
                                 <div className="bg-no-repeat bg-contain bg-center w-full h-full flex items-center justify-center z-10" style={{ backgroundImage: `url(/assets/images/share/lunex.png)` }}>
-                                    <div className="text-white text-4xl font-bold">0</div>
+                                    <AnimatedCounter value={1000} color="white" fontSize="32px" includeCommas={true} includeDecimals={false} />
                                 </div>
                             </div>
                             <div className="flex flex-col gap-2 items-center justify-center h-full w-full py-6 relative min-h-[200px]">
@@ -489,7 +482,7 @@ const DashboardPage = () => {
                                                         <div className="flex gap-4 items-center">
                                                             <div className="flex flex-col">
                                                                 <div className="text-slate-300 text-xs">RANK</div>
-                                                                <div className={`font-bold text-xl ${rubik_distressed.className}`}>1000</div>
+                                                                <AnimatedCounter value={1000} color="white" fontSize="16px" includeCommas={true} includeDecimals={false} />
                                                             </div>
                                                         </div>
                                                         <div id="attributes" className="gap-4 grid grid-cols-1 lg:grid-cols-2">
@@ -538,56 +531,25 @@ const DashboardPage = () => {
                                 placeholder="blur"
                                 blurDataURL={`/assets/images/share/middleFrame.png`}
                             />
-                            {/*authUser && authUser?.id === id ?
-                                <div className="flex flex-col gap-2 absolute top-0 left-0 w-full h-full p-4">
-                                    <div className="flex items-center justify-between">
-                                        <button onClick={() => {
-                                            resetForm();
-                                            setIsOpenEntryModal(true);
-                                        }} className="bg-[#45b5d9] duration-300 flex items-center hover:bg-[#45b5d9]/80 gap-2 rounded-xl text-sm font-bold text-white py-1 px-4 shadow-md"><MdAddCircle /> NEW ENTRY</button>
-                                        <button onClick={() => router.push(`/entry/stories`)} className="bg-[#45b5d9] duration-300 hover:bg-[#45b5d9]/80 gap-2 rounded-xl text-sm font-bold text-white py-1 px-4 shadow-md">VIEW ENTRIES</button>
-                                    </div>
-                                    <div className="bg-white/20 backdrop-blur-sm flex flex-col gap-2 p-4 rounded-xl h-full shadow-md overflow-y-auto filter-bar">
-                                        {entries.length > 0 ? (
-                                            entries.map(entry => (
-                                                <div key={entry.id} className="bg-black/20 p-3 rounded-lg flex justify-between items-center shadow-md">
-                                                    <span className="text-white truncate pr-4">{entry.title}</span>
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="text-white text-xs border-2 border-white rounded-lg py-1 px-2 shadow-md">{entry.status}</div>
-                                                        <button className="text-white hover:text-gray-300" onClick={() => handleEditEntry(entry)}>
-                                                            <TbEdit />
-                                                        </button>
-                                                        <button className="text-red-500 hover:text-red-300" onClick={() => handleDelete(entry)}>
-                                                            <BiTrash />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className="text-center text-white/50 italic">No entries</div>
-                                        )}
-                                    </div>
-                                </div>
-                            */}
                             <div className="absolute top-0 left-0 flex flex-col items-center justify-center h-full w-full gap-4 z-10">
                                 {
                                     authUser && authUser?.id === id ? (
                                         <div className="flex items-center justify-center gap-8">
                                             <div className="flex flex-col items-center justify-center gap-2">
                                                 <div className="text-white text-sm">Drafts</div>
-                                                <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.entries_stats?.draft}</div>
+                                                <AnimatedCounter value={user?.entries_stats?.draft} color="white" fontSize="14px" includeCommas={true} includeDecimals={false} />
                                             </div>
                                             <div className="flex flex-col items-center justify-center gap-2">
                                                 <div className="text-white text-sm">Pending</div>
-                                                <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.entries_stats?.pending}</div>
+                                                <AnimatedCounter value={user?.entries_stats?.pending} color="white" fontSize="14px" includeCommas={true} includeDecimals={false} />
                                             </div>
                                             <div className="flex flex-col items-center justify-center gap-2">
                                                 <div className="text-white text-sm">Approved</div>
-                                                <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.entries_stats?.approved}</div>
+                                                <AnimatedCounter value={user?.entries_stats?.approved} color="white" fontSize="14px" includeCommas={true} includeDecimals={false} />
                                             </div>
                                             <div className="flex flex-col items-center justify-center gap-2">
                                                 <div className="text-white text-sm">Rejected</div>
-                                                <div className="text-white text-lg sm:text-xl md:text-2xl font-bold">{user?.entries_stats?.rejected}</div>
+                                                <AnimatedCounter value={user?.entries_stats?.rejected} color="white" fontSize="14px" includeCommas={true} includeDecimals={false} />
                                             </div>
                                         </div>
                                     ) : (<div className="flex flex-col items-center justify-center gap-2">
@@ -622,7 +584,10 @@ const DashboardPage = () => {
                 blurDataURL={`/assets/images/entry/entryListBottomCardFrame.png`}
             />
         </div>
-        <EntryDialog isOpenEntryModal={isOpenEntryModal} setIsOpenEntryModal={setIsOpenEntryModal} entryId={"new"} />
+        <EntryDialog isOpenEntryModal={isOpenEntryModal} setIsOpenEntryModal={() => {
+            setIsOpenEntryModal(false);
+            fetchUser();
+        }} entryId={"new"} />
         <AnimatePresence>
             {isOpenDialog && (
                 <motion.div
