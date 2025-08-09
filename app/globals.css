@@ -95,3 +95,10 @@ canvas {
   }
 }
 /*glitch text animation - end*/
+
+@media (max-width: 480px) { /* Adjust breakpoint as needed */
+  .recaptcha-container {
+    transform: scale(0.8); /* Scale down for smaller screens */
+    transform-origin: 0 0; /* Important for correct scaling origin */
+  }
+}

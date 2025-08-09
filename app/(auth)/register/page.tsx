@@ -60,7 +60,7 @@ const RegisterPage = () => {
         <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/entry/entryBG.png`} priority />
         <Header />
         <Loader />
-        <div className="relative w-full sm:max-w-[400px] md:max-w-[500px] flex flex-col items-center justify-center">
+        <div className="relative w-full sm:max-w-[300px] md:max-w-[400px] flex flex-col items-center justify-center">
             <Image alt=""
                 height={198} width={1425} src={`/assets/images/entry/entryContentTopCardFrame.png`}
                 placeholder="blur"
@@ -72,8 +72,14 @@ const RegisterPage = () => {
                     placeholder="blur"
                     blurDataURL={`/assets/images/entry/entryContentCenterCardFrame.png`}
                 />
-                <div className="flex flex-col gap-4 w-[70%] overflow-x-hidden overflow-y-auto px-2 max-h-[calc(100vh-100px)] z-10 filter-bar">
-                    <div className="text-2xl font-bold text-center">REGISTER</div>
+                <div className="flex flex-col gap-4 w-[80%] overflow-y-auto px-2 py-4 max-h-[calc(100vh-100px)] z-10 filter-bar">
+                    <div className="flex items-center gap-2">
+                        <div className="bg-white w-2 h-10"></div>
+                        <div className="flex flex-col items-start">
+                            <span className="text-xl font-bold">REGISTER</span>
+                            <span className="text-sm text-gray-400">Create your account</span>
+                        </div>
+                    </div>
                     <div className="flex flex-col w-full">
                         <div>EMAIL*</div>
                         <input
@@ -108,7 +114,7 @@ const RegisterPage = () => {
                     { errors.password2 && <div className="text-red-500 text-xs">*{errors.password2.message}</div> }
                     </div>
                     {!loading && (
-                        <div className="flex flex-col w-full">
+                        <div className="flex flex-col w-full recaptcha-container">
                             <ReCAPTCHA
                                 ref={recaptchaRef}
                                 sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}
