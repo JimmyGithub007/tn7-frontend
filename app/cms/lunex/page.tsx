@@ -337,7 +337,7 @@ const LunexManagementPage = () => {
         dispatch(setJumpPage(false))
     }, []);
 
-    return (<Shell>
+    return (<>
         <div className="flex h-16 justify-between items-center">
             <h1 className="text-2xl font-semibold">Lunex Management</h1>
         </div>
@@ -599,7 +599,7 @@ const LunexManagementPage = () => {
                 }} />
             </div>
         </Drawer>
-    </Shell>)
+    </>)
 }
 
 export default LunexManagementPage;

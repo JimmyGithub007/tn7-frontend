@@ -383,12 +383,12 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // 自动签名登录
-  useEffect(() => {
+  /*useEffect(() => {
     if (isConnected && !isAuthenticated && !isLoading) {
       handleWalletLogin();
     }
     // eslint-disable-next-line
-  }, [isConnected]);
+  }, [isConnected]);*/
 
   const handleWalletLogin = async () => {
     if (!isConnected || !address) {

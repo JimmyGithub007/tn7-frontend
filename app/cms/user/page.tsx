@@ -8,7 +8,6 @@ import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { IoCloudUploadOutline } from "react-icons/io5"
 import CustomTable, { Column } from "@/components/(widgets)/CustomTable"
-import Shell from "@/components/Shell"
 import axios from 'axios'
 import * as z from "zod"
 import { useSnackbar } from 'notistack';
@@ -338,15 +337,16 @@ const UserPage = () => {
     }
 
     useEffect(() => {
-        fetchUsers()
+        setLoading(true);
+        fetchUsers();
     }, [tabId])
 
     useEffect(() => {
-        fetchRoles()
+        fetchRoles();
     }, [])
 
     useEffect(() => {
-        dispatch(setJumpPage(false))
+        dispatch(setJumpPage(false));
     }, [])
 
     const userColumns: Column[] = [
@@ -495,7 +495,7 @@ const UserPage = () => {
     ];
 
     return (
-        <Shell>
+        <>
             <div className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 mb-2">
                 {tabs.map((tab) => (
                     <button
@@ -722,7 +722,7 @@ const UserPage = () => {
                     </form>
                 </div>
             </Drawer>
-        </Shell>
+        </>
     )
 }
 

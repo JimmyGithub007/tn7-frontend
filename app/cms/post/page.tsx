@@ -259,7 +259,7 @@ const PostManagementPage = () => {
     }, [])
 
     return (
-        <Shell>
+        <>
             <div className="flex justify-between items-center mb-4">
                 <h1 className="text-2xl font-bold">Post Management</h1>
                 <Button
@@ -369,7 +369,7 @@ const PostManagementPage = () => {
                     </form>
                 </div>
             </Drawer>
-        </Shell>
+        </>
     );
 };
 

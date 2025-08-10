@@ -12,6 +12,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 
 import "./globals.css";
 import Script from 'next/script'
+import Shell from "@/components/Shell";
 
 //const archivo_black = Archivo_Black({ subsets: ["latin"], weight: "400" });
 
@@ -78,11 +79,13 @@ export default function RootLayout({
         />
       </head>
       <body className={impact.className} style={{ overflow: "hidden" }}>
-        <NotistackProvider>
-          <WalletProviders>
-            {children}
-          </WalletProviders>
-        </NotistackProvider>
+        <Shell>
+          <NotistackProvider>
+            <WalletProviders>
+              {children}
+            </WalletProviders>
+          </NotistackProvider>          
+        </Shell>
         <Dialog />
         {/*<MouseFollower />*/}
       </body>
