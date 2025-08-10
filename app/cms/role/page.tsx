@@ -1,14 +1,13 @@
 "use client"
 
-import Shell from "@/components/Shell"
 import { useEffect, useState } from "react"
-import axios from "axios"
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Checkbox, FormControlLabel, FormGroup, CircularProgress, Typography, Divider, MenuItem, Drawer, List, ListItem, ListItemText, ListItemButton } from "@mui/material"
 import { MdAdd, MdEdit, MdDelete } from "react-icons/md"
-import CustomTable, { Column } from "@/components/(widgets)/CustomTable"
 import { useSnackbar } from 'notistack';
 import { setJumpPage } from "@/store/slice/pageSlice"
 import { useDispatch } from "react-redux"
+import CustomTable, { Column } from "@/components/(widgets)/CustomTable"
+import axios from "axios"
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL + "/api",
@@ -213,7 +212,7 @@ const RolePage = () => {
   }, [])
 
   return (
-    <Shell>
+    <>
       <div className="flex h-16 justify-between items-center">
         <h1 className="text-2xl font-semibold">Role Management</h1>
         <button className={`bg-[#45b5d9] hover:bg-[#45b5d9]/80 duration-300 rounded-xl text-white px-4 py-2 text-sm shadow-lg flex items-center justify-center gap-2 z-10`}
@@ -319,7 +318,7 @@ const RolePage = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Shell>
+    </>
   )
 }
 

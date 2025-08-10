@@ -444,7 +444,7 @@ const LoreManagementPage = () => {
         dispatch(setJumpPage(false))
     }, [])
 
-    return (<Shell>
+    return (<>
         <div className="flex h-16 justify-between items-center">
             <h1 className="text-2xl font-semibold">Lore Management</h1>
             {tabId === 1 && (
@@ -645,7 +645,7 @@ const LoreManagementPage = () => {
                 )}
             </div>
         </Drawer>
-    </Shell>)
+    </>)
 }
 
 export default LoreManagementPage;

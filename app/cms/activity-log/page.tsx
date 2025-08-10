@@ -133,7 +133,7 @@ const ActivityLogPage = () => {
     }, [])
 
     return (
-        <Shell>
+        <>
             <div className="flex h-16 justify-between items-center">
                 <h1 className="text-2xl font-semibold">Activity Logs</h1>
             </div>
@@ -143,7 +143,7 @@ const ActivityLogPage = () => {
                 </div>
             )}
             <CustomTable columns={columns} data={logs} pagination={true} loading={loading} />
-        </Shell>
+        </>
     )
 }
 

@@ -9,7 +9,6 @@ import { useAuth } from "@/hooks/useAuth"
 
 import CircularProgress from "@mui/material/CircularProgress"
 import Image from "next/image"
-import axios from "axios"
 import z from "zod"
 
 type Inputs = {
@@ -69,21 +68,27 @@ const LoginPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
                 exit={{ opacity: 0, y: 20 }}
-                className="relative w-full sm:max-w-[400px] md:max-w-[500px] flex flex-col items-center justify-center">
+                className="relative w-full sm:max-w-[300px] md:max-w-[400px] flex flex-col items-center justify-center">
                 <Image alt=""
                     height={198} width={1425} src={`/assets/images/entry/entryContentTopCardFrame.png`}
                     placeholder="blur"
                     blurDataURL={`/assets/images/entry/entryContentTopCardFrame.png`}
                 />
-                <div className="relative text-white flex flex-col gap-4 items-center justify-center py-12 w-full text-white">
+                <div className="relative text-white flex flex-col gap-4 items-center justify-center w-full text-white">
                     <Image className="absolute left-0 top-0 w-full h-full" alt=""
                         height={1272} width={1425} src={`/assets/images/entry/entryContentCenterCardFrame.png`}
                         placeholder="blur"
                         blurDataURL={`/assets/images/entry/entryContentCenterCardFrame.png`}
                     />
-                    <div className="flex flex-col gap-4 w-[70%] overflow-y-auto px-2 max-h-[calc(100vh-100px)] z-10 filter-bar">
-                        <h1 className="text-4xl font-bold text-center">TN7 CMS</h1>                    
-                        <div className="text-2xl font-bold text-center">LOGIN</div>
+                    <div className="flex flex-col gap-4 w-[80%] overflow-y-auto px-2 py-4 max-h-[calc(100vh-100px)] z-10 filter-bar">
+                        <div className="text-2xl font-bold text-center">TN7 CMS</div>
+                        <div className="flex items-center gap-2">
+                            <div className="bg-white w-2 h-10"></div>
+                            <div className="flex flex-col items-start">
+                                <span className="text-xl font-bold">LOGIN</span>
+                                <span className="text-sm text-gray-400">Enter your account details</span>
+                            </div>
+                        </div>
                         <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
                             <div className="flex flex-col w-full">
                                 <div>EMAIL*</div>

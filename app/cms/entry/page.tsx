@@ -176,7 +176,7 @@ const EntryPage = () => {
     }, [])
 
     return (
-        <Shell>
+        <>
             <div className="flex h-16 justify-between items-center">
                 <h1 className="text-2xl font-semibold">Entry Management</h1>
             </div>
@@ -293,7 +293,7 @@ const EntryPage = () => {
                     </form>
                 </div>
             </Drawer>
-        </Shell>
+        </>
     );
 };
 

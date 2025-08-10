@@ -1,17 +1,19 @@
-import Link from "next/link";
-import Image from "next/image";
-import { useState, useEffect, createContext } from "react";
+"use client"
+
+import { useState, useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { MdDashboard, MdShoppingCart, MdListAlt, MdPeople, MdSettings, MdManageAccounts, MdLeaderboard } from "react-icons/md";
+import { MdListAlt, MdPeople, MdManageAccounts, MdLeaderboard } from "react-icons/md";
 import { TbLogs } from "react-icons/tb";
 import { BiLogOut, BiUser } from "react-icons/bi";
 import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, CircularProgress } from "@mui/material";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { setJumpPage } from "@/store/slice/pageSlice";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAuth } from "@/hooks/useAuth";
+import { useSnackbar } from "notistack";
+import axios from "axios";
+import Image from "next/image";
+import Loader from "./Loader";
 
 const menuItems = [
     //{ label: "Dashboard", href: "/cms/dashboard", icon: <MdDashboard size={22} /> },
@@ -25,58 +27,68 @@ const menuItems = [
 ];
 
 const Shell = ({ children }: { children: React.ReactNode }) => {
-
-    const { isAuthenticated, user, loading: authLoading, logout } = useAuth({ type: "cms" });
+    const { enqueueSnackbar } = useSnackbar();
 
     const dispatch = useDispatch();
     const jumpPage = useSelector((state: RootState) => state.page.jumpPage);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState<string | null>(null);
+    const [user, setUser] = useState<any>(null);
     const pathname = usePathname();
     const router = useRouter();
 
-    /*const handleLogout = async () => {
-        try {
-            const token = localStorage.getItem('token')
-            await axios.post(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/logout`,
-                {},
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json',
-                    }
-                }
-            );
+    const logout = () => {
+        dispatch(setJumpPage(true));
+        localStorage.removeItem('cms_token');
+        setUser(null);
+        router.push('/cms/login');
+        enqueueSnackbar('Logged out successfully', { variant: 'success' });
+    };
 
-            localStorage.removeItem('token');
-            localStorage.removeItem('user_email');
-            localStorage.removeItem('roles');
-            localStorage.removeItem('permissions');
-            router.push('/cms/login');
-        } catch (error) {
-            console.error('Logout failed:', error);
-        }
-    };*/
+    // 将权限过滤也放到useMemo中，避免每次渲染都重新计算
+    const filteredMenuItems = useMemo(() => {
+        if (!user?.permissions) return [];
+        return menuItems.filter(item =>
+            user.permissions.some((permission: any) => permission.name === item.permission)
+        );
+    }, [menuItems, user]);
 
     useEffect(() => {
         if (pathname !== currentPage) setCurrentPage(pathname)
     }, [pathname])
 
     useEffect(() => {
-        if (!authLoading && !isAuthenticated) {
-            router.push('/cms/login');
-        }
-    }, [authLoading, isAuthenticated, user, router])
+        if (!pathname.includes('/cms')) return;
+        const token = localStorage.getItem('cms_token');
+        const checkAuthStatus = async () => {
+            if (token) {
+                try {
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/me`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    setUser(response.data);
+                } catch (error) {
+                    localStorage.removeItem('cms_token');
+                    dispatch(setJumpPage(true));
+                    router.push('/cms/login');
+                    enqueueSnackbar('Session expired, please login again', { variant: 'error' });
+                }
+            } else {
+                dispatch(setJumpPage(true));
+                router.push('/cms/login');
+            }
+        };
+        checkAuthStatus();
+    }, [pathname]);
 
-    useEffect(() => {
-        console.log("reload")
-    }, [])
+    if (!pathname.includes('/cms') || pathname == '/cms/login') {
+        return children;
+    }
 
     return (<>
         <div className="flex h-screen w-full bg-gray-100 overflow-hidden">
+            <Loader />
             {/* Mobile menu button */}
             <button
                 className="lg:hidden fixed top-6 left-8 z-50 p-2 rounded-3xl bg-slate-100 shadow-md"
@@ -95,12 +107,11 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
                         <Image src="/assets/images/TN7_Blurb.png" alt="TN7 Logo" width={80} height={80} className="mb-2" />
                     </div>
                     <nav className="flex flex-col gap-2 mt-6 px-4">
-                        {menuItems.map(item => (
+                        {filteredMenuItems.map(item => (
                             <button
                                 key={item.href}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-gray-700 transition-all duration-150 hover:bg-slate-100 
                                     ${currentPage === item.href ? 'bg-blue-50 font-bold shadow' : ''}
-                                    ${user?.permissions?.some((permission: any) => permission.name === item.permission) ? '' : 'cursor-not-allowed opacity-50'}
                                 `}
                                 onClick={() => {
                                     setIsMobileMenuOpen(false)
@@ -169,19 +180,21 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setLogoutDialogOpen(false)} color="primary">
-                        Cancel
-                    </Button>
-                    <Button
+                    <button
+                        className="w-full bg-white border border-gray-300 hover:bg-gray-50 duration-300 rounded-xl text-gray-500 px-4 py-1 text-sm shadow-lg flex items-center justify-center gap-2 z-10"
+                        onClick={() => setLogoutDialogOpen(false)}
+                    >
+                        CANCEL
+                    </button>
+                    <button
                         onClick={() => {
                             setLogoutDialogOpen(false);
                             logout();
                         }}
-                        color="primary"
-                        variant="contained"
+                        className={`bg-[#45b5d9] hover:bg-[#45b5d9]/80 duration-300 rounded-xl text-white px-4 py-1 text-sm shadow-lg flex items-center justify-center gap-2 z-10 w-full`}
                     >
-                        Logout
-                    </Button>
+                        LOGOUT
+                    </button>
                 </DialogActions>
             </Dialog>
         </div>
