@@ -14,28 +14,28 @@ import Image from "next/image";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 
-// Uploads a file to the backend and returns the URL to the uploaded file
-const uploadFile = async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const token = localStorage.getItem("token");
-    const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/upload/temp`,
-        formData,
-        {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: token ? `Bearer ${token}` : "",
-            },
-        }
-    );
-
-    // Return the preview URL from the backend response
-    return response.data.preview_url;
-}
-
 const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpenEntryModal: boolean, setIsOpenEntryModal: (isOpen: boolean) => void, entryId: string }) => {
+
+    // Uploads a file to the backend and returns the URL to the uploaded file
+    const uploadFile = async (file: File): Promise<string> => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const token = localStorage.getItem("token");
+        const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/upload/temp`,
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: token ? `Bearer ${token}` : "",
+                },
+            }
+        );
+
+        // Return the preview URL from the backend response
+        return response.data.preview_url;
+    }
 
     const editor = useCreateBlockNote({
         uploadFile,
@@ -57,6 +57,47 @@ const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpe
     const [tempFilePath, setTempFilePath] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const [tags, setTags] = useState<string[]>([]); // 已选标签
+    const [input, setInput] = useState(""); // 输入框
+    const [popularTags, setPopularTags] = useState<string[]>([]); // 热门标签
+    const [filteredTags, setFilteredTags] = useState<string[]>([]); // 匹配标签
+
+    // 模拟后端获取热门标签
+    useEffect(() => {
+        setPopularTags(["travel", "food", "fitness", "music", "art", "nature", "fashion"]);
+    }, []);
+
+    // 输入时过滤热门标签
+    useEffect(() => {
+        if (input.length > 0) {
+            const query = input.toLowerCase();
+            setFilteredTags(
+                popularTags.filter((tag: string) => tag.toLowerCase().includes(query) && !tags.includes(tag))
+            );
+        } else {
+            setFilteredTags([]);
+        }
+    }, [input, popularTags, tags]);
+
+
+    const addTag = (tag: string) => {
+        if (!tags.includes(tag)) {
+            setTags([...tags, tag]);
+        }
+        setInput("");
+        setFilteredTags([]);
+    };
+
+    const removeTag = (tag: string) => {
+        setTags(tags.filter((t: string) => t !== tag));
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            addTag(input.trim());
+        }
+    };
+
     const onSubmit = async (data: any, status?: string) => {
         const contentJSON = editor.topLevelBlocks;
         const payload = {
@@ -66,6 +107,7 @@ const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpe
             file_type: fileType,
             temp_file_path: tempFilePath,
             status: status,
+            tags: tags,
         };
 
         // If editing and no new file uploaded, keep the existing media
@@ -75,7 +117,7 @@ const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpe
 
         try {
             const token = localStorage.getItem("token");
-            
+
             if (isEditing && editingEntry) {
                 // Update existing entry
                 await axios.put(
@@ -91,7 +133,7 @@ const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpe
                     { headers: { Authorization: token ? `Bearer ${token}` : "" } }
                 );
             }
-            
+
             //resetForm();
             //fetchUserEntries();
         } catch (error) {
@@ -164,7 +206,6 @@ const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpe
                 });
 
                 const entryData = response.data;
-                console.log(entryData);
 
                 // Set editing state
                 setIsEditing(true);
@@ -185,6 +226,11 @@ const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpe
                 if (entryData.content) {
                     const content = typeof entryData.content === 'string' ? JSON.parse(entryData.content) : entryData.content;
                     editor.replaceBlocks(editor.topLevelBlocks, content);
+                }
+
+                // Set tags if they exist
+                if (entryData.tags) {
+                    setTags(Array.isArray(entryData.tags) ? entryData.tags : []);
                 }
 
                 setIsOpenEntryModal(true);
@@ -226,18 +272,19 @@ const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpe
                     transition={{ duration: 0.2, delay: 0.2 }}
                     id="modal"
                 >
-                    <form onSubmit={handleSubmit((data) => onSubmit(data, 'draft'))} className="bg-[#1f1f1f] flex flex-col gap-4 p-4 rounded-xl w-[400px] shadow-lg relative">
+                    <div className="bg-[#1f1f1f] flex flex-col gap-4 p-4 rounded-xl w-[400px] shadow-lg relative">
                         <div className="text-white text-lg font-bold text-center">
                             {isEditing ? 'EDIT ENTRY' : 'NEW ENTRY'}
                         </div>
-                        <input
-                            type="text"
-                            placeholder="Title"
-                            className="bg-black/20 backdrop-blur-sm text-white py-2 px-4 rounded-xl"
-                            {...register("title", { required: "Title is required" })}
-                        />
-                        {errors.title && <span className="text-red-400 text-xs">{errors.title.message as string}</span>}
-
+                        <form>
+                            <input
+                                type="text"
+                                placeholder="Title"
+                                className="bg-black/20 backdrop-blur-sm text-white py-2 px-4 rounded-xl w-full"
+                                {...register("title", { required: "Title is required" })}
+                            />
+                            {errors.title && <span className="text-red-400 text-xs">{errors.title.message as string}</span>}
+                        </form>
                         <div className="bg-white/20 backdrop-blur-sm text-white flex justify-center items-center rounded-lg w-full overflow-hidden relative">
                             {/* 滑动的背景指示器 */}
                             <motion.div
@@ -269,7 +316,7 @@ const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpe
                                 ARTWORK
                             </button>
                         </div>
-                        <div className="flex flex-col gap-2 min-h-[388px] max-h-[calc(100vh-300px)] overflow-y-auto">
+                        <div className="flex flex-col gap-2 min-h-[388px] max-h-[calc(100vh-390px)] overflow-y-auto">
                             <input
                                 type="file"
                                 ref={fileInputRef}
@@ -331,22 +378,62 @@ const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpe
                                     getItems={async (query: string) => {
                                         // 获取默认的斜杠菜单项
                                         const defaultItems = getDefaultReactSlashMenuItems(editor);
-                                        
+
                                         // 当 category 是 artwork 时，过滤掉媒体相关的菜单项
                                         if (entryCategory === 'artwork') {
-                                            const filteredItems = defaultItems.filter(item => 
+                                            const filteredItems = defaultItems.filter(item =>
                                                 !['image', 'video', 'audio', 'file'].includes(item.title.toLowerCase())
                                             );
                                             return filteredItems;
                                         }
-                                        
+
                                         // 否则返回所有默认菜单项
                                         return defaultItems;
                                     }}
                                 />
                             </BlockNoteView>
                         </div>
-                        <div className="grid grid-cols-2 gap-4 w-full p-4 z-10">
+                        <div className="flex flex-wrap gap-2 px-2 z-20">
+                            <AnimatePresence>
+                                {tags.map(tag => (
+                                    <motion.span
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: 10 }}
+                                        transition={{ duration: 0.3 }}
+                                        key={tag}
+                                        className="bg-white/20 backdrop-blur-sm text-white py-1 px-2 rounded-xl cursor-pointer text-sm"
+                                        onClick={() => removeTag(tag)}
+                                    >
+                                        #{tag} ✕
+                                    </motion.span>
+                                ))}
+                            </AnimatePresence>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    value={input}
+                                    onChange={e => setInput(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    placeholder="#Add New Tag"
+                                    className="bg-black/80 backdrop-blur-sm text-white py-1 px-4 rounded-xl shadow-lg shadow-black/10 text-sm w-fit"
+                                />
+                                {filteredTags.length > 0 && (
+                                    <div className="absolute top-full left-0 top-2 bg-black/30 backdrop-blur-sm text-white rounded-lg shadow-lg shadow-black/10 text-sm w-fit overflow-hidden">
+                                        {filteredTags.map(tag => (
+                                            <div
+                                                key={tag}
+                                                className="duration-300 py-1 px-2 cursor-pointer cursor-pointer hover:bg-white/20"
+                                                onClick={() => addTag(tag)}
+                                            >
+                                                #{tag}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 w-full px-2 z-10">
                             <button
                                 type="button"
                                 onClick={handleSubmit((data) => onSubmit(data, 'draft'))}
@@ -372,7 +459,7 @@ const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpe
                                 CLOSE
                             </button>
                         </div>
-                    </form>
+                    </div>
                 </motion.div>
             </motion.div>
         }

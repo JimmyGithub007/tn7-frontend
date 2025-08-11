@@ -7,7 +7,7 @@ import { FaBookmark, FaCaretDown, FaHeart, FaRegBookmark, FaTrash } from "react-
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useInView } from "react-intersection-observer";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import { BsThreeDots } from "react-icons/bs";
 import { Masonry } from 'react-plock';
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -41,10 +41,15 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
     useEffect(() => {
+        console.log("checkHeight");
         const checkHeight = () => {
-            if (contentRef.current && mediaRef.current) {
-                const contentHeight = contentRef.current.scrollHeight;
-                const mediaHeight = mediaRef.current.clientHeight;
+            console.log("checkHeight2");
+            if (contentRef.current || mediaRef.current) {
+                console.log("checkHeight3");
+
+                const contentHeight = contentRef.current?.scrollHeight || 0;
+                const mediaHeight = mediaRef.current?.clientHeight || 0;
+                console.log("checkHeight4", contentHeight + mediaHeight > MAX_HEIGHT);
                 setShowExpand(contentHeight + mediaHeight > MAX_HEIGHT);
             }
         };
@@ -55,7 +60,7 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
         // 如果媒体元素存在，监听加载完成事件
         if (mediaRef.current) {
             const mediaElement = mediaRef.current;
-            
+
             if (mediaElement.tagName === 'IMG') {
                 if (mediaElement.complete) {
                     checkHeight();
@@ -94,8 +99,8 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
         // 获取当前用户信息
         const token = localStorage.getItem("token");
         if (token) {
-            fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/me`, { 
-                headers: { Authorization: `Bearer ${token}` } 
+            fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/me`, {
+                headers: { Authorization: `Bearer ${token}` }
             }).then(res => res.json()).then(data => {
                 setCurrentUserId(data.id);
             }).catch(() => {
@@ -174,12 +179,13 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
             className="text-white max-w-64 md:max-w-80 lg:max-w-96"
         >
             <Image alt=""
+                className={`${entry.status !== "approved" ? "hue-rotate-180" : ""}`}
                 height={132} width={1241} src={`/assets/images/entry/entryContentTopCardFrame.png`}
                 placeholder="blur"
                 blurDataURL={`/assets/images/entry/entryContentTopCardFrame.png`}
             />
             <div className="relative flex justify-center items-center">
-                <Image className="absolute left-0 top-0 w-full h-full" alt=""
+                <Image className={`absolute left-0 top-0 w-full h-full ${entry.status !== "approved" ? "hue-rotate-180" : ""}`} alt=""
                     height={1272} width={1241} src={`/assets/images/entry/entryContentCenterCardFrame.png`}
                     placeholder="blur"
                     blurDataURL={`/assets/images/entry/entryContentCenterCardFrame.png`}
@@ -207,7 +213,7 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
                                 className="duration-300 text-white hover:text-white/60"
                                 onClick={() => setShowMenu((v) => !v)}
                             >
-                                <BsThreeDotsVertical />
+                                <BsThreeDots />
                             </button>
                             <AnimatePresence>
                                 {showMenu && (
@@ -219,23 +225,27 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
                                         transition={{ duration: 0.2 }}
                                         className="absolute right-0 mt-2 w-40 bg-black/90 rounded-lg shadow-lg overflow-hidden z-30"
                                     >
-                                        <button
-                                            className="block w-full text-left px-4 py-2 hover:bg-white/20 text-white flex items-center gap-2"
-                                            onClick={() => { setShowMenu(false); handleEdit(); }}
-                                        >
-                                            <FaEdit /> Edit Post
-                                        </button>
-                                        <button
-                                            className="block w-full text-left px-4 py-2 hover:bg-white/20 text-white flex items-center gap-2"
-                                            onClick={() => { setShowMenu(false); handleDelete(entry); }}
-                                        >
-                                            <FaTrash /> Delete Post
-                                        </button>
+                                        {entry.status === "draft" && currentUserId === entry.author_id && (
+                                            <button
+                                                className="block w-full text-left px-4 py-2 hover:bg-white/20 text-white flex items-center gap-2"
+                                                onClick={() => { setShowMenu(false); handleEdit(); }}
+                                            >
+                                                <FaEdit /> Edit Post
+                                            </button>
+                                        )}
+                                        {currentUserId === entry.author_id && (
+                                            <button
+                                                className="block w-full text-left px-4 py-2 hover:bg-white/20 text-white flex items-center gap-2"
+                                                onClick={() => { setShowMenu(false); handleDelete(entry); }}
+                                            >
+                                                <FaTrash /> Delete Post
+                                            </button>
+                                        )}
                                         <button
                                             className="block w-full text-left px-4 py-2 hover:bg-white/20 text-white flex items-center gap-2"
                                             onClick={() => { setShowMenu(false); handleBookmark(entry); }}
                                         >
-                                            { bookmarked ? <span className="flex items-center gap-2 text-yellow-500"><FaBookmark /> Bookmarked</span> : <span className="flex items-center gap-2"><FaRegBookmark className="text-white" /> Bookmark</span> }
+                                            {bookmarked ? <span className="flex items-center gap-2 text-yellow-500"><FaBookmark /> Bookmarked</span> : <span className="flex items-center gap-2"><FaRegBookmark className="text-white" /> Bookmark</span>}
                                         </button>
                                     </motion.div>
                                 )}
@@ -251,7 +261,7 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
                         }}
                     >
                         {/* 渲染媒体内容 */}
-                        { entry.category === "artwork" && entry.media_type === "image" && entry.media_url && (
+                        {entry.category === "artwork" && entry.media_type === "image" && entry.media_url && (
                             <img
                                 ref={mediaRef}
                                 src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/storage/${entry.media_url}`}
@@ -259,7 +269,7 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
                                 className="mt-2 max-w-full"
                             />
                         )}
-                        { entry.category === "artwork" && entry.media_type === "video" && entry.media_url && (
+                        {entry.category === "artwork" && entry.media_type === "video" && entry.media_url && (
                             <video
                                 ref={mediaRef}
                                 src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/storage/${entry.media_url}`}
@@ -271,17 +281,22 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
                     </div>
                     <div className={`flex flex-col w-full ${showExpand && !expanded ? '-mt-[100px]' : ''}`}>
                         {showExpand && !expanded && (
-                            <div className="h-[100px] bg-gradient-to-b from-black/80 to-black flex justify-center items-center w-full">
+                            <div className="h-[100px] bg-gradient-to-b from-black/30 to-black/40 flex justify-center items-center w-full">
 
-                                    <button
-                                        className="text-white underline hover:text-white/60 duration-300"
-                                        onClick={() => setExpanded((v) => !v)}
-                                    >
-                                        READ MORE
-                                    </button>
-                                
+                                <button
+                                    className="text-white underline hover:text-white/60 duration-300"
+                                    onClick={() => setExpanded((v) => !v)}
+                                >
+                                    READ MORE
+                                </button>
+
                             </div>
                         )}
+                        <div className="flex flex-wrap gap-2 w-full px-4 py-2">
+                            {entry.tags && entry.tags.map((tag: string) => (
+                                <div key={tag} className="text-white/60 text-xs">{`#${tag}`}</div>
+                            ))}
+                        </div>
                         <div className="flex justify-between items-center gap-2 w-full px-4 py-2">
                             <div className="rounded-full border-2 border-white px-4 py-1 text-white/60 text-xs">{likeCount}</div>
                             <FaHeart className={`cursor-pointer active:scale-90 hover:opacity-60 duration-300 ${liked ? 'text-red-500' : 'text-white'}`} onClick={handleLike} />
@@ -290,6 +305,7 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
                 </div>
             </div>
             <Image alt=""
+                className={`${entry.status !== "approved" ? "hue-rotate-180" : ""}`}
                 height={132} width={1241} src={`/assets/images/entry/entryContentBottomCardFrame.png`}
                 placeholder="blur"
                 blurDataURL={`/assets/images/entry/entryContentBottomCardFrame.png`}
@@ -413,7 +429,7 @@ const EntryPage = ({ params }: { params: { category: string, type: string } }) =
                     <button onClick={() => {
                         dispatch(setIsOpen(false));
                         handleDeleteConfirm(entry);
-                    } } className="bg-[#45b5d9] duration-300 hover:bg-[#45b5d9]/80 flex items-center justify-center rounded-xl text-md font-bold h-8 w-40 shadow-lg">YES</button>
+                    }} className="bg-[#45b5d9] duration-300 hover:bg-[#45b5d9]/80 flex items-center justify-center rounded-xl text-md font-bold h-8 w-40 shadow-lg">YES</button>
                 </div>
             </div>
         </div>));
@@ -453,7 +469,7 @@ const EntryPage = ({ params }: { params: { category: string, type: string } }) =
                 blurDataURL={`/assets/images/entry/entryListTopCardFrame.png`}
             />
             <div className="relative flex flex-col gap-4 items-center h-[calc(100vh-200px)] max-h-[700px] py-8"
-                //style={{ height: imgHeight, width: imgWidth }}
+            //style={{ height: imgHeight, width: imgWidth }}
             >
                 {/*<Image className="absolute invisible sm:visible" alt=""
                     height={1379} width={2260} src={`/assets/images/entry/entryFrameHorizontal.png`}
@@ -574,7 +590,7 @@ const EntryPage = ({ params }: { params: { category: string, type: string } }) =
                             }}
                             render={(entry) => <EntryCard entry={entry} handleDelete={handleDelete} setIsOpenEntryModal={setIsOpenEntryModal} setEntryId={setEntryId} />}
                         />
-                        
+
                         {isLoadingMore && (
                             <div className="col-span-full flex justify-center py-4 z-10">
                                 <div className="text-white">Loading more entries...</div>
@@ -594,18 +610,18 @@ const EntryPage = ({ params }: { params: { category: string, type: string } }) =
                         )}
                     </>) : (
                         <div className="h-full flex items-center justify-center text-white/60">
-                           {
-                            type === "private" ? (
-                                <div className="flex flex-col items-center gap-4">
-                                    <div className="text-3xl font-bold">YOU HAVE NO ENTRIES YET.</div>
-                                    <div className="text-md">START NOW TO EARN YOUR LUNEX POINTS</div>
-                                </div>
-                            ) : (
-                                <div className="text-3xl font-bold">No entries found</div>
-                            )
-                           }
+                            {
+                                type === "private" ? (
+                                    <div className="flex flex-col items-center gap-4">
+                                        <div className="text-3xl font-bold">YOU HAVE NO ENTRIES YET.</div>
+                                        <div className="text-md">START NOW TO EARN YOUR LUNEX POINTS</div>
+                                    </div>
+                                ) : (
+                                    <div className="text-3xl font-bold">No entries found</div>
+                                )
+                            }
                         </div>
-                    )}   
+                    )}
                 </div>
             </div>
             <Image alt=""

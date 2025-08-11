@@ -2,19 +2,20 @@
 import { Header, Loader } from "@/components";
 import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import {
     CircularProgress,
     Avatar,
 } from "@mui/material";
-import { FaInstagram, FaXTwitter } from "react-icons/fa6";
+import { FaInstagram, FaUpload, FaSpinner, FaXTwitter } from "react-icons/fa6";
 import { IoCloseCircle } from "react-icons/io5";
 import { useAccount, useDisconnect, useSignMessage } from "wagmi";
 import { MdWallet } from "react-icons/md";
 import { useAuth } from "@/hooks/useAuth";
 import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useDropzone } from "react-dropzone";
 
 type ProfileForm = {
     name: string;
@@ -25,10 +26,12 @@ type ProfileForm = {
 const ProfileSetupPage = () => {
     const { address, isConnected } = useAccount();
     const { disconnect } = useDisconnect();
-    const [ isLoading, setIsLoading ] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const { signMessageAsync } = useSignMessage();
     const { openConnectModal } = useConnectModal();
     const { isAuthenticated, user, loading: authLoading, login, redirectToDashboard, walletLogin } = useAuth({ type: "user" });
+    const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     const { control, handleSubmit, setError, setValue, watch, formState: { errors, isSubmitting } } = useForm<ProfileForm>({
         defaultValues: {
@@ -41,6 +44,22 @@ const ProfileSetupPage = () => {
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
+
+    const onDrop = useCallback((acceptedFiles: File[]) => {
+        if (acceptedFiles && acceptedFiles[0]) {
+            setProfileImageFile(acceptedFiles[0]);
+            setPreviewUrl(URL.createObjectURL(acceptedFiles[0]));
+        }
+    }, []);
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop,
+        accept: {
+            'image/*': ['.jpeg', '.jpg', '.png', '.gif']
+        },
+        maxFiles: 1,
+        maxSize: 5242880, // 5MB
+    });
 
     const handleWalletConnect = async () => {
         if (!isConnected || !address) {
@@ -139,6 +158,7 @@ const ProfileSetupPage = () => {
             const formData = new FormData();
             formData.append("name", data.name);
             formData.append("email", data.email);
+            if (profileImageFile) formData.append("profile_picture", profileImageFile);
             if (data.bio) formData.append("bio", data.bio);
             //if (data.avatar && data.avatar.length) formData.append("profile_picture", data.avatar[0]);
 
@@ -170,7 +190,7 @@ const ProfileSetupPage = () => {
             <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/entry/entryBG.png`} priority />
             <Header />
             <Loader />
-            <div className="relative w-full sm:max-w-[400px] md:max-w-[500px] flex flex-col items-center justify-center">
+            <div className="relative w-full sm:max-w-[300px] md:max-w-[400px] flex flex-col items-center justify-center">
                 <Image alt=""
                     height={198} width={1425} src={`/assets/images/entry/entryContentTopCardFrame.png`}
                     placeholder="blur"
@@ -182,8 +202,14 @@ const ProfileSetupPage = () => {
                         placeholder="blur"
                         blurDataURL={`/assets/images/entry/entryContentCenterCardFrame.png`}
                     />
-                    <div className="flex flex-col gap-4 w-[70%] overflow-x-hidden overflow-y-auto max-h-[calc(100vh-100px)] px-2 z-10 filter-bar">
-                        <div className="text-2xl font-bold text-center z-10">COMPLETE YOUR PROFILE</div>
+                    <div className="flex flex-col gap-4 w-[80%] overflow-x-hidden overflow-y-auto max-h-[calc(100vh-100px)] px-2 py-4 z-10 filter-bar">
+                        <div className="flex items-center gap-2">
+                            <div className="bg-white w-2 h-10"></div>
+                            <div className="flex flex-col items-start">
+                                <span className="text-xl font-bold">PROFILE SETUP</span>
+                                <span className="text-sm text-gray-400">Complete your profile to start using the platform</span>
+                            </div>
+                        </div>
                         <div className="flex items-center justify-between gap-4 z-10">
                             <div className="flex flex-col w-full">
                                 <div>DISPLAY NAME*</div>
@@ -202,28 +228,19 @@ const ProfileSetupPage = () => {
                                 />
                             </div>
                             <div className="flex flex-col items-center">
-                                <Avatar
-                                    className="cursor-pointer shadow-md"
-                                    src={avatarPreview || undefined}
-                                    sx={{ width: 100, height: 100, mb: 1 }}
-                                    onClick={() => fileInputRef.current?.click()}
-                                />
-                                <button type="button" onClick={() => fileInputRef.current?.click()} className="bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-md text-sm cursor-pointer hover:bg-white/20 duration-300">
-                                    Edit Photo
-                                </button>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    hidden
-                                    ref={fileInputRef}
-                                    onChange={(e) => {
-                                        if (e.target.files && e.target.files[0]) {
-                                            const reader = new FileReader();
-                                            reader.onloadend = () => setAvatarPreview(reader.result as string);
-                                            reader.readAsDataURL(e.target.files[0]);
-                                        }
-                                    }}
-                                />
+                                <div {...getRootProps()} className={`bg-white/10 backdrop-blur-md duration-300 flex flex-col items-center overflow-hidden justify-center h-28 w-28 border-2 border-dashed rounded-xl text-center cursor-pointer ${isDragActive ? 'opacity-50' : 'hover:opacity-50'}`}>
+                                    <input {...getInputProps()} />
+                                    {
+                                        previewUrl ? (
+                                            <Image src={previewUrl} alt="Preview" width={400} height={300} className="w-full h-auto max-h-[250px] object-contain rounded-lg" />
+                                        ) : (
+                                            <div className={`flex flex-col items-center justify-center gap-2 text-xs`}>
+                                                <FaUpload className="text-2xl" />
+                                                UPLOAD YOUR <br /> PROFILE PICTURE
+                                            </div>
+                                        )
+                                    }
+                                </div>
                             </div>
                         </div>
                         <div className="flex flex-col z-10">
@@ -265,7 +282,7 @@ const ProfileSetupPage = () => {
                                     <FaXTwitter />
                                     CONNECT
                                 </button>
-                                <button      onClick={() => { }} className="bg-white/20 backdrop-blur-sm duration-300 flex hover:bg-white/30 items-center justify-center text-white gap-4 h-8 w-full rounded-xl shadow-md">
+                                <button onClick={() => { }} className="bg-white/20 backdrop-blur-sm duration-300 flex hover:bg-white/30 items-center justify-center text-white gap-4 h-8 w-full rounded-xl shadow-md">
                                     <FaInstagram />
                                     CONNECT
                                 </button>
@@ -286,7 +303,7 @@ const ProfileSetupPage = () => {
                                         :
                                         <button
                                             type="button"
-                                            onClick={() => !isLoading && disconnect() }
+                                            onClick={() => !isLoading && disconnect()}
                                             className={`bg-white/20 backdrop-blur-sm duration-300 flex hover:bg-white/30 items-center justify-center text-white gap-4 h-8 w-full rounded-xl shadow-md ${isLoading ? 'cursor-not-allowed opacity-50' : ''}`}
                                         >
                                             {isLoading ? 'Connecting...' : address?.slice(0, 6)}...{address?.slice(-4)}
