@@ -16,7 +16,7 @@ import { FaEdit } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { IoClose } from "react-icons/io5";
 import { LuImageUp } from "react-icons/lu";
-import { RiVideoUploadLine } from "react-icons/ri";
+import { RiLayoutGridFill, RiLayoutMasonryFill, RiVideoUploadLine } from "react-icons/ri";
 import { BlockNoteView } from "@blocknote/mantine";
 import { useCreateBlockNote } from "@blocknote/react";
 
@@ -26,12 +26,16 @@ import Image from "next/image";
 
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
+import { setJumpPage } from "@/store/slice/pageSlice";
+import { TbLayoutList, TbLayoutListFilled } from "react-icons/tb";
 
 const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { entry: any, handleDelete: (entry: any) => void, setIsOpenEntryModal: (isOpen: boolean) => void, setEntryId: (id: string) => void }) => {
     const MAX_HEIGHT = 250;
     const contentRef = useRef<HTMLDivElement>(null);
     const mediaRef = useRef<any>(null);
     const menuRef = useRef<HTMLDivElement>(null);
+
+    const dispatch = useDispatch();
     const [expanded, setExpanded] = useState<boolean>(false);
     const [showExpand, setShowExpand] = useState<boolean>(false);
     const [showMenu, setShowMenu] = useState(false);
@@ -39,6 +43,7 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
     const [likeCount, setLikeCount] = useState<number>(entry.likes_count);
     const [bookmarked, setBookmarked] = useState<boolean>(false);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
         console.log("checkHeight");
@@ -192,7 +197,13 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
                 />
                 <div className="flex flex-col w-[90.5%] z-10 relative">
                     <div className="flex justify-between items-center px-4 py-2">
-                        <div className="flex items-center gap-2 sm:gap-4">
+                        <div className="flex items-center gap-2 sm:gap-4 hover:opacity-60 duration-300 cursor-pointer" onClick={() => {
+                            dispatch(setJumpPage(true));
+                            const timeout = setTimeout(() => {
+                                router.push(`/dashboard/${entry.author.id}`);
+                            }, 200);
+                            return () => clearTimeout(timeout);
+                        }}>
                             <div className="w-6 h-6 md:w-10 md:h-10 bg-white rounded-full overflow-hidden">
                                 <Image alt=""
                                     height={24} width={24} src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${entry.author.profile_picture}`}
@@ -203,8 +214,8 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
                                 />
                             </div>
                             <div className="flex flex-col">
-                                <div className="text-xs sm:text-sm font-semibold text-white">{entry.title}</div>
-                                <div className="text-[0.4rem] sm:text-[0.5rem] text-white/60">{moment(entry.updated_at).format("YYYY-MM-DD HH:mm")}</div>
+                                <div className="text-xs sm:text-sm font-semibold text-white">{entry.author.name}</div>
+                                <div className="text-[0.4rem] sm:text-[0.6rem] text-white/60">{moment(entry.updated_at).format("YYYY-MM-DD HH:mm")}</div>
                             </div>
                         </div>
                         {/* 三点按钮及下拉菜单 */}
@@ -252,6 +263,7 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
                             </AnimatePresence>
                         </div>
                     </div>
+                    <div className="text-white text-sm font-bold text-center">{entry.title}</div>
                     <div
                         className="min-h-[200px]"
                         style={{
@@ -297,10 +309,12 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
                                 <div key={tag} className="text-white/60 text-xs">{`#${tag}`}</div>
                             ))}
                         </div>
-                        <div className="flex justify-between items-center gap-2 w-full px-4 py-2">
-                            <div className="rounded-full border-2 border-white px-4 py-1 text-white/60 text-xs">{likeCount}</div>
-                            <FaHeart className={`cursor-pointer active:scale-90 hover:opacity-60 duration-300 ${liked ? 'text-red-500' : 'text-white'}`} onClick={handleLike} />
-                        </div>
+                        {entry.status === "approved" && (
+                            <div className="flex justify-between items-center gap-2 w-full px-4 py-2">
+                                <div className="rounded-full border-2 border-white px-4 py-1 text-white/60 text-xs">{likeCount}</div>
+                                <FaHeart className={`cursor-pointer active:scale-50 active:text-red-500 hover:opacity-60 duration-300 ${liked ? 'text-red-500' : 'text-white'}`} onClick={handleLike} />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -317,6 +331,7 @@ const EntryCard = ({ entry, handleDelete, setIsOpenEntryModal, setEntryId }: { e
 const EntryPage = ({ params }: { params: { category: string, type: string } }) => {
     const [isOpenEntryModal, setIsOpenEntryModal] = useState(false);
     const [entryId, setEntryId] = useState<string | null>(null);
+    const [displayMode, setDisplayMode] = useState<string>("masonry");
     const dispatch = useDispatch();
 
     const editor = useCreateBlockNote();
@@ -336,6 +351,7 @@ const EntryPage = ({ params }: { params: { category: string, type: string } }) =
     const [hasMore, setHasMore] = useState<boolean>(true);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
+    const [isMobile, setIsMobile] = useState<boolean>(false);
 
     const [showFilterDropdown, setShowFilterDropdown] = useState(false);
     const [filter, setFilter] = useState<string>("");
@@ -457,12 +473,30 @@ const EntryPage = ({ params }: { params: { category: string, type: string } }) =
         }
     }, [inView, hasMore, isLoadingMore, isLoading, currentPage, category]);
 
+    useEffect(() => {
+        const checkRatio = () => {
+            if(window.innerWidth/window.innerHeight <= 1.333) {
+                setIsMobile(true);
+                setDisplayMode("masonry");
+            } else {
+                setIsMobile(false);
+            }
+        };
+
+        checkRatio(); // 初始检测
+
+        window.addEventListener("resize", checkRatio);
+        return () => {
+            window.removeEventListener("resize", checkRatio);
+        };
+    }, []);
+
     return (<div className="fixed flex h-screen items-center justify-center overflow-hidden w-full">
         <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/entry/entryBG.png`} priority />
         <Header />
         <Loader />
         {/*<div className="flex h-[calc(100vh-80x)] items-top sm:items-center justify-center w-full mt-[80px] sm:mt-0">*/}
-        <div className="flex flex-col max-w-[1280px]">
+        <div className={`flex flex-col ${displayMode === "list" ? "max-w-[480px]" : "max-w-[1280px]"}`}>
             <Image alt=""
                 height={277} width={4608} src={`/assets/images/entry/entryListTopCardFrame.png`}
                 placeholder="blur"
@@ -577,6 +611,16 @@ const EntryPage = ({ params }: { params: { category: string, type: string } }) =
                                 )}
                             </AnimatePresence>
                         </div>
+                        {   !isMobile && (
+                            <div className="flex items-center gap-2">
+                                <button className={`hover:opacity-60 duration-300 text-2xl ${displayMode === "masonry" ? "text-white/40" : "text-white"}`} onClick={() => setDisplayMode("masonry")}>
+                                    <RiLayoutMasonryFill />
+                                </button>
+                                <button className={`hover:opacity-60 duration-300 text-2xl ${displayMode === "list" ? "text-white/40" : "text-white"}`} onClick={() => setDisplayMode("list")}>
+                                    <TbLayoutListFilled />
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className="w-[92%] md:w-[80%] overflow-y-auto z-10 filter-bar flex flex-col items-center min-h-[calc(100%-40px)]">
@@ -584,9 +628,9 @@ const EntryPage = ({ params }: { params: { category: string, type: string } }) =
                         <Masonry
                             items={entries}
                             config={{
-                                columns: [2, 2, 3],
+                                columns: [displayMode === "masonry" ? 2 : 1, displayMode === "masonry" ? 2 : 1, displayMode === "masonry" ? 3 : 1],
                                 gap: [6, 12, 24],
-                                media: [640, 1024, 1440],
+                                media: [displayMode === "masonry" ? 640 : 1024, displayMode === "masonry" ? 1024 : 1440, displayMode === "masonry" ? 1440 : 1440],
                             }}
                             render={(entry) => <EntryCard entry={entry} handleDelete={handleDelete} setIsOpenEntryModal={setIsOpenEntryModal} setEntryId={setEntryId} />}
                         />
