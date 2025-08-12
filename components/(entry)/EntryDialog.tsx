@@ -93,7 +93,7 @@ const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpe
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
+        if (e.key === "Enter" && input.length > 0) {
             addTag(input.trim());
         }
     };
@@ -192,6 +192,7 @@ const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpe
 
     const handleUploadClick = (type: 'image' | 'video') => {
         if (fileInputRef.current) {
+            fileInputRef.current.accept = type === 'image' ? 'image/*' : 'video/*';
             fileInputRef.current.click();
         }
     };
@@ -340,9 +341,9 @@ const EntryDialog = ({ isOpenEntryModal, setIsOpenEntryModal, entryId }: { isOpe
                                             ) : previewUrl ? (
                                                 <div className="relative group">
                                                     {fileType === 'image' ? (
-                                                        <Image src={previewUrl} alt="Preview" width={400} height={300} className="w-full h-auto max-h-[250px] object-contain rounded-lg" />
+                                                        <img src={previewUrl} alt="Preview" className="w-full h-auto max-h-[250px] object-contain" />
                                                     ) : (
-                                                        <video src={previewUrl} controls className="w-full h-auto max-h-[250px] rounded-lg" />
+                                                        <video src={previewUrl} controls className="w-full h-auto max-h-[250px]" />
                                                     )}
                                                     <button
                                                         type="button"

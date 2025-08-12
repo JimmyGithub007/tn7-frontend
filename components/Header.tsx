@@ -514,7 +514,7 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
                     if (pathname === `/dashboard/${user.id}`) return;
                     dispatch(setJumpPage(true));
                     const timeout = setTimeout(() => {
-                      router.push(`/dashboard/${user.id}`)
+                      window.location.href = `/dashboard/${user.id}`;
                     }, 200);
                     return () => clearTimeout(timeout);
                   }} className="duration-300 flex items-center gap-2 w-full h-full text-white text-left px-4 py-2 hover:bg-white/30"><MdDashboard /> Go to Dashboard</button>
