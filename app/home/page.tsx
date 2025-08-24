@@ -26,10 +26,10 @@ interface versionProps {
 
 const PCVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV, setLoadingProgression, message }) => {
     const { unityProvider, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
-        loaderUrl: "/unity/build/HomeScene.loader.js",
-        dataUrl: "/unity/build/HomeScene.data.unityweb",
-        frameworkUrl: "/unity/build/HomeScene.framework.js.unityweb",
-        codeUrl: "/unity/build/HomeScene.wasm.unityweb",
+        loaderUrl: "/unity/build/HomeSceneV1.loader.js",
+        dataUrl: "/unity/build/HomeSceneV1.data.unityweb",
+        frameworkUrl: "/unity/build/HomeSceneV1.framework.js.unityweb",
+        codeUrl: "/unity/build/HomeSceneV1.wasm.unityweb",
     });
 
     useEffect(() => {
@@ -73,6 +73,7 @@ const Home = () => {
         { id: 1, name: "", x: 0, y: 0 },
         { id: 2, name: "", x: 0, y: 0 },
         { id: 3, name: "", x: 0, y: 0 },
+        { id: 4, name: "", x: 0, y: 0 },
     ]);
 
     const handleHoverTV = useCallback((tvData: any) => {
@@ -81,7 +82,7 @@ const Home = () => {
             setTvData(prev =>
                 prev.map(item =>
                     item.id === parseInt(tvId)
-                        ? { ...item, x: parseInt(tvX) - (tvId == 2 ? -100 : 80), y: window.innerHeight - parseInt(tvY) - ( tvId == 1 ? 100 : 50 ) } // Update the matching entry
+                        ? { ...item, x: parseInt(tvX) - (tvId == 2 ? -100 : (tvId == 4 ? 0 : 80)), y: window.innerHeight - parseInt(tvY) - ( tvId == 1 ? 100 : (tvId == 4 ? 100 : 50) ) } // Update the matching entry
                         : item // Keep the rest unchanged
                 )
             );
@@ -101,6 +102,9 @@ const Home = () => {
                 break;
             case 3:
                 url = "/worldmap";
+                break;
+            case 4:
+                url = "/citizen";
                 break;
             default:
                 url = "";
@@ -127,6 +131,9 @@ const Home = () => {
             case 3:
                 url = "/worldmap";
                 break;
+            case 4:
+                url = "/citizen";
+                break;
             default:
                 url = "";
         }
@@ -151,7 +158,8 @@ const Home = () => {
     const tvs = [
         { id: 1, name: "TN7 UNIVERSE" },
         { id: 2, name: "LORE" },
-        { id: 3, name: "WORLD MAP" }
+        { id: 3, name: "WORLD MAP" },
+        { id: 4, name: "CITIZEN" }
     ];
 
     const generateRandomString = (length: number) => {
@@ -320,7 +328,7 @@ const Home = () => {
             </AnimatePresence>
             {   !isMobile && hoverTvId > 0 && <div className="absolute cursor-pointer w-full h-full opacity-0 z-[100] top-0 left-0" onClick={() => clickTV(hoverTvId) }></div> }
             {   !isMobile &&
-                [1, 2, 3].map((value, key) => (
+                [1, 2, 3, 4].map((value, key) => (
                     <div key={key} className="absolute h-12 overflow-hidden w-full flex justify-center hidden lg:block" style={{ 
                         left: isMobile ? 0 : tvData.find(e => e.id === value)?.x || 0, top: tvData.find(e => e.id === value)?.y || 0 
                     }}>

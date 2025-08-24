@@ -275,7 +275,7 @@ const DashboardPage = () => {
         if (!authLoading && !isAuthenticated) {
             router.push('/login');
         } else if (isAuthenticated && authUser?.id === id && !authUser?.completed) {
-            router.push('/profile/setup');
+            window.location.href = '/profile/setup';
         }
     }, [authLoading, isAuthenticated, router, authUser, id]);
 
