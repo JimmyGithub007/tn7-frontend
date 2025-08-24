@@ -36,7 +36,7 @@ const RegisterPage = () => {
         setLoading(true);
         try {
             await registerUser(data.email, data.password, data.email.split('@')[0], recaptchaToken || "");
-            router.push('/profile/setup');
+            window.location.href = '/profile/setup';
         } catch (err: any) {
             console.log(err?.response?.data?.message || 'Registration failed');
         } finally {

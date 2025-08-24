@@ -402,7 +402,7 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
       const signature = await signMessageAsync({ message });
 
       await walletLogin(address, signature);
-      router.push('/profile/setup'); // 自动跳转到完善资料页面
+      window.location.href = '/profile/setup'; // 自动跳转到完善资料页面
     } catch (error) {
       console.error('Login failed', error);
     } finally {
