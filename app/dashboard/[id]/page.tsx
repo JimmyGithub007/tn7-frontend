@@ -318,14 +318,14 @@ const DashboardPage = () => {
                 placeholder="blur"
                 blurDataURL={`/assets/images/entry/entryListTopCardFrame.png`}
             />
-            <div className="relative flex flex-col items-center justify-center h-[calc(100vh-200px)] max-h-[600px] py-8">
+            <div className="relative flex flex-col items-center justify-center h-[calc(100vh-200px)] max-h-[700px] py-8">
                 <Image className="absolute left-0 top-0 w-full h-full" alt=""
                     height={1272} width={1425} src={`/assets/images/entry/entryListCenterCardFrame.png`}
                     placeholder="blur"
                     blurDataURL={`/assets/images/entry/entryListCenterCardFrame.png`}
                 />
                 <div className="gap-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 w-[85%] z-10 overflow-y-auto filter-bar">
-                    <div ref={profileCard} className="col-span-1 relative w-full min-h-[600px] h-full">
+                    <div ref={profileCard} className="col-span-1 relative w-full min-h-[700px] h-full">
                         <Image className="absolute top-0 left-0 w-full h-full" alt=""
                             height={2276} width={1258} src={`/assets/images/share/middleVerticalFrame.png`}
                             placeholder="blur"

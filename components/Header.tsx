@@ -414,7 +414,7 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
     localStorage.removeItem('token');
     dispatch(setJumpPage(true));
     const timeout = setTimeout(() => {
-      router.push(`/login`);
+      window.location.href = '/login';
     }, 200);
     return () => clearTimeout(timeout);
   };
@@ -533,7 +533,7 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
               if (pathname === "/home") {
                 window.location.href = `/${targetPath}`;
               } else {
-                router.push(`/${targetPath}`);
+                window.location.href = `/${targetPath}`;
               }
             }, 200);
             return () => clearTimeout(timeout);
