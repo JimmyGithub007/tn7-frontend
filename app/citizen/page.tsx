@@ -1,18 +1,17 @@
 "use client";
 
-import Image from "next/image";
 import { useState, useReducer, useEffect } from "react";
 import { BiLike, BiSearch } from "react-icons/bi";
 import { motion, AnimatePresence } from "framer-motion";
-import { BsArrowLeft, BsArrowLeftCircleFill } from "react-icons/bs";
+import { BsArrowLeft } from "react-icons/bs";
 import { MdClose } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { setContent, setIsOpen } from "@/store/slice/dialogSlice";
 import { IoIosClose } from "react-icons/io";
-import Lenis from '@studio-freight/lenis';
-
 import { Pixelify_Sans, Rubik_Distressed } from "next/font/google";
 import { RootState } from "@/store";
+import Lenis from '@studio-freight/lenis';
+import Image from "next/image";
 import Header from "@/components/Header";
 import Loader from "@/components/Loader";
 
@@ -117,6 +116,8 @@ const Citizen = () => {
     const dispatch = useDispatch();
     const [isOpenSidebar, setIsOpenSidebar] = useState<boolean>(true);
     const { isOpen } = useSelector((state: RootState) => state.dialog);
+    const [searchKeyword, setSearchKeyword] = useState<string>("");
+    const [debouncedSearchKeyword, setDebouncedSearchKeyword] = useState<string>("");
 
     const [filters, dispatchFilter] = useReducer(filterReducer, {
         background: [],
@@ -131,15 +132,51 @@ const Citizen = () => {
         weapon: [],
     });
 
+    // Debounce search input
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearchKeyword(searchKeyword);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [searchKeyword]);
+
     const handleFilterClick = (filterType: string, value: string) => {
         dispatchFilter({ type: "TOGGLE_FILTER", payload: { filterType, value } });
     };
 
-    const filteredCitizens = Citizens.filter((c) =>
-        (Object.keys(filters) as (keyof citizenProps)[]).every((key) =>
+    const filteredCitizens = Citizens.filter((c) => {
+        // First apply filter-based filtering
+        const passesFilters = (Object.keys(filters) as (keyof citizenProps)[]).every((key) =>
             filters[key].length === 0 || filters[key].includes(c[key])
-        )
-    );
+        );
+
+        // Then apply keyword search if there's a search term
+        if (debouncedSearchKeyword.trim() === "") {
+            return passesFilters;
+        }
+
+        const keyword = debouncedSearchKeyword.toLowerCase().trim();
+        const searchableText = [
+            c.code.toString(),
+            c.background,
+            c.body,
+            c.eyes,
+            c.tattoo,
+            c.clothes,
+            c.headgear,
+            c.facegear,
+            c.eyes_flare,
+            c.hair,
+            c.weapon
+        ].filter(Boolean).join(" ").toLowerCase();
+
+        // Support partial matching and multiple keywords
+        const keywords = keyword.split(/\s+/);
+        const matchesAllKeywords = keywords.every(k => searchableText.includes(k));
+
+        return passesFilters && matchesAllKeywords;
+    });
 
     const handleWindowResize = () => {
         if (window.innerWidth < 900) {
@@ -385,13 +422,39 @@ const Citizen = () => {
                     <BsArrowLeft onClick={() => setIsOpenSidebar(!isOpenSidebar)} className={`cursor-pointer duration-300 text-3xl text-gray-300 hover:text-white ${!isOpenSidebar && "rotate-180"}`} />
                 </motion.div>
                 <div className="flex flex-col gap-4 px-4 py-8 w-full">
-                    <div className="flex items-center relative w-full">
-                        <BiSearch className="absolute left-0 text-gray-400 text-2xl" />
-                        <input
-                            className="border-b-2 border-gray-600 bg-gray-800 text-gray-100 pl-8 py-2 text-sm focus:outline-none focus:border-red-500 transition-colors duration-300 w-full sm:w-80 placeholder-gray-400"
-                            placeholder="SEARCH TOKEN"
-                        />
+                    <div className="flex flex-col gap-2 w-full sm:w-[400px]">
+                        <div className="flex items-center relative w-full">
+                            <BiSearch className="absolute left-2 text-gray-400 text-2xl" />
+                            <input
+                                className="border-b-2 border-gray-600 bg-gray-800 rounded-t-md text-gray-100 pl-10 py-2 text-sm focus:outline-none focus:border-red-500 transition-colors duration-300 w-full placeholder-gray-400 shadow-md"
+                                placeholder="SEARCH CITIZEN"
+                                value={searchKeyword}
+                                onChange={(e) => setSearchKeyword(e.target.value)}
+                            />
+                            <AnimatePresence>
+                                {searchKeyword && (
+                                    <motion.button
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
+                                        transition={{ duration: 0.2 }}
+                                        onClick={() => setSearchKeyword("")}
+                                        className="absolute right-2 text-gray-400 hover:text-white transition-colors duration-200"
+                                    >
+                                        <MdClose className="text-xl" />
+                                    </motion.button>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                        <div className="text-[0.7rem] text-gray-500">
+                            Search by token number, background, body type, eyes, clothes, weapons, and more...
+                        </div>
                     </div>
+                    {debouncedSearchKeyword && (
+                        <div className="text-sm text-gray-400">
+                            Found {filteredCitizens.length} citizen{filteredCitizens.length !== 1 ? 's' : ''} for "{debouncedSearchKeyword}"
+                        </div>
+                    )}
                     <div className="gap-6 flex flex-wrap">
                         {filteredCitizens.map((c, index) => (
                             <motion.div
