@@ -32,6 +32,7 @@ const ProfileSetupPage = () => {
     const { isAuthenticated, user, loading: authLoading, login, redirectToDashboard, walletLogin } = useAuth({ type: "user" });
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [mounted, setMounted] = useState(false);
 
     const { control, handleSubmit, setError, setValue, watch, formState: { errors, isSubmitting } } = useForm<ProfileForm>({
         defaultValues: {
@@ -91,6 +92,11 @@ const ProfileSetupPage = () => {
             setIsLoading(false);
         }
     };
+
+    // Handle hydration error
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // 获取当前用户信息，自动填充 email
     useEffect(() => {
@@ -180,10 +186,10 @@ const ProfileSetupPage = () => {
     };
 
     useEffect(() => {
-        if (isAuthenticated && user && user.completed) {
+        if (mounted && isAuthenticated && user && user.completed) {
             router.push(`/dashboard/${user.id}`);
         }
-    }, [isAuthenticated, user, router]);
+    }, [mounted, isAuthenticated, user, router]);
 
     return (
         <div className="fixed h-screen w-full flex justify-center">
@@ -292,7 +298,12 @@ const ProfileSetupPage = () => {
                             <div>WALLET (Optional)</div>
                             <div>
                                 {
-                                    !isConnected ?
+                                    !mounted ? (
+                                        <div className="bg-white/20 backdrop-blur-sm duration-300 flex items-center justify-center text-white gap-4 h-8 w-full rounded-xl shadow-md">
+                                            <FaSpinner className="animate-spin" />
+                                            Loading...
+                                        </div>
+                                    ) : !isConnected ? (
                                         <button
                                             type="button"
                                             onClick={openConnectModal}
@@ -300,7 +311,7 @@ const ProfileSetupPage = () => {
                                             <MdWallet className="text-2xl" />
                                             Connect Wallet
                                         </button>
-                                        :
+                                    ) : (
                                         <button
                                             type="button"
                                             onClick={() => !isLoading && disconnect()}
@@ -309,6 +320,7 @@ const ProfileSetupPage = () => {
                                             {isLoading ? 'Connecting...' : address?.slice(0, 6)}...{address?.slice(-4)}
                                             <IoCloseCircle />
                                         </button>
+                                    )
                                 }
                             </div>
                         </div>

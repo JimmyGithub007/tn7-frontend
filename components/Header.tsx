@@ -5,14 +5,13 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { opinionPro } from "./Font";
 import { IoIosArrowForward } from "react-icons/io";
-import { Collapse } from "antd";
+import { Collapse, Spin } from "antd";
 import { BsDiscord, BsInstagram, BsTwitterX } from "react-icons/bs";
 import { useAccount, useDisconnect, useSignMessage } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useDispatch } from "react-redux";
 import { setJumpPage } from "@/store/slice/pageSlice";
 import { MdDashboard, MdLogout, MdNotificationsOff, MdWallet } from "react-icons/md";
-import { FaBell } from "react-icons/fa6";
 import { FaRegUserCircle } from "react-icons/fa";
 import { useAuth } from '@/hooks/useAuth';
 import Image from "next/image";
@@ -373,22 +372,28 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
   const router = useRouter();
   const pathname = usePathname();
   const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
-  const { isConnected, address } = useAccount();
+  const { isConnected, address, isConnecting } = useAccount();
   const { disconnect } = useDisconnect();
   const { openConnectModal } = useConnectModal();
   const { signMessageAsync } = useSignMessage();
   const [isLoading, setIsLoading] = useState(false);
   const { isAuthenticated, user, walletLogin } = useAuth({ type: "user" });
   const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // 自动签名登录
-  /*useEffect(() => {
-    if (isConnected && !isAuthenticated && !isLoading) {
+  useEffect(() => {
+    if (isConnected && !isAuthenticated && !isLoading && mounted) {
       handleWalletLogin();
     }
     // eslint-disable-next-line
-  }, [isConnected]);*/
+  }, [isConnected, isAuthenticated, isLoading, mounted]);
+
+  //handle hydration error
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleWalletLogin = async () => {
     if (!isConnected || !address) {
@@ -401,8 +406,10 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
       const message = 'Sign to login to NFT Website!';
       const signature = await signMessageAsync({ message });
 
-      await walletLogin(address, signature);
-      window.location.href = '/profile/setup'; // 自动跳转到完善资料页面
+      const response = await walletLogin(address, signature);
+      if (!response?.completed) {
+        window.location.href = `/profile/setup`;
+      }
     } catch (error) {
       console.error('Login failed', error);
     } finally {
@@ -412,6 +419,7 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    disconnect();// 断开钱包连接
     dispatch(setJumpPage(true));
     const timeout = setTimeout(() => {
       window.location.href = '/login';
@@ -450,23 +458,19 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
       }}
     />
     <div className="fixed right-24 top-4 z-[100] flex gap-4">
-      {!isConnected ? (
+      {!mounted ? (
+        <div className="bg-white/20 backdrop-blur-sm text-white h-10 px-4 rounded-full sm:rounded-lg flex items-center justify-center gap-2">
+          <Spin size="small" />
+        </div>
+      ) : !isConnected ? (
         <button
           onClick={openConnectModal}
           type="button"
-          className="bg-white/20 backdrop-blur-sm text-white h-10 w-10 sm:w-40 rounded-full sm:rounded-lg hover:bg-white/30 transition-all duration-300 flex items-center justify-center gap-2"
+          className="bg-white/20 backdrop-blur-sm text-white h-10 px-4 rounded-full sm:rounded-lg hover:bg-white/30 transition-all duration-300 flex items-center justify-center gap-2"
         >
           <MdWallet className="text-2xl" />
           <span className="hidden sm:block">Connect Wallet</span>
-        </button>
-      ) : !isAuthenticated ? (
-        <button
-          onClick={handleWalletLogin}
-          type="button"
-          className="bg-white/20 backdrop-blur-xl text-white px-4 py-2 rounded-lg hover:bg-white/30 transition-all duration-300"
-          disabled={isLoading}
-        >
-          {isLoading ? 'Signing...' : 'Sign In'}
+          {isConnecting && <Spin size="small" />}
         </button>
       ) : (
         <button
@@ -474,7 +478,7 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
           type="button"
           className="bg-white/20 backdrop-blur-xl text-white px-4 py-2 rounded-lg hover:bg-white/30 transition-all duration-300"
         >
-          {address?.slice(0, 6)}...{address?.slice(-4)}
+          {address?.slice(0, 6) + "..." + address?.slice(-4)}
         </button>
       )}
       {/* 用户按钮 - 显示用户头像或默认图标 */}
