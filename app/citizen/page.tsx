@@ -526,7 +526,7 @@ const Citizen = () => {
                     </div>
                     {debouncedSearchKeyword && (
                         <div className="text-sm text-gray-400">
-                            Found {filteredCitizens.length} citizen{filteredCitizens.length !== 1 ? 's' : ''} for "{debouncedSearchKeyword}"
+                            Found {filteredCitizens.length} citizen{filteredCitizens.length !== 1 ? 's' : ''} for &quot;{debouncedSearchKeyword}&quot;
                         </div>
                     )}
                     <div className="gap-6 flex flex-wrap">
