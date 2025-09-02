@@ -14,12 +14,16 @@ import Lenis from '@studio-freight/lenis';
 import Image from "next/image";
 import Header from "@/components/Header";
 import Loader from "@/components/Loader";
+import { useAuth } from "@/hooks/useAuth";
+import { AnimatedCounter } from "react-animated-counter";
 
 const pixelify_sans = Pixelify_Sans({ subsets: ["latin"], weight: "400" });
 const rubik_distressed = Rubik_Distressed({ subsets: ["latin"], weight: "400" });
 
 type citizenProps = {
-    code: number;
+    id: string;
+    code: string;
+    name: string;
     background: string;
     body: string;
     eyes: string;
@@ -30,32 +34,18 @@ type citizenProps = {
     eyes_flare: string | null;
     hair: string | null;
     weapon: string | null;
+    image_url: string | null;
+    likes_count: number;
+    likes: Array<{
+        id: string;
+        user_id: string;
+        citizen_id: string;
+        created_at: string;
+        updated_at: string;
+    }>;
+    created_at: string;
+    updated_at: string;
 };
-
-const Citizens: citizenProps[] = [
-    { code: 10032, background: "BG-2", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: null, clothes: "CLOTHES-4-GREY", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-5", weapon: "WEAPON-14" },
-    { code: 10040, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: null, clothes: "CLOTHES-3", headgear: "HEADGEAR-9", facegear: null, eyes_flare: null, hair: "HAIR-11-BLACK", weapon: "WEAPON-1" },
-    { code: 10083, background: "BG-6", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: null, clothes: "CLOTHES-31", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-3", weapon: "WEAPON-11" },
-    { code: 10111, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_RED", tattoo: null, clothes: "CLOTHES-17", headgear: "HEADGEAR-4", facegear: null, eyes_flare: null, hair: "HAIR-11-BLACK", weapon: "WEAPON-7" },
-    { code: 10144, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-23", headgear: "HEADGEAR-10", facegear: null, eyes_flare: null, hair: "HAIR-11", weapon: "WEAPON-28" },
-    { code: 10155, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PINK", tattoo: null, clothes: "CLOTHES-12", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-7-GREY", weapon: "WEAPON-14" },
-    { code: 10156, background: "BG-4", body: "M_BODY_ANGRY_2", eyes: "M_RED", tattoo: "TATTOO-10", clothes: "CLOTHES-6", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-20", weapon: "WEAPON-16" },
-    { code: 10175, background: "BG-2", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-30", headgear: "HEADGEAR-8", facegear: null, eyes_flare: null, hair: "HAIR-7-GREY", weapon: "WEAPON-15" },
-    { code: 10180, background: "BG-3", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: "TATTOO-6", clothes: "CLOTHES-13", headgear: "HEADGEAR-3", facegear: null, eyes_flare: null, hair: "HAIR-9", weapon: "WEAPON-8" },
-    { code: 10182, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: null, clothes: "CLOTHES-16", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-4", weapon: "WEAPON-30" },
-    { code: 10183, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-21", headgear: "HEADGEAR-4", facegear: null, eyes_flare: null, hair: "HAIR-19", weapon: "WEAPON-26" },
-    { code: 10215, background: "BG-2", body: "M_BODY_ANGRY_2", eyes: "M_RED", tattoo: null, clothes: "CLOTHES-28", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-3", weapon: "WEAPON-9" },
-    { code: 10224, background: "BG-3", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-25", headgear: "HEADGEAR-7", facegear: null, eyes_flare: null, hair: "HAIR-11-BLACK", weapon: "WEAPON-13" },
-    { code: 10230, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREEN", tattoo: null, clothes: "CLOTHES-6", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-3", weapon: "WEAPON-25" },
-    { code: 10243, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PINK", tattoo: "TATTOO-2", clothes: "CLOTHES-12", headgear: "HEADGEAR-6", facegear: null, eyes_flare: null, hair: "HAIR-18-GREY", weapon: "WEAPON-7" },
-    { code: 10255, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: null, clothes: "CLOTHES-11", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-8", weapon: "WEAPON-32" },
-    { code: 10325, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: null, clothes: "CLOTHES-28", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-9", weapon: "WEAPON-4" },
-    { code: 10327, background: "BG-5", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: "TATTOO-2", clothes: "CLOTHES-6", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-2", weapon: null },
-    { code: 10345, background: "BG-6", body: "M_BODY_ANGRY_2", eyes: "M_GREY", tattoo: null, clothes: "CLOTHES-17", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-11", weapon: "WEAPON-25" },
-    { code: 10361, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_PINK", tattoo: null, clothes: "CLOTHES-17", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-11", weapon: "WEAPON-22" },
-    { code: 10374, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: "TATTOO-3", clothes: "CLOTHES-12", headgear: null, facegear: null, eyes_flare: null, hair: "HAIR-3", weapon: "WEAPON-22" },
-    { code: 10391, background: "BG-1", body: "M_BODY_ANGRY_2", eyes: "M_PURPLE", tattoo: null, clothes: "CLOTHES-29", headgear: "HEADGEAR-9", facegear: null, eyes_flare: null, hair: "HAIR-7-GREY", weapon: "WEAPON-7" },
-];
 
 const BGColors = [
     { background: "BG-1", bg_color: "#3c487f", card_color: "#455495", text_color: "#ffffff" },
@@ -114,10 +104,13 @@ const Collapse = ({ icon, text, children }: { icon: string, text: string; childr
 
 const Citizen = () => {
     const dispatch = useDispatch();
+    const { isAuthenticated, user } = useAuth({ type: "user" });
     const [isOpenSidebar, setIsOpenSidebar] = useState<boolean>(true);
     const { isOpen } = useSelector((state: RootState) => state.dialog);
     const [searchKeyword, setSearchKeyword] = useState<string>("");
     const [debouncedSearchKeyword, setDebouncedSearchKeyword] = useState<string>("");
+    const [citizens, setCitizens] = useState<citizenProps[]>([]);
+    const [likedCitizens, setLikedCitizens] = useState<Set<string>>(new Set());
 
     const [filters, dispatchFilter] = useReducer(filterReducer, {
         background: [],
@@ -145,7 +138,60 @@ const Citizen = () => {
         dispatchFilter({ type: "TOGGLE_FILTER", payload: { filterType, value } });
     };
 
-    const filteredCitizens = Citizens.filter((c) => {
+    const handleLikeToggle = async (citizenId: string, event: React.MouseEvent) => {
+        event.stopPropagation(); // 防止触发父元素的点击事件
+        
+        if (!isAuthenticated) {
+            // 如果用户未登录，可以显示登录提示
+            alert('Please login to like citizens');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/citizen/${citizenId}/toggle-like`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                // 更新citizens数组中的likes_count
+                setCitizens(prevCitizens => 
+                    prevCitizens.map(citizen => 
+                        citizen.id === citizenId 
+                            ? { ...citizen, likes_count: data.likes_count }
+                            : citizen
+                    )
+                );
+
+                // 更新liked状态
+                setLikedCitizens(prev => {
+                    const newSet = new Set(prev);
+                    if (data.is_liked) {
+                        newSet.add(citizenId);
+                    } else {
+                        newSet.delete(citizenId);
+                    }
+                    return newSet;
+                });
+            } else {
+                const errorData = await response.json();
+                console.error('Error toggling like:', errorData);
+                alert('Failed to update like status');
+            }
+        } catch (error) {
+            console.error('Error toggling like:', error);
+            alert('Failed to update like status');
+        }
+    };
+
+    const filteredCitizens = citizens.filter((c) => {
         // First apply filter-based filtering
         const passesFilters = (Object.keys(filters) as (keyof citizenProps)[]).every((key) =>
             filters[key].length === 0 || filters[key].includes(c[key])
@@ -246,6 +292,34 @@ const Citizen = () => {
             lenis.destroy();
         };
     }, [isOpen])*/
+
+    
+    useEffect(() => {
+        const fetchCitizens = async () => {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/citizen/list`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+            console.log(data);
+            setCitizens(data);
+            
+            // 初始化liked状态 - 检查当前用户是否已经like了这些citizens
+            if (user) {
+                const likedIds = new Set<string>();
+                data.forEach((citizen: citizenProps) => {
+                    const userLiked = citizen.likes.some(like => like.user_id === user.id);
+                    if (userLiked) {
+                        likedIds.add(citizen.id);
+                    }
+                });
+                setLikedCitizens(likedIds);
+            }
+        };
+        fetchCitizens();
+    }, [user]);
 
     return (<div className="bg-gray-800 fixed h-screen w-full">
         <Header />
@@ -488,6 +562,22 @@ const Citizen = () => {
                                                         <div className="text-slate-300 text-xs">RANK</div>
                                                         <div className={`font-bold text-xl ${rubik_distressed.className}`}>1000</div>
                                                     </div>
+                                                    <div className="flex flex-col items-center">
+                                                        <div className="text-slate-300 text-xs">LIKES</div>
+                                                        <div className="flex items-center gap-2">
+                                                            <AnimatedCounter value={c.likes_count} color="white" fontSize="16px" includeCommas={true} includeDecimals={false} />
+                                                            <button
+                                                                onClick={(e) => handleLikeToggle(c.id, e)}
+                                                                className={`duration-200 active:scale-[1.2] transition-colors ${
+                                                                    likedCitizens.has(c.id) 
+                                                                        ? 'text-red-500 hover:opacity-80' 
+                                                                        : 'text-gray-400 hover:text-red-500 hover:scale-[0.9]'
+                                                                }`}
+                                                            >
+                                                                <BiLike className={`text-2xl ${likedCitizens.has(c.id) ? 'fill-current' : ''}`} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div id="attributes" className="gap-4 grid grid-cols-1 lg:grid-cols-2">
                                                     {
@@ -506,7 +596,7 @@ const Citizen = () => {
                                                                     <Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/${attr.image}.png`} />
                                                                     <div className="flex flex-col text-xs ">
                                                                         <span className="text-slate-300">{attr.name}</span>
-                                                                        <span className="font-bold">{c[attr.type]}</span>
+                                                                        <span className="font-bold">{c[attr.type] as string}</span>
                                                                     </div>
                                                                 </div> : null
                                                         ))
@@ -531,8 +621,17 @@ const Citizen = () => {
                                 <div className={`flex items-center justify-between ${pixelify_sans.className} text-gray-100`}>
                                     <span className="font-bold">No. {c.code}</span>
                                     <div className="flex gap-2 items-center text-xs text-gray-300">
-                                        1000
-                                        <BiLike className="text-red-500" />
+                                        <AnimatedCounter value={c.likes_count} color="white" fontSize="16px" includeCommas={true} includeDecimals={false} />
+                                        <button
+                                            onClick={(e) => handleLikeToggle(c.id, e)}
+                                            className={`transition-colors duration-200 active:scale-[1.2] ${
+                                                likedCitizens.has(c.id) 
+                                                    ? 'text-red-500 hover:opacity-80' 
+                                                    : 'text-gray-400 hover:text-red-500 hover:scale-[0.9]'
+                                            }`}
+                                        >
+                                            <BiLike className={`text-xl ${likedCitizens.has(c.id) ? 'fill-current' : ''}`} />
+                                        </button>
                                     </div>
                                 </div>
                             </motion.div>
