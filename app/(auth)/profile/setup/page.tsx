@@ -16,6 +16,7 @@ import { MdWallet } from "react-icons/md";
 import { useAuth } from "@/hooks/useAuth";
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useDropzone } from "react-dropzone";
+import { enqueueSnackbar } from "notistack";
 
 type ProfileForm = {
     name: string;
@@ -152,6 +153,7 @@ const ProfileSetupPage = () => {
             const isUnique = await checkUsername(data.name);
             if (!isUnique) {
                 setError("name", { message: "Username already taken" });
+                enqueueSnackbar(`${data.name} is already taken , please try another one`, { variant: 'error' });
                 return;
             }
             // Get current user
