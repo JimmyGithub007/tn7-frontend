@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux';
 import { CircularProgress } from '@mui/material';
 import Image from 'next/image';
 import ReCAPTCHA from "react-google-recaptcha";
+import { enqueueSnackbar } from 'notistack';
 
 type RegisterForm = {
     email: string;
@@ -37,8 +38,10 @@ const RegisterPage = () => {
         try {
             await registerUser(data.email, data.password, data.email.split('@')[0], recaptchaToken || "");
             window.location.href = '/profile/setup';
+            enqueueSnackbar('Registration successful, now jump to profile setup', { variant: 'success' });
         } catch (err: any) {
-            console.log(err?.response?.data?.message || 'Registration failed');
+            enqueueSnackbar(err?.response?.data?.error || 'Registration failed', { variant: 'error' });
+            console.log(err?.response?.data?.error || 'Registration failed');
         } finally {
             setLoading(false);
         }
