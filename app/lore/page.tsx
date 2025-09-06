@@ -386,7 +386,6 @@ const Lore = () => {
                     transition={{ duration: 0.2, ease: "easeInOut" }} />
             )}
         </AnimatePresence>
-        <Header />
         <Suspense fallback={
             <div className="absolute flex h-full items-center justify-center left-0 w-full top-0 bg-black z-[100]">
                 <span className="font-bold text-5xl text-white">0%</span>

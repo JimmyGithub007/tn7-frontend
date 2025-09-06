@@ -30,7 +30,7 @@ export default function RootLayout({
 
   return (<StoreProvider>
     <html lang="en" className={opinionPro.variable}>
-    <head>
+      <head>
         {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-G17004Z8T3"
@@ -79,13 +79,13 @@ export default function RootLayout({
         />
       </head>
       <body className={impact.className} style={{ overflow: "hidden" }}>
-        <Shell>
-          <NotistackProvider>
-            <WalletProviders>
+        <NotistackProvider>
+          <WalletProviders>
+            <Shell>
               {children}
-            </WalletProviders>
-          </NotistackProvider>          
-        </Shell>
+            </Shell>
+          </WalletProviders>
+        </NotistackProvider>
         <Dialog />
         {/*<MouseFollower />*/}
       </body>

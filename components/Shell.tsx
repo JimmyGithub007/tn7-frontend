@@ -1,21 +1,24 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, createContext } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { MdListAlt, MdPeople, MdManageAccounts, MdLeaderboard } from "react-icons/md";
 import { TbLogs } from "react-icons/tb";
 import { BiLogOut, BiUser } from "react-icons/bi";
-import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, CircularProgress } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, CircularProgress } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { setJumpPage } from "@/store/slice/pageSlice";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSnackbar } from "notistack";
+import { Header } from ".";
 import axios from "axios";
 import Image from "next/image";
 import Loader from "./Loader";
 
-const menuItems = [
+export const MenuContext = createContext<{ isMenuOpen: boolean, setIsMenuOpen: (isOpen: boolean) => void } | null>(null);
+
+const menuItems = [//menu for cms
     //{ label: "Dashboard", href: "/cms/dashboard", icon: <MdDashboard size={22} /> },
     { label: "User", href: "/cms/user", icon: <MdPeople size={22} />, permission: "user-management" },
     { label: "Role", href: "/cms/role", icon: <MdManageAccounts size={22} />, permission: "role-management" },
@@ -82,10 +85,31 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
         checkAuthStatus();
     }, [pathname]);
 
-    if (!pathname.includes('/cms') || pathname == '/cms/login') {
+    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+
+    if (!pathname.includes('/cms') && pathname !== '/cms/login') {
+        return (
+            <MenuContext.Provider value={{ isMenuOpen, setIsMenuOpen }}>
+                <Header isOpenMenuParent={isMenuOpen} setIsOpenMenuParent={setIsMenuOpen} />
+                <AnimatePresence>
+                    {jumpPage && (
+                        <motion.div
+                            className="absolute bg-black h-full left-0 w-full top-0 z-[300]"
+                            initial={{ y: "-100%" }}
+                            animate={{ y: 0 }}
+                            transition={{ duration: 0.2, ease: "easeInOut" }} />
+                    )}
+                </AnimatePresence>
+                {children}
+            </MenuContext.Provider>
+        )
+    }
+
+    if (pathname == '/cms/login') {
         return children;
     }
 
+    //cms shell
     return (<>
         <div className="flex h-screen w-full bg-gray-100 overflow-hidden">
             <Loader />

@@ -47,6 +47,10 @@ const LoginPage = () => {
         }
     }, [isAuthenticated, redirectToDashboard]);
 
+    useEffect(() => {
+        dispatch(setJumpPage(false));
+    }, []);
+
     if (authLoading || isAuthenticated) {
         return (
             <div className="bg-black h-screen w-full"></div>
@@ -55,7 +59,6 @@ const LoginPage = () => {
 
     return (<div className="fixed h-screen w-full overflow-hidden flex justify-center items-center">
         <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/entry/entryBG.png`} priority />
-        <Header />
         <Loader />
         <motion.div
             initial={{ opacity: 0, y: 20 }}

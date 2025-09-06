@@ -491,9 +491,12 @@ const EntryPage = ({ params }: { params: { category: string, type: string } }) =
         };
     }, []);
 
+    useEffect(() => {
+        dispatch(setJumpPage(false));
+    }, []);
+
     return (<div className="fixed flex h-screen items-center justify-center overflow-hidden w-full">
         <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/entry/entryBG.png`} priority />
-        <Header />
         <Loader />
         {/*<div className="flex h-[calc(100vh-80x)] items-top sm:items-center justify-center w-full mt-[80px] sm:mt-0">*/}
         <div className={`flex flex-col ${displayMode === "list" ? "max-w-[480px]" : "max-w-[1280px]"}`}>

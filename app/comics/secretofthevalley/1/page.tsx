@@ -81,7 +81,6 @@ const ComicsChapter = () => {
     return (
         <div className="flex flex-col items-center bg-black min-h-screen">
             <Loader />
-            <Header />
             <AnimatePresence>
                 {showHeader && <motion.div
                     initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -50 }} transition={{ duration: 0.5, delay: 0.2 }}

@@ -17,6 +17,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useDropzone } from "react-dropzone";
 import { enqueueSnackbar } from "notistack";
+import { setJumpPage } from "@/store/slice/pageSlice";
+import { useDispatch } from "react-redux";
 
 type ProfileForm = {
     name: string;
@@ -25,6 +27,7 @@ type ProfileForm = {
 };
 
 const ProfileSetupPage = () => {
+    const dispatch = useDispatch();
     const { address, isConnected } = useAccount();
     const { disconnect } = useDisconnect();
     const [isLoading, setIsLoading] = useState(false);
@@ -193,10 +196,13 @@ const ProfileSetupPage = () => {
         }
     }, [mounted, isAuthenticated, user, router]);
 
+    useEffect(() => {
+        dispatch(setJumpPage(false));
+    }, []);
+
     return (
         <div className="fixed h-screen w-full flex justify-center">
             <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/entry/entryBG.png`} priority />
-            <Header />
             <Loader />
             <div className="relative w-full sm:max-w-[300px] md:max-w-[400px] flex flex-col items-center justify-center">
                 <Image alt=""

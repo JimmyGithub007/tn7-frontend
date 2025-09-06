@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, use } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,7 @@ import { RootState } from "@/store";
 import { setJumpPage } from "@/store/slice/pageSlice";
 
 import dynamic from 'next/dynamic';
+import { MenuContext } from "@/components/Shell";
 
 const MobileVersionHomeScene = dynamic(() => import('@/components/MobileVersionHomeScene'), {
     ssr: false, // 只在客户端渲染，避免 SSR 报错
@@ -67,7 +68,7 @@ const Home = () => {
     const [ hoverTvId, setHoverTvId ] = useState<number>(0);
     const [ isMobile, setIsMobile ] = useState(false);
     const [ message, setMessage ] = useState<{ id: string, content: string }>({ id: "", content: "" });
-    const [ isMenuOpen, setIsMenuOpen ] = useState<boolean>(false);
+    const { isMenuOpen } = useContext(MenuContext) as { isMenuOpen: boolean, setIsMenuOpen: (isOpen: boolean) => void };
 
     const [ tvData, setTvData ] = useState<{ id: number, name: string, x: number, y: number }[]>([
         { id: 1, name: "", x: 0, y: 0 },
@@ -259,6 +260,7 @@ const Home = () => {
     }, [loadingPercentage]);
 
     useEffect(() => {
+        console.log("isMenuOpen", isMenuOpen);
         if(isMenuOpen) {
             setMessage({ id: "Home", content: "StopHome" });
         } else {
@@ -289,19 +291,17 @@ const Home = () => {
 
     return (
         <div className="bg-black h-screen w-full relative overflow-hidden">
-            <Header isOpenMenuParent={isMenuOpen} setIsOpenMenuParent={setIsMenuOpen} />
-            {   isMobile ? <MobileVersionHomeScene
+            {isMobile ? <MobileVersionHomeScene
                 setHoverTvId={setHoverTvId}
                 setTvData={setTvData}
                 tvData={tvData}
                 clickTV={clickTV}
-                onSceneReady={() => setLoadingProgression(1) }
-            /> : 
-                <PCVersion handleHoverTV={handleHoverTV} 
-                    handleClickTV={handleClickTV} 
-                    setLoadingProgression={setLoadingProgression} 
-                    message={message} 
-                />
+                onSceneReady={() => setLoadingProgression(1)}
+            /> : <PCVersion handleHoverTV={handleHoverTV}
+                handleClickTV={handleClickTV}
+                setLoadingProgression={setLoadingProgression}
+                message={message}
+            />
             }
             <AnimatePresence>
                 {!loaderHidden && (

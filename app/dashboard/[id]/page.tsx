@@ -304,13 +304,16 @@ const DashboardPage = () => {
         };
     }, [profileCard.current]);
 
+    useEffect(() => {
+        dispatch(setJumpPage(false));
+    }, []);
+
     if (authLoading || !isAuthenticated || (isAuthenticated && authUser?.id === id && !authUser?.completed)) {
         return <div className="bg-black h-screen w-full"></div>;
     }
 
     return (<div className="fixed h-screen w-full overflow-hidden flex justify-center items-center">
         <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/entry/entryBG.png`} priority />
-        <Header />
         <Loader />
         <div className="flex flex-col max-w-[1280px]">
             <Image alt=""
@@ -354,7 +357,10 @@ const DashboardPage = () => {
                                     <AnimatedCounter value={1000} color="white" fontSize="16px" includeCommas={true} includeDecimals={false} />
                                 </div>
                             </div>
-                            <div className="text-center text-lg md:text-xl font-bold text-white">{user?.name}</div>
+                            <div className="flex flex-col items-center justify-center text-lg md:text-xl font-bold text-white">
+                                {user?.name}
+                                <div className="text-xs text-white">{user?.email}</div>
+                            </div>
                             {authUser && authUser?.id !== id &&
                                 <button onClick={handleFollow} className={`bg-white/20 backdrop-blur-sm duration-300 flex hover:bg-white/30 items-center justify-center text-white gap-2 h-8 px-4 rounded-2xl shadow-md text-xs`}>
                                     <FaUser />

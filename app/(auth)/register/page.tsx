@@ -53,6 +53,10 @@ const RegisterPage = () => {
         }
     }, [isAuthenticated, redirectToDashboard]);
 
+    useEffect(() => {
+        dispatch(setJumpPage(false));
+    }, []);
+
     if (authLoading || isAuthenticated) {
         return (
             <div className="bg-black h-screen w-full"></div>
@@ -61,7 +65,6 @@ const RegisterPage = () => {
 
     return (<div className="fixed h-screen w-full overflow-hidden flex justify-center items-center">
         <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/entry/entryBG.png`} priority />
-        <Header />
         <Loader />
         <div className="relative w-full sm:max-w-[300px] md:max-w-[400px] flex flex-col items-center justify-center">
             <Image alt=""
