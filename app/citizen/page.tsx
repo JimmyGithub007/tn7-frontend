@@ -16,6 +16,7 @@ import Header from "@/components/Header";
 import Loader from "@/components/Loader";
 import { useAuth } from "@/hooks/useAuth";
 import { AnimatedCounter } from "react-animated-counter";
+import { setJumpPage } from "@/store/slice/pageSlice";
 
 const pixelify_sans = Pixelify_Sans({ subsets: ["latin"], weight: "400" });
 const rubik_distressed = Rubik_Distressed({ subsets: ["latin"], weight: "400" });
@@ -303,7 +304,6 @@ const Citizen = () => {
                 },
             });
             const data = await response.json();
-            console.log(data);
             setCitizens(data);
             
             // 初始化liked状态 - 检查当前用户是否已经like了这些citizens
@@ -321,8 +321,11 @@ const Citizen = () => {
         fetchCitizens();
     }, [user]);
 
+    useEffect(() => {
+        dispatch(setJumpPage(false));
+    }, []);
+
     return (<div className="bg-gray-800 fixed h-screen w-full">
-        <Header />
         <Loader />
         <div className="bg-gray-900 h-[calc(100vh-72.51px)] mt-[72.51px] overflow-hidden relative w-full">
             {/* Left Sidebar */}

@@ -128,7 +128,6 @@ const Comics = () => {
 
     return (
         <div className="bg-black h-screen w-full relative overflow-hidden">
-            <Header />
             { !isMobile && hoverComicId > 0 && <div className={`absolute hidden lg:block w-full h-full opacity-0 ${hoverComicId === 2 ? "cursor-pointer" : "cursor-not-allowed"}`} onClick={() => clickComic(hoverComicId) }></div> }
             { isMobile ? <MobileVersionComicTimeLineScene /> 
                 : <PCVersionComicTimeLineScene 

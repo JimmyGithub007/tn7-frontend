@@ -66,7 +66,6 @@ const Collapse = ({ children, title }: { children: ReactNode, title: string }) =
 
 const DiscoverMore = () => {
     const dispatch = useDispatch();
-    const jumpPage = useSelector((state: RootState) => state.page.jumpPage);
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
@@ -75,16 +74,6 @@ const DiscoverMore = () => {
 
     return (<div className={`bg-black flex justify-center relative w-full ${isLoaded ? "overflow-y-auto" : "overflow-y-hidden h-screen"}`}>
         <Loader setIsLoadedParent={setIsLoaded} />
-        <AnimatePresence>
-            {   jumpPage && (
-                <motion.div
-                    className="absolute bg-black h-full left-0 w-full top-0 z-[300]"
-                    initial={{ y: "-100%" }}
-                    animate={{ y: 0 }}
-                    transition={{ duration: 0.2, ease: "easeInOut" }} />
-            )}
-        </AnimatePresence>
-        <Header />
         <div className="flex flex-col gap-8 px-12 py-36 2xl:w-[1280px] 2xl:px-0 text-white">
             <div className="flex flex-col gap-4 text-center">
                 <div className="font-bold text-2xl sm:text-3xl">Welcome to TN7</div>   

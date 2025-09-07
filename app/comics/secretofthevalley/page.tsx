@@ -61,7 +61,6 @@ const ComicsId = () => {
 
     return (<div className="fixed h-screen w-full overflow-hidden flex justify-center">
         <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/universe/webp/Background.webp`} priority />
-        <Header />
         <Loader />
         <div className="flex h-[calc(100vh-80x)] items-top sm:items-center justify-center w-full mt-[80px] sm:mt-0">
             <div className="relative flex items-center justify-center"

@@ -3,49 +3,32 @@
 import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Mousewheel } from 'swiper/modules';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { Footer, Loader, ProgressiveImage } from '@/components';
+import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { setJumpPage } from '@/store/slice/pageSlice';
+import Image from 'next/image';
 import 'swiper/css';
 import 'swiper/css/free-mode';
-import Image from 'next/image';
-import { Footer, Header, Loader, ProgressiveImage } from '@/components';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/store';
-import { setJumpPage } from '@/store/slice/pageSlice';
 
 const universes = [
     { id: 1, name: "COMICS", image: "u1", url: "/comics", available: true },
     { id: 2, name: "LORE", image: "u2", url: "/lore?category=cities&id=0", available: true },
     { id: 3, name: "WORLD MAP", image: "u3", url: "/worldmap", available: true },
-    { id: 4, name: "PUBLIC ENTRIES", image: "u4", url: "/publicentries", available: false },
+    { id: 4, name: "PUBLIC ENTRIES", image: "u4", url: "/entry/public/story", available: true },
     { id: 5, name: "VIDEOS", image: "u5", url: "/videos", available: false }
 ];
 
 const Universe = () => {
     const router = useRouter();
     const dispatch = useDispatch();
-    const jumpPage = useSelector((state: RootState) => state.page.jumpPage);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-    const [loadingPercentage, setLoadingPercentage] = useState(0);
-    const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
-        // Simulate loading process
-        const interval = setInterval(() => {
-            setLoadingPercentage((prev) => {
-                if (prev >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => setIsLoaded(true), 500); // Delay after reaching 100%
-                    return 100;
-                }
-                return prev + 5; // Increase percentage every interval
-            });
-        }, 50); // 100 ms interval for smoother progress
-
         // Mouse movement tracking for the parallax effect
         const handleMouseMove = (e: MouseEvent) => {
-            if(window.innerWidth >= 1024) {
+            if (window.innerWidth >= 1024) {
                 const { clientX, clientY } = e;
                 const x = clientX - window.innerWidth / 2;
                 const y = clientY - window.innerHeight / 2;
@@ -68,101 +51,87 @@ const Universe = () => {
         <div className="fixed flex justify-center h-screen items-center w-full">
             <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/universe/webp/Background.webp`} priority />
             <Loader />
-            <AnimatePresence>
-                {   jumpPage && (
-                    <motion.div
-                        className="absolute bg-black h-full left-0 w-full top-0 z-[300]"
-                        initial={{ y: "-100%" }}
-                        animate={{ y: 0 }}
-                        transition={{ duration: 0.2, ease: "easeInOut" }} />
-                )}
-            </AnimatePresence>
-            {isLoaded && (
-                <>
-                    <Header />
-                    <Swiper
-                        loop={false}
-                        freeMode={true}
-                        centeredSlides={false}
-                        slidesPerView={1}
-                        spaceBetween={10}
-                        breakpoints={{
-                            640: {
-                                slidesPerView: 1,
-                                spaceBetween: 10
-                            },
-                            768: {
-                                slidesPerView: 2,
-                                spaceBetween: 15
-                            },
-                            1024: {
-                                slidesPerView: 3,
-                                spaceBetween: 20
-                            },
-                            1920: {
-                                slidesPerView: 4,
-                                spaceBetween: 25
-                            },
-                            2560: {
-                                slidesPerView: 5,
-                                spaceBetween: 200
-                            },
+            <Swiper
+                loop={false}
+                freeMode={true}
+                centeredSlides={false}
+                slidesPerView={1}
+                spaceBetween={10}
+                breakpoints={{
+                    640: {
+                        slidesPerView: 1,
+                        spaceBetween: 10
+                    },
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: 15
+                    },
+                    1024: {
+                        slidesPerView: 3,
+                        spaceBetween: 20
+                    },
+                    1920: {
+                        slidesPerView: 4,
+                        spaceBetween: 25
+                    },
+                    2560: {
+                        slidesPerView: 5,
+                        spaceBetween: 200
+                    },
+                }}
+                modules={[FreeMode, Mousewheel]}
+                mousewheel={true}
+                style={{ paddingRight: "150px" }}
+            >
+                {universes.map((value, key) => (
+                    <SwiperSlide
+                        key={value.id}
+                        style={{
+                            transform: `translateX(${mousePosition.x * 0.02}px)`,
                         }}
-                        modules={[FreeMode, Mousewheel]}
-                        mousewheel={true}
-                        style={{ paddingRight: "150px" }}
                     >
-                        {universes.map((value, key) => (
-                            <SwiperSlide
-                                key={value.id}
-                                style={{
-                                    transform: `translateX(${mousePosition.x * 0.02}px)`,
-                                }}
-                            >
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    whileInView={{ opacity: 1 }}
-                                    transition={{ duration: 0.5, delay: key * 0.1 }}
-                                    viewport={{ once: true }}
-                                    onClick={() => {
-                                        if(value.available) {
-                                            dispatch(setJumpPage(true));
-                                            const timeout = setTimeout(() => {
-                                                router.push(value.url);
-                                            }, 200);
-                                            return () => clearTimeout(timeout);
-                                        }
-                                    }}
-                                    className={`${value.available ? "cursor-pointer" : "cursor-not-allowed"} relative h-full w-full`}>
-                                    <ProgressiveImage
-                                        className=""
-                                        lowQualitySrc={`/assets/images/universe/webp/tiny/${value.image}.webp`}
-                                        highQualitySrc={`/assets/images/universe/webp/${value.image}.webp`}
-                                        alt={`universe ${value.name}`}
-                                        width={821}
-                                        height={1171}
-                                    />
-                                    {!value.available && <Image className="absolute opacity-90 top-0 z-[30]" alt="without frame" width={1642} height={2342} src={`/assets/images/universe/webp/Frame.webp`} />}
-                                    {!value.available &&
-                                        <div className="absolute flex font-bold h-full items-center justify-center text-md md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-center text-white top-0 w-full z-[30]">
-                                            COMING SOON
-                                        </div>
-                                    }
-                                    <div className="absolute bottom-[10%] font-bold text-md md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-center text-white w-full z-10">
-                                        {value.name}
-                                    </div>
-                                </motion.div>
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
-                    <div className="absolute bottom-24 sm:bottom-4 flex flex-col gap-1 items-center p-1 rounded-3xl text-white">
-                        <div className="border-white border-2 flex h-8 items-center justify-center rounded-3xl w-6 z-10">
-                            <div className="animate-scroll bg-white h-1 rounded-full w-1"></div>
-                        </div>
-                        <div>Scroll the mouse/ Drag the box</div>
-                    </div>
-                </>
-            )}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            transition={{ duration: 0.5, delay: key * 0.1 }}
+                            viewport={{ once: true }}
+                            onClick={() => {
+                                if (value.available) {
+                                    dispatch(setJumpPage(true));
+                                    const timeout = setTimeout(() => {
+                                        router.push(value.url);
+                                    }, 200);
+                                    return () => clearTimeout(timeout);
+                                }
+                            }}
+                            className={`${value.available ? "cursor-pointer" : "cursor-not-allowed"} relative h-full w-full`}>
+                            <ProgressiveImage
+                                className=""
+                                lowQualitySrc={`/assets/images/universe/webp/tiny/${value.image}.webp`}
+                                highQualitySrc={`/assets/images/universe/webp/${value.image}.webp`}
+                                alt={`universe ${value.name}`}
+                                width={821}
+                                height={1171}
+                            />
+                            {!value.available && <Image className="absolute opacity-90 top-0 z-[30]" alt="without frame" width={1642} height={2342} src={`/assets/images/universe/webp/Frame.webp`} />}
+                            {!value.available &&
+                                <div className="absolute flex font-bold h-full items-center justify-center text-md md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-center text-white top-0 w-full z-[30]">
+                                    COMING SOON
+                                </div>
+                            }
+                            <div className="absolute bottom-[10%] font-bold text-md md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-center text-white w-full z-10">
+                                {value.name}
+                            </div>
+                        </motion.div>
+                    </SwiperSlide>
+                ))}
+            </Swiper>
+            <div className="absolute bottom-24 sm:bottom-4 flex flex-col gap-1 items-center p-1 rounded-3xl text-white">
+                <div className="border-white border-2 flex h-8 items-center justify-center rounded-3xl w-6 z-10">
+                    <div className="animate-scroll bg-white h-1 rounded-full w-1"></div>
+                </div>
+                <div>Scroll the mouse/ Drag the box</div>
+            </div>
             <Footer />
         </div>
     );

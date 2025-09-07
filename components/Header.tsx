@@ -9,12 +9,13 @@ import { Collapse, Spin } from "antd";
 import { BsDiscord, BsInstagram, BsTwitterX } from "react-icons/bs";
 import { useAccount, useDisconnect, useSignMessage } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setJumpPage } from "@/store/slice/pageSlice";
 import { MdDashboard, MdLogout, MdNotificationsOff, MdWallet } from "react-icons/md";
 import { FaRegUserCircle } from "react-icons/fa";
 import { useAuth } from '@/hooks/useAuth';
 import Image from "next/image";
+import { RootState } from "@/store";
 
 const randomCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
 
@@ -382,6 +383,8 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
   const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const jumpPage = useSelector((state: RootState) => state.page.jumpPage);
+
   // 自动签名登录
   useEffect(() => {
     if (isConnected && !isAuthenticated && !isLoading && mounted) {
@@ -408,7 +411,9 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
 
       const response = await walletLogin(address, signature);
       if (!response?.completed) {
-        window.location.href = `/profile/setup`;
+        router.push(`/profile/setup`);
+      } else if(pathname === "/login" || pathname === "/register") {
+        router.push('/home');
       }
     } catch (error) {
       console.error('Login failed', error);
@@ -422,7 +427,7 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
     disconnect();// 断开钱包连接
     dispatch(setJumpPage(true));
     const timeout = setTimeout(() => {
-      window.location.href = '/login';
+      router.push('/login');
     }, 200);
     return () => clearTimeout(timeout);
   };
@@ -442,6 +447,12 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showUserDropdown]);
+
+  useEffect(() => {
+    if(jumpPage) {
+      setIsOpenMenu(false);
+    }
+  }, [jumpPage]);
 
   return (<>
     <Image alt="logo"
@@ -518,7 +529,7 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
                     if (pathname === `/dashboard/${user.id}`) return;
                     dispatch(setJumpPage(true));
                     const timeout = setTimeout(() => {
-                      window.location.href = `/dashboard/${user.id}`;
+                      router.push(`/dashboard/${user.id}`);
                     }, 200);
                     return () => clearTimeout(timeout);
                   }} className="duration-300 flex items-center gap-2 w-full h-full text-white text-left px-4 py-2 hover:bg-white/30"><MdDashboard /> Go to Dashboard</button>
@@ -534,11 +545,7 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
             dispatch(setJumpPage(true));
             const timeout = setTimeout(() => {
               const targetPath = pathname === "/login" ? "register" : "login";
-              if (pathname === "/home") {
-                window.location.href = `/${targetPath}`;
-              } else {
-                window.location.href = `/${targetPath}`;
-              }
+              router.push(`/${targetPath}`);
             }, 200);
             return () => clearTimeout(timeout);
           }}

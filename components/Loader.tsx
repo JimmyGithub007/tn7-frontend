@@ -28,7 +28,7 @@ const Loader = ({ setIsLoadedParent }: LoaderProps) => {
                 return prev + 5; // Increase percentage every interval
             });
         }, 100); // 100 ms interval for smoother progress
-    }, [setIsLoaded]);
+    }, []);
 
     return (<AnimatePresence>
         {!isLoaded && (
