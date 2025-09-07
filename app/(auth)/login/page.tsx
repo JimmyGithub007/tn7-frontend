@@ -12,6 +12,7 @@ import { setJumpPage } from '@/store/slice/pageSlice';
 import { useDispatch } from 'react-redux';
 import { useSnackbar } from 'notistack';
 import { FaUserLock } from 'react-icons/fa6';
+import axios from 'axios';
 
 type LoginForm = {
     email: string;
@@ -24,16 +25,29 @@ const LoginPage = () => {
     const router = useRouter();
     const dispatch = useDispatch();
     const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [sentEmail, setSentEmail] = useState(false);
 
     const [loading, setLoading] = useState(false);
     const { isAuthenticated, loading: authLoading, login, redirectToDashboard } = useAuth({ type: "user" });
 
     const onSubmit = async (data: LoginForm) => {
+        if (sentEmail || loading) {
+            return;
+        }
         setLoading(true);
         try {
-            await login(data.email, data.password);
-            enqueueSnackbar('Login successful', { variant: 'success' });
-            redirectToDashboard();
+            if (showForgotPassword) {
+                await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/forgot-password`, {
+                    email: data.email,
+                });
+                enqueueSnackbar('Reset email sent', { variant: 'success' });
+                setSentEmail(true);
+            } else {
+                await login(data.email, data.password);
+                enqueueSnackbar('Login successful', { variant: 'success' });
+                redirectToDashboard();
+            }
         } catch (err: any) {
             enqueueSnackbar(err.response.data.message, { variant: 'error' });
         } finally {
@@ -81,52 +95,68 @@ const LoginPage = () => {
                     <div className="flex items-center gap-2">
                         <div className="bg-white w-2 h-10"></div>
                         <div className="flex flex-col items-start">
-                            <span className="text-xl font-bold">LOGIN</span>
-                            <span className="text-sm text-gray-400">Enter your account details</span>
+                            <span className="text-xl font-bold">{showForgotPassword ? 'FORGOT PASSWORD' : 'LOGIN'}</span>
+                            <span className="text-sm text-gray-400">{showForgotPassword ? 'Enter your email to reset password' : 'Enter your account details'}</span>
                         </div>
                     </div>
-                    <div className="flex flex-col w-full">
+                    <div className="flex flex-col gap-2 w-full">
+                        {sentEmail && (
+                            <div className="text-xs text-gray-400">Reset email sent to your email address. Please check your inbox and follow the instructions to reset your password.</div>
+                        )}
                         <div>EMAIL*</div>
                         <input
                             autoComplete="email"
-                            disabled={loading}
+                            disabled={loading || sentEmail}
                             type="email"
                             {...register('email', { required: 'Email is required' })}
                             className="w-full bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-md text-sm shadow-md"
                         />
                         { errors.email && <div className="text-red-500 text-xs">*{errors.email.message}</div> }
                     </div>
-                    <div className="flex flex-col w-full">
-                        <div>PASSWORD*</div>
-                        <input
-                            autoComplete="current-password"
-                            disabled={loading}
-                            type="password"
-                            {...register('password', { required: 'Password is required' })}
-                            className="w-full bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-md text-sm shadow-md"
-                        />
-                        { errors.password && <div className="text-red-500 text-xs">*{errors.password.message}</div> }
-                    </div>
+                    {!showForgotPassword && (
+                        <div className="flex flex-col w-full">
+                            <div>PASSWORD*</div>
+                            <input
+                                autoComplete="current-password"
+                                disabled={loading}
+                                type="password"
+                                {...register('password', { required: 'Password is required' })}
+                                className="w-full bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-md text-sm shadow-md"
+                            />
+                            { errors.password && <div className="text-red-500 text-xs">*{errors.password.message}</div> }
+                        </div>
+                    )}
                     <button
                         type="submit"
-                        className="w-full bg-[#45b5d9] hover:bg-[#45b5d9]/80 duration-300 rounded-xl text-white px-4 py-2 text-sm shadow-lg flex items-center justify-center gap-2 z-10"
-                        disabled={loading}
+                        className={`w-full bg-[#45b5d9] duration-300 rounded-xl text-white px-4 py-2 text-sm shadow-lg flex items-center justify-center gap-2 z-10 ${sentEmail ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#45b5d9]/80'}`}
+                        disabled={loading || sentEmail}
                     >
-                        {loading ? 'LOGGING IN...' : 'LOGIN'}
+                        {loading ? `${showForgotPassword ? 'SENDING RESET EMAIL...' : 'LOGGING IN...'}` : showForgotPassword ? 'SEND RESET EMAIL' : 'LOGIN'}
                         {loading && <CircularProgress size={20} />}
                     </button>
-                    <div className="text-sm text-center">
-                        Don&apos;t have an account?{' '}
-                        <button type="button" className="text-[#45b5d9] hover:text-[#45b5d9]/80 duration-300" onClick={() => {
-                            dispatch(setJumpPage(true));
-                            const timeout = setTimeout(() => {
-                                router.push(`/register`);
-                            }, 200);
-                            return () => clearTimeout(timeout);
-                        }}>
-                            REGISTER
-                        </button>
-                    </div>
+                    {!showForgotPassword && (
+                        <div className="flex flex-col gap-2">
+                            <button
+                                type="button"
+                                className="text-[#45b5d9] hover:text-[#45b5d9]/80 duration-300 text-sm"
+                                onClick={() => setShowForgotPassword(true)}
+                            >
+                                FORGOT PASSWORD?
+                            </button>
+                            <div className="text-sm text-center">
+                                Don&apos;t have an account?{' '}
+                                <button type="button" className="text-[#45b5d9] hover:text-[#45b5d9]/80 duration-300" onClick={() => {
+                                    dispatch(setJumpPage(true));
+                                    const timeout = setTimeout(() => {
+                                        router.push(`/register`);
+                                    }, 200);
+                                    return () => clearTimeout(timeout);
+                                }}>
+                                    REGISTER
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </form>
             <Image alt=""
