@@ -11,7 +11,7 @@ import Image from 'next/image';
 import { setJumpPage } from '@/store/slice/pageSlice';
 import { useDispatch } from 'react-redux';
 import { useSnackbar } from 'notistack';
-import { FaUserLock } from 'react-icons/fa6';
+import { FaUserLock, FaEye, FaEyeSlash } from 'react-icons/fa6';
 import axios from 'axios';
 
 type LoginForm = {
@@ -27,6 +27,7 @@ const LoginPage = () => {
     const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [sentEmail, setSentEmail] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const [loading, setLoading] = useState(false);
     const { isAuthenticated, loading: authLoading, login, redirectToDashboard } = useAuth({ type: "user" });
@@ -116,13 +117,23 @@ const LoginPage = () => {
                     {!showForgotPassword && (
                         <div className="flex flex-col w-full">
                             <div>PASSWORD*</div>
-                            <input
-                                autoComplete="current-password"
-                                disabled={loading}
-                                type="password"
-                                {...register('password', { required: 'Password is required' })}
-                                className="w-full bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-md text-sm shadow-md"
-                            />
+                            <div className="relative">
+                                <input
+                                    autoComplete="current-password"
+                                    disabled={loading}
+                                    type={showPassword ? "text" : "password"}
+                                    {...register('password', { required: 'Password is required' })}
+                                    className="w-full bg-white/10 backdrop-blur-md text-white px-4 py-2 pr-10 rounded-md text-sm shadow-md"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200"
+                                    disabled={loading}
+                                >
+                                    {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                                </button>
+                            </div>
                             { errors.password && <div className="text-red-500 text-xs">*{errors.password.message}</div> }
                         </div>
                     )}
