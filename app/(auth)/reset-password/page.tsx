@@ -12,6 +12,7 @@ import { useDispatch } from 'react-redux';
 import { useSnackbar } from 'notistack';
 import Image from 'next/image';
 import axios from 'axios';
+import { FaEye, FaEyeSlash } from 'react-icons/fa6';
 
 type ResetPasswordForm = {
     email: string;
@@ -28,6 +29,8 @@ const ResetPasswordPage = ({ searchParams }: { searchParams: { token: string } }
     const { register, handleSubmit, formState: { errors }, setError } = useForm<ResetPasswordForm>();
 
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const { isAuthenticated, loading: authLoading, redirectToDashboard } = useAuth({ type: "user" });
 
     const onSubmit = async (data: ResetPasswordForm) => {
@@ -99,25 +102,45 @@ const ResetPasswordPage = ({ searchParams }: { searchParams: { token: string } }
                     </div>
                     <div className="flex flex-col w-full">
                         <div>NEW PASSWORD*</div>
-                        <input
-                            autoComplete="password"
-                            disabled={loading}
-                            type="password"
-                            {...register('password', { required: 'Password is required', minLength: { value: 8, message: 'Password must be at least 8 characters long' } })}
-                            className="w-full bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-md text-sm shadow-md"
-                        />
+                        <div className="relative">
+                            <input
+                                autoComplete="password"
+                                disabled={loading}
+                                type={showPassword ? "text" : "password"}
+                                {...register('password', { required: 'Password is required', minLength: { value: 8, message: 'Password must be at least 8 characters long' } })}
+                                className="w-full bg-white/10 backdrop-blur-md text-white px-4 py-2 pr-10 rounded-md text-sm shadow-md"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200"
+                                disabled={loading}
+                            >
+                                {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                            </button>
+                        </div>
                         { errors.password && <div className="text-red-500 text-xs">*{errors.password.message}</div> }
                     </div>
                     <div className="flex flex-col w-full">
                         <div className="flex flex-col w-full">
                             <div>CONFIRM PASSWORD*</div>
-                            <input
-                                autoComplete="confirm-password"
-                                disabled={loading}
-                                type="password"
-                                {...register('confirmPassword', { required: 'Confirm Password is required', minLength: { value: 8, message: 'Confirm Password must be at least 8 characters long' } })}
-                                className="w-full bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-md text-sm shadow-md"
-                            />
+                            <div className="relative">
+                                <input
+                                    autoComplete="confirm-password"
+                                    disabled={loading}
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    {...register('confirmPassword', { required: 'Confirm Password is required', minLength: { value: 8, message: 'Confirm Password must be at least 8 characters long' } })}
+                                    className="w-full bg-white/10 backdrop-blur-md text-white px-4 py-2 pr-10 rounded-md text-sm shadow-md"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200"
+                                    disabled={loading}
+                                >
+                                    {showConfirmPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                                </button>
+                            </div>
                             { errors.confirmPassword && <div className="text-red-500 text-xs">*{errors.confirmPassword.message}</div> }
                         </div>
                     </div>

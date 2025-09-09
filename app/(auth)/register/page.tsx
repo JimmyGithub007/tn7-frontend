@@ -11,6 +11,7 @@ import { CircularProgress } from '@mui/material';
 import Image from 'next/image';
 import ReCAPTCHA from "react-google-recaptcha";
 import { enqueueSnackbar } from 'notistack';
+import { FaEye, FaEyeSlash } from 'react-icons/fa6';
 
 type RegisterForm = {
     email: string;
@@ -22,6 +23,8 @@ const RegisterPage = () => {
     const router = useRouter();
     const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterForm>();
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const { isAuthenticated, loading: authLoading, register: registerUser, redirectToDashboard } = useAuth({ type: "user" });
     const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
     const recaptchaRef = useRef<ReCAPTCHA>(null);
@@ -98,26 +101,46 @@ const RegisterPage = () => {
                     </div>
                     <div className="flex flex-col w-full">
                         <div>PASSWORD*</div>
-                        <input
-                            disabled={loading}
-                            type="password"
-                            {...register('password', { required: 'Password is required', minLength: { value: 6, message: 'Password must be at least 6 characters' } })}
-                            className={`w-full bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-md text-sm ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        />
+                        <div className="relative">
+                            <input
+                                disabled={loading}
+                                type={showPassword ? "text" : "password"}
+                                {...register('password', { required: 'Password is required', minLength: { value: 6, message: 'Password must be at least 6 characters' } })}
+                                className={`w-full bg-white/10 backdrop-blur-md text-white px-4 py-2 pr-10 rounded-md text-sm ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200"
+                                disabled={loading}
+                            >
+                                {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                            </button>
+                        </div>
                         { errors.password && <div className="text-red-500 text-xs">*{errors.password.message}</div> }
                     </div>
                     <div className="flex flex-col w-full">
                         <div>CONFIRM PASSWORD*</div>
-                        <input
-                            disabled={loading}
-                            type="password"
-                            {...register('password2', {
-                                required: 'Please confirm your password',
-                                validate: value => value === watch('password') || 'Passwords do not match'
-                            })}
-                            className={`w-full bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-md text-sm ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        />
-                    { errors.password2 && <div className="text-red-500 text-xs">*{errors.password2.message}</div> }
+                        <div className="relative">
+                            <input
+                                disabled={loading}
+                                type={showConfirmPassword ? "text" : "password"}
+                                {...register('password2', {
+                                    required: 'Please confirm your password',
+                                    validate: value => value === watch('password') || 'Passwords do not match'
+                                })}
+                                className={`w-full bg-white/10 backdrop-blur-md text-white px-4 py-2 pr-10 rounded-md text-sm ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200"
+                                disabled={loading}
+                            >
+                                {showConfirmPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                            </button>
+                        </div>
+                        { errors.password2 && <div className="text-red-500 text-xs">*{errors.password2.message}</div> }
                     </div>
                     {!loading && (
                         <div className="flex flex-col w-full recaptcha-container">
