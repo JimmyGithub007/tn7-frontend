@@ -31,7 +31,7 @@ const ResetPasswordPage = ({ searchParams }: { searchParams: { token: string } }
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const { isAuthenticated, loading: authLoading, redirectToDashboard } = useAuth({ type: "user" });
+    const { isAuthenticated, loading: authLoading, user } = useAuth({ type: "user" });
 
     const onSubmit = async (data: ResetPasswordForm) => {
         if (data.password !== data.confirmPassword) {
@@ -57,10 +57,10 @@ const ResetPasswordPage = ({ searchParams }: { searchParams: { token: string } }
     };
 
     useEffect(() => {
-        if (isAuthenticated) {
-            redirectToDashboard();
+        if (isAuthenticated && user.id) {
+            router.push(`/dashboard/${user.id}`);
         }
-    }, [isAuthenticated, redirectToDashboard]);
+    }, [isAuthenticated, user]);
 
     useEffect(() => {
         dispatch(setJumpPage(false));

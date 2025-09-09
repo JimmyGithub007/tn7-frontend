@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, use, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { opinionPro } from "./Font";
 import { IoIosArrowForward } from "react-icons/io";
@@ -378,7 +378,7 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
   const { openConnectModal } = useConnectModal();
   const { signMessageAsync } = useSignMessage();
   const [isLoading, setIsLoading] = useState(false);
-  const { isAuthenticated, user, walletLogin } = useAuth({ type: "user" });
+  const { isAuthenticated, user, walletLogin, logout } = useAuth({ type: "user" });
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -411,9 +411,17 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
 
       const response = await walletLogin(address, signature);
       if (!response?.completed) {
-        router.push(`/profile/setup`);
+        dispatch(setJumpPage(true));
+        const timeout = setTimeout(() => {
+          router.push(`/profile/setup`);
+        }, 200);
+        return () => clearTimeout(timeout);
       } else if(pathname === "/login" || pathname === "/register") {
-        router.push('/home');
+        dispatch(setJumpPage(true));
+        const timeout = setTimeout(() => {
+          router.push('/home');
+        }, 200);
+        return () => clearTimeout(timeout);
       }
     } catch (error) {
       console.error('Login failed', error);
@@ -423,7 +431,7 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    logout();
     disconnect();// 断开钱包连接
     dispatch(setJumpPage(true));
     const timeout = setTimeout(() => {
@@ -453,6 +461,10 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
       setIsOpenMenu(false);
     }
   }, [jumpPage]);
+
+  useEffect(() => {
+    console.log("isAuthenticated", isAuthenticated);
+  }, [isAuthenticated]);
 
   return (<>
     <Image alt="logo"
