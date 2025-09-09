@@ -24,13 +24,13 @@ const LoginPage = () => {
     
     const router = useRouter();
     const dispatch = useDispatch();
-    const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<LoginForm>();
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [sentEmail, setSentEmail] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const [loading, setLoading] = useState(false);
-    const { isAuthenticated, loading: authLoading, login, redirectToDashboard } = useAuth({ type: "user" });
+    const { isAuthenticated, loading: authLoading, login, user } = useAuth({ type: "user" });
 
     const onSubmit = async (data: LoginForm) => {
         if (sentEmail || loading) {
@@ -45,22 +45,27 @@ const LoginPage = () => {
                 enqueueSnackbar('Reset email sent', { variant: 'success' });
                 setSentEmail(true);
             } else {
-                await login(data.email, data.password);
+                const res = await login(data.email, data.password);
                 enqueueSnackbar('Login successful', { variant: 'success' });
-                redirectToDashboard();
+                router.push(`/dashboard/${res.id}`);
             }
         } catch (err: any) {
-            enqueueSnackbar(err.response.data.message, { variant: 'error' });
+            console.log("loginerr", err);
+            if (err.response.data.message) {
+                enqueueSnackbar(err.response.data.message, { variant: 'error' });
+            } else {
+                enqueueSnackbar('Login failed', { variant: 'error' });
+            }
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        if (isAuthenticated) {
-            redirectToDashboard();
+        if (isAuthenticated && user.id) {
+            router.push(`/dashboard/${user.id}`);
         }
-    }, [isAuthenticated, redirectToDashboard]);
+    }, [isAuthenticated, user]);
 
     useEffect(() => {
         dispatch(setJumpPage(false));
@@ -150,7 +155,10 @@ const LoginPage = () => {
                             <button
                                 type="button"
                                 className="text-[#45b5d9] hover:text-[#45b5d9]/80 duration-300 text-sm"
-                                onClick={() => setShowForgotPassword(true)}
+                                onClick={() => {
+                                    setShowForgotPassword(true);
+                                    reset();
+                                }}
                             >
                                 FORGOT PASSWORD?
                             </button>

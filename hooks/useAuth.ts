@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUser, setIsAuthenticated } from '@/store/slice/userSlice';
+import { RootState } from '@/store';
 import axios from 'axios';
 
 export const useAuth = ({ type = "user" }: { type?: "user" | "cms" }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-    const [user, setUser] = useState<any>(null);
+    const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const user = useSelector((state: RootState) => state.user.info);
+    const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
 
     useEffect(() => {
         const checkAuthStatus = async () => {
@@ -18,8 +22,8 @@ export const useAuth = ({ type = "user" }: { type?: "user" | "cms" }) => {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                     console.log("response", response.data);
-                    setUser(response.data);
-                    setIsAuthenticated(true);
+                    dispatch(setUser(response.data));
+                    dispatch(setIsAuthenticated(true));
                 } catch (err) {
                     console.log("checkautherr", err);
                     /*console.log("err", err);
@@ -33,8 +37,8 @@ export const useAuth = ({ type = "user" }: { type?: "user" | "cms" }) => {
                     setIsAuthenticated(false);*/
                 }
             } else {
-                setUser(null);
-                setIsAuthenticated(false);
+                dispatch(setUser(null));
+                dispatch(setIsAuthenticated(false));
             }
             setLoading(false);
         };
@@ -58,7 +62,7 @@ export const useAuth = ({ type = "user" }: { type?: "user" | "cms" }) => {
                 localStorage.setItem('token', res.data.access_token);
             }
             
-            setUser(res.data.user);
+            dispatch(setUser(res.data.user));
             setIsAuthenticated(true);
             return res.data.user;
         } catch (error) {
@@ -81,7 +85,7 @@ export const useAuth = ({ type = "user" }: { type?: "user" | "cms" }) => {
             const userResponse = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/me`, {
                 headers: { Authorization: `Bearer ${res.data.access_token}` }
             });
-            setUser(userResponse.data);
+            dispatch(setUser(userResponse.data));
             setIsAuthenticated(true);
             return userResponse.data;
         } catch (error) {
@@ -102,8 +106,8 @@ export const useAuth = ({ type = "user" }: { type?: "user" | "cms" }) => {
             const userResponse = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/me`, {
                 headers: { Authorization: `Bearer ${res.data.access_token}` }
             });
-            setUser(userResponse.data);
-            setIsAuthenticated(true);
+            dispatch(setUser(userResponse.data));
+            dispatch(setIsAuthenticated(true));
             return userResponse.data;
         } catch (error) {
             throw error;
@@ -116,14 +120,8 @@ export const useAuth = ({ type = "user" }: { type?: "user" | "cms" }) => {
         } else {
             localStorage.removeItem('token');
         }
-        setUser(null);
-        setIsAuthenticated(false);
-    };
-
-    const redirectToDashboard = () => {
-        if (user?.id) {
-            router.push(`/dashboard/${user.id}`);
-        }
+        dispatch(setUser(null));
+        dispatch(setIsAuthenticated(false));
     };
 
     return {
@@ -134,6 +132,5 @@ export const useAuth = ({ type = "user" }: { type?: "user" | "cms" }) => {
         register,
         walletLogin,
         logout,
-        redirectToDashboard
     };
 }; 

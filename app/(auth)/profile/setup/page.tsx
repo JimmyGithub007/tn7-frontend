@@ -33,7 +33,7 @@ const ProfileSetupPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { signMessageAsync } = useSignMessage();
     const { openConnectModal } = useConnectModal();
-    const { isAuthenticated, user, loading: authLoading, login, redirectToDashboard, walletLogin } = useAuth({ type: "user" });
+    const { isAuthenticated, user, loading: authLoading, login, walletLogin } = useAuth({ type: "user" });
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [mounted, setMounted] = useState(false);

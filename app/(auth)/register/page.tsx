@@ -25,7 +25,7 @@ const RegisterPage = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const { isAuthenticated, loading: authLoading, register: registerUser, redirectToDashboard } = useAuth({ type: "user" });
+    const { isAuthenticated, loading: authLoading, register: registerUser, user } = useAuth({ type: "user" });
     const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
     const recaptchaRef = useRef<ReCAPTCHA>(null);
     const dispatch = useDispatch();
@@ -52,9 +52,9 @@ const RegisterPage = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            redirectToDashboard();
+            router.push(`/dashboard/${user.id}`);
         }
-    }, [isAuthenticated, redirectToDashboard]);
+    }, [isAuthenticated, user]);
 
     useEffect(() => {
         dispatch(setJumpPage(false));

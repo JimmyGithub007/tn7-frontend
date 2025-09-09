@@ -336,7 +336,7 @@ const DashboardPage = () => {
                         />
                         <div className="flex flex-col items-center gap-4 text-white z-[50] absolute top-0 left-0 w-full h-full px-8" style={{ paddingTop: profileCardTop, paddingBottom: profileCardTop }}>
                             <div className="bg-black/80 backdrop-blur-md flex items-center justify-center rounded-2xl overflow-hidden relative shadow-md overflow-hidden"
-                                style={{ width: profileCardWidth, height: profileCardWidth }}
+                                style={{ width: profileCardWidth < 0 ? 302.6 : profileCardWidth, height: profileCardWidth < 0 ? 302.6 : profileCardWidth }}
                             >
                                 {user?.profile_picture ? <Image className="w-full h-full object-cover hover:scale-105 duration-300" alt=""
                                     height={2276} width={1258} src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${user.profile_picture}`}
