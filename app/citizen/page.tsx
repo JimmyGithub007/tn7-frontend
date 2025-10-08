@@ -48,24 +48,40 @@ type citizenProps = {
     updated_at: string;
 };
 
-const BGColors = [
+/*const BGColors = [
     { background: "BG-1", bg_color: "#3c487f", card_color: "#455495", text_color: "#ffffff" },
     { background: "BG-2", bg_color: "#1b4850", card_color: "#205e68", text_color: "#ffffff" },
     { background: "BG-3", bg_color: "#5c2a61", card_color: "#82398a", text_color: "#ffffff" },
     { background: "BG-4", bg_color: "#415432", card_color: "#4d653b", text_color: "#ffffff" },
     { background: "BG-5", bg_color: "#3b4244", card_color: "#4b5456", text_color: "#ffffff" },
     { background: "BG-6", bg_color: "#57471d", card_color: "#6b5825", text_color: "#ffffff" }
-];
+];*/
+
+const bgColors = [
+    { id: 2107, color: "#f4e8e2", card_color: "#f4e8e2" },
+    { id: 2112, color: "#bbbfb8", card_color: "#bbbfb8" },
+    { id: 2121, color: "#edf3f2", card_color: "#edf3f2" },
+    { id: 2108, color: "#f7eddc", card_color: "#f7eddc" },
+    { id: 2111, color: "#a4ccf6", card_color: "#a4ccf6" },
+    { id: 2120, color: "#1fd2c7", card_color: "#1fd2c7" },
+    { id: 2117, color: "#844f85", card_color: "#844f85" },
+    { id: 2109, color: "#526280", card_color: "#526280" },
+    { id: 2116, color: "#fd9da7", card_color: "#fd9da7" },
+    { id: 2110, color: "#91a3ac", card_color: "#91a3ac" },
+    { id: 2113, color: "#bddad2", card_color: "#bddad2" },
+]
 
 const filterReducer = (state: any, action: any) => {
     switch (action.type) {
         case "TOGGLE_FILTER":
             const { filterType, value } = action.payload;
-            const currentFilters = state[filterType];
+            const currentFilters = state[filterType] || [];
             const updatedFilters = currentFilters.includes(value)
                 ? currentFilters.filter((item: string) => item !== value)
                 : [...currentFilters, value];
             return { ...state, [filterType]: updatedFilters };
+        case "INIT_FILTERS":
+            return { ...state, ...action.payload };
         default:
             return state;
     }
@@ -75,13 +91,18 @@ const Collapse = ({ icon, text, children }: { icon: string, text: string; childr
     const [isOpen, setIsOpen] = useReducer((state: boolean) => !state, false);
 
     return (
-        <div className="border-b-[1px] border-gray-700">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="border-b-[1px] border-gray-700">
             <div
                 className="cursor-pointer flex justify-between items-center"
                 onClick={() => setIsOpen()}
             >
-                <div className="flex items-center gap-2 font-bold text-xs pb-2 text-gray-300">
-                    <Image className="w-8 bg-white shadow-sm rounded-lg p-1" alt="icon" width={512} height={512} src={icon} />
+                <div className="flex items-center gap-2 font-bold text-md pb-2 text-gray-300">
+                    {/*<Image className="w-8 bg-white shadow-sm rounded-lg p-1" alt="icon" width={512} height={512} src={icon} />*/}
                     {text}
                 </div>
                 <span className="font-bold text-gray-300">{isOpen ? "-" : "+"}</span>
@@ -99,7 +120,7 @@ const Collapse = ({ icon, text, children }: { icon: string, text: string; childr
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+        </motion.div>
     );
 };
 
@@ -111,20 +132,11 @@ const Citizen = () => {
     const [searchKeyword, setSearchKeyword] = useState<string>("");
     const [debouncedSearchKeyword, setDebouncedSearchKeyword] = useState<string>("");
     const [citizens, setCitizens] = useState<citizenProps[]>([]);
+    const [nfts, setNfts] = useState<any[]>([]);
+    const [components, setComponents] = useState<{ [key: string]: any[] }>({});
     const [likedCitizens, setLikedCitizens] = useState<Set<string>>(new Set());
 
-    const [filters, dispatchFilter] = useReducer(filterReducer, {
-        background: [],
-        body: [],
-        eyes: [],
-        tattoo: [],
-        clothes: [],
-        headgear: [],
-        facegear: [],
-        eyes_flare: [],
-        hair: [],
-        weapon: [],
-    });
+    const [filters, dispatchFilter] = useReducer(filterReducer, {});
 
     // Debounce search input
     useEffect(() => {
@@ -136,12 +148,13 @@ const Citizen = () => {
     }, [searchKeyword]);
 
     const handleFilterClick = (filterType: string, value: string) => {
+        console.log(filterType, value);
         dispatchFilter({ type: "TOGGLE_FILTER", payload: { filterType, value } });
     };
 
     const handleLikeToggle = async (citizenId: string, event: React.MouseEvent) => {
         event.stopPropagation(); // 防止触发父元素的点击事件
-        
+
         if (!isAuthenticated) {
             // 如果用户未登录，可以显示登录提示
             alert('Please login to like citizens');
@@ -161,11 +174,11 @@ const Citizen = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                
+
                 // 更新citizens数组中的likes_count
-                setCitizens(prevCitizens => 
-                    prevCitizens.map(citizen => 
-                        citizen.id === citizenId 
+                setCitizens(prevCitizens =>
+                    prevCitizens.map(citizen =>
+                        citizen.id === citizenId
                             ? { ...citizen, likes_count: data.likes_count }
                             : citizen
                     )
@@ -192,7 +205,7 @@ const Citizen = () => {
         }
     };
 
-    const filteredCitizens = citizens.filter((c) => {
+    const filteredNfts = nfts.filter((c) => {
         // First apply filter-based filtering
         const passesFilters = (Object.keys(filters) as (keyof citizenProps)[]).every((key) =>
             filters[key].length === 0 || filters[key].includes(c[key])
@@ -205,17 +218,19 @@ const Citizen = () => {
 
         const keyword = debouncedSearchKeyword.toLowerCase().trim();
         const searchableText = [
-            c.code.toString(),
-            c.background,
-            c.body,
-            c.eyes,
-            c.tattoo,
-            c.clothes,
-            c.headgear,
-            c.facegear,
-            c.eyes_flare,
-            c.hair,
-            c.weapon
+            c.id.toString(),
+            components["Background"].find(e => e.id === c.background)?.meta_type,
+            components["Type"].find(e => e.id === c.type)?.meta_type,
+            components["Outfit"].find(e => e.id === c.outfit)?.meta_type,
+            components["Eyes"].find(e => e.id === c.eyes)?.meta_type,
+            components["Mouth"].find(e => e.id === c.mouth)?.meta_type,
+            components["Hair"].find(e => e.id === c.hair)?.meta_type,
+            components["Tattoo"].find(e => e.id === c.tattoo)?.meta_type,
+            components["Object"].find(e => e.id === c.object)?.meta_type,
+            components["Special"].find(e => e.id === c.special)?.meta_type,
+            components["Pet"].find(e => e.id === c.pet)?.meta_type,
+            components["Element"].find(e => e.id === c.element)?.meta_type,
+            components["Glasses"].find(e => e.id === c.glasses)?.meta_type,
         ].filter(Boolean).join(" ").toLowerCase();
 
         // Support partial matching and multiple keywords
@@ -294,9 +309,9 @@ const Citizen = () => {
         };
     }, [isOpen])*/
 
-    
+
     useEffect(() => {
-        const fetchCitizens = async () => {
+        /*const fetchCitizens = async () => {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/citizen/list`, {
                 method: 'POST',
                 headers: {
@@ -318,8 +333,42 @@ const Citizen = () => {
                 setLikedCitizens(likedIds);
             }
         };
-        fetchCitizens();
+        fetchCitizens();*/
+        const fetchNfts = async () => {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/nfts`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            console.log(data);
+            setNfts(data);
+        };
+        fetchNfts();
+        const fetchComponents = async () => {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/components`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            setComponents(data);
+        };
+        fetchComponents();
     }, [user]);
+
+    // 初始化过滤器状态
+    useEffect(() => {
+        const initialFilters: { [key: string]: string[] } = {};
+        Object.keys(components).forEach(category => {
+            initialFilters[category] = [];
+        });
+        if (Object.keys(initialFilters).length > 0) {
+            dispatchFilter({ type: "INIT_FILTERS", payload: initialFilters });
+        }
+    }, [components]);
 
     useEffect(() => {
         dispatch(setJumpPage(false));
@@ -337,7 +386,38 @@ const Citizen = () => {
                 <div className="flex font-bold gap-4 text-xl text-gray-100">
                     FILTERS
                 </div>
-                <Collapse icon={`/assets/images/icons/background.png`} text="BACKGROUND">
+                {
+                    Object.entries(components).map(([category, items]) => (
+                        <Collapse
+                            key={category}
+                            icon={`/assets/images/icons/${category.toLowerCase()}.png`}
+                            text={category.toUpperCase() + " (" + items.length + ")"}
+                        >
+                            {items.map((item) => (
+                                <div
+                                    key={item.id}
+                                    className="flex items-center gap-2 cursor-pointer mb-2"
+                                    onClick={() => handleFilterClick(category.toLowerCase(), item.id)}
+                                >
+                                    <div
+                                        className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters[category.toLowerCase()]?.includes(item.id)
+                                                ? "bg-red-500"
+                                                : "bg-gray-600"
+                                            }`}
+                                    ></div>
+                                    <div className="flex justify-between w-full">
+                                        <div className="flex flex-col">
+                                            <div className="text-sm text-gray-300">{item.meta_type}</div>
+                                            <div className="text-xs text-gray-500">{item.rarity_percent || '0.00%'}</div>
+                                        </div>
+                                        <div className="text-sm text-gray-300">{item.rarity_count || 0}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </Collapse>
+                    ))
+                }
+                {/*<Collapse icon={`/assets/images/icons/background.png`} text="BACKGROUND">
                     {["BG-1", "BG-2", "BG-3", "BG-4", "BG-5", "BG-6"].map((bg) => (
                         <div
                             key={bg}
@@ -486,7 +566,7 @@ const Citizen = () => {
                             <span className="text-xs text-gray-300">{weapon}</span>
                         </div>
                     ))}
-                </Collapse>
+                </Collapse>*/}
             </div>
 
             {/* Main Content */}
@@ -529,11 +609,11 @@ const Citizen = () => {
                     </div>
                     {debouncedSearchKeyword && (
                         <div className="text-sm text-gray-400">
-                            Found {filteredCitizens.length} citizen{filteredCitizens.length !== 1 ? 's' : ''} for &quot;{debouncedSearchKeyword}&quot;
+                            Found {filteredNfts.length} citizen{filteredNfts.length !== 1 ? 's' : ''} for &quot;{debouncedSearchKeyword}&quot;
                         </div>
                     )}
                     <div className="gap-6 flex flex-wrap">
-                        {filteredCitizens.map((c, index) => (
+                        {filteredNfts.map((c, index) => (
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
@@ -548,17 +628,17 @@ const Citizen = () => {
                                                 <IoIosClose />
                                             </button>
                                             <Image
-                                                alt={c.code.toString()}
+                                                alt={c.id.toString()}
                                                 className="lg:w-[50%]"
                                                 width={1080}
                                                 height={1080}
-                                                src={`/assets/images/citizens/${c.code}.png`}
+                                                src={`/assets/images/nfts/nft_${String(c.id).padStart(4, '0')}.png`}
                                             />
                                             <div className={`flex flex-col gap-2 p-8 w-full text-white`} style={{
-                                                backgroundColor: BGColors.find(e => e.background === c.background)?.bg_color
+                                                backgroundColor: bgColors.find(e => e.id === c.background)?.color
                                             }}>
-                                                <div className="text-slate-300">TN7 NFTs Main Collection</div>
-                                                <div className={`font-bold text-3xl ${pixelify_sans.className}`}>No. {c.code}</div>
+                                                <div className="text-slate-300">TN7 NFTs Main Collection2</div>
+                                                <div className={`font-bold text-3xl ${pixelify_sans.className}`}>No. {c.id}</div>
                                                 <div className="flex gap-4 items-center">
                                                     {/*<Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/ranking.png`} />*/}
                                                     <div className="flex flex-col">
@@ -568,14 +648,13 @@ const Citizen = () => {
                                                     <div className="flex flex-col items-center">
                                                         <div className="text-slate-300 text-xs">LIKES</div>
                                                         <div className="flex items-center gap-2">
-                                                            <AnimatedCounter value={c.likes_count} color="white" fontSize="16px" includeCommas={true} includeDecimals={false} />
+                                                            {/*<AnimatedCounter value={c.likes_count} color="white" fontSize="16px" includeCommas={true} includeDecimals={false} />*/}
                                                             <button
                                                                 onClick={(e) => handleLikeToggle(c.id, e)}
-                                                                className={`duration-200 active:scale-[1.2] transition-colors ${
-                                                                    likedCitizens.has(c.id) 
-                                                                        ? 'text-red-500 hover:opacity-80' 
+                                                                className={`duration-200 active:scale-[1.2] transition-colors ${likedCitizens.has(c.id)
+                                                                        ? 'text-red-500 hover:opacity-80'
                                                                         : 'text-gray-400 hover:text-red-500 hover:scale-[0.9]'
-                                                                }`}
+                                                                    }`}
                                                             >
                                                                 <BiLike className={`text-2xl ${likedCitizens.has(c.id) ? 'fill-current' : ''}`} />
                                                             </button>
@@ -586,20 +665,28 @@ const Citizen = () => {
                                                     {
                                                         [
                                                             { name: "BACKGROUND", image: "background", type: "background" as keyof citizenProps },
-                                                            { name: "BODY", image: "upper-body", type: "body" as keyof citizenProps },
-                                                            { name: "EYES", image: "eye-makeup", type: "eyes" as keyof citizenProps },
+                                                            { name: "TYPE", image: "type", type: "type" as keyof citizenProps },
+                                                            { name: "OUTFIT", image: "outfit", type: "outfit" as keyof citizenProps },
+                                                            { name: "EYES", image: "eyes", type: "eyes" as keyof citizenProps },
+                                                            { name: "MOUTH", image: "mouth", type: "mouth" as keyof citizenProps },
+                                                            { name: "HAIR", image: "hair", type: "hair" as keyof citizenProps },
                                                             { name: "TATTOO", image: "tattoo", type: "tattoo" as keyof citizenProps },
-                                                            { name: "CLOTHES", image: "hood", type: "clothes" as keyof citizenProps },
-                                                            { name: "HEADGEAR", image: "helmet", type: "headgear" as keyof citizenProps }
+                                                            { name: "OBJECT", image: "object", type: "object" as keyof citizenProps },
+                                                            { name: "SPECIAL", image: "special", type: "special" as keyof citizenProps },
+                                                            { name: "PET", image: "pet", type: "pet" as keyof citizenProps },
+                                                            { name: "ELEMENT", image: "element", type: "element" as keyof citizenProps },
+                                                            { name: "GLASSES", image: "glasses", type: "glasses" as keyof citizenProps },
                                                         ].map((attr, index) => (
-                                                            c[attr.type] !== null ?
-                                                                <div key={index} className={`duration-300 flex gap-2 hover:scale-105 items-center p-4 rounded-md shadow-md`}
-                                                                    style={{ backgroundColor: BGColors.find(e => e.background === c.background)?.card_color }}
+                                                            c[attr.type] !== null && components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)] ?
+                                                                <div key={index} className={`duration-300 flex gap-2 hover:scale-105 items-center p-4 rounded-md shadow-md text-white`}
+                                                                    style={{
+                                                                        backgroundColor: bgColors.find(e => e.id === c.background)?.color
+                                                                    }}
                                                                 >
-                                                                    <Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/${attr.image}.png`} />
+                                                                    {/*<Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/${attr.image}.png`} />*/}
                                                                     <div className="flex flex-col text-xs ">
-                                                                        <span className="text-slate-300">{attr.name}</span>
-                                                                        <span className="font-bold">{c[attr.type] as string}</span>
+                                                                        <span className="text-slate-100">{attr.name}</span>
+                                                                        <span className="font-bold">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === c[attr.type])?.meta_type || "N/A"}</span>
                                                                     </div>
                                                                 </div> : null
                                                         ))
@@ -615,23 +702,22 @@ const Citizen = () => {
                                 }}
                             >
                                 <Image
-                                    alt={c.code.toString()}
+                                    alt={c.id.toString()}
                                     className="cursor-pointer duration-300 rounded-xl hover:scale-[1.05] sm:h-56 sm:w-56 shadow-lg shadow-black/50 hover:shadow-xl hover:shadow-red-500/20"
                                     width={1080}
                                     height={1080}
-                                    src={`/assets/images/citizens/${c.code}.png`}
+                                    src={`/assets/images/nfts/nft_${String(c.id).padStart(4, '0')}.png`}
                                 />
                                 <div className={`flex items-center justify-between ${pixelify_sans.className} text-gray-100`}>
-                                    <span className="font-bold">No. {c.code}</span>
+                                    <span className="font-bold">No. {c.id}</span>
                                     <div className="flex gap-2 items-center text-xs text-gray-300">
                                         <AnimatedCounter value={c.likes_count} color="white" fontSize="16px" includeCommas={true} includeDecimals={false} />
                                         <button
                                             onClick={(e) => handleLikeToggle(c.id, e)}
-                                            className={`transition-colors duration-200 active:scale-[1.2] ${
-                                                likedCitizens.has(c.id) 
-                                                    ? 'text-red-500 hover:opacity-80' 
+                                            className={`transition-colors duration-200 active:scale-[1.2] ${likedCitizens.has(c.id)
+                                                    ? 'text-red-500 hover:opacity-80'
                                                     : 'text-gray-400 hover:text-red-500 hover:scale-[0.9]'
-                                            }`}
+                                                }`}
                                         >
                                             <BiLike className={`text-xl ${likedCitizens.has(c.id) ? 'fill-current' : ''}`} />
                                         </button>
