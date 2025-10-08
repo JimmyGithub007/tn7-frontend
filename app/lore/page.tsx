@@ -13,6 +13,7 @@ import parse from "html-react-parser";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { setJumpPage } from "@/store/slice/pageSlice";
+import axios from "axios";
 
 const details = [
     {
@@ -175,7 +176,7 @@ const contents = [
     { id: "1", name: "DRAGON", img: "g1", category: "government" },
 ];
 
-const menus = [
+/*const menus = [
     { id: "characters", title: "CHARACTERS", url: "" },
     { id: "cities", title: "CITIES", url: "" },
     { id: "locations", title: "LOCATIONS", url: "" },
@@ -183,10 +184,11 @@ const menus = [
     { id: "currency", title: "CURRENCY", url: "" },
     { id: "badges", title: "BADGES", url: "" },
     { id: "government", title: "GOVERNMENT", url: "" },
-];
+];*/
 
-const Content = () => {
+const Content = ({ menus }: { menus: any[] }) => {
     const searchParams = useSearchParams()
+    const router = useRouter();
     
     const [category, setCategory] = useState<string>("cities");
     const [loreId, setLoreId] = useState<string>("0");
@@ -237,12 +239,24 @@ const Content = () => {
             <Image className="absolute scale-[1.25] z-10 h-[inherit]" alt="" width={1384} height={2448} src={`/assets/images/lore/SideBarFrame.png`} priority />
             <div className="filter-bar grid grid-rows-7 h-[inherit] overflow-y-auto">
                 {
-                    menus.map((menu, key) => (
-                        <Link
-                            href={{ pathname: '/lore', query: { category: menu.id, id: "0" } }}
-                            className={`cursor-pointer duration-300 flex items-center py-4 text-white z-10 ${menu.id === category ? "bg-gradient-to-r from-orange-500 to-yellow-500" : "hover:text-yellow-400"}`} key={key}>
+                    menus.filter(menu => menu.status !== "hidden").map((menu, key) => (
+                        <button
+                            disabled={menu.status === "inactive"}
+                            onClick={() => {
+                                if(menu.status !== "inactive") {
+                                    router.push(`/lore?category=${menu.category}&id=0`);
+                                }
+                            }}
+                            className={`duration-300 flex items-center py-4 z-10 
+                                    ${
+                                        menu.status === "inactive" ? "cursor-not-allowed text-gray-500" :
+                                        (menu.category === category ? "text-white bg-gradient-to-r from-orange-500 to-yellow-500" : "text-white hover:text-yellow-400")
+                                    }
+                                `}
+                                key={key}
+                            >
                             <span className="px-20 z-10">{menu.title}</span>
-                        </Link>
+                        </button>
                     ))
                 }
             </div>
@@ -250,12 +264,22 @@ const Content = () => {
         <div className="h-full w-full flex flex-col items-center justify-center mt-24 lg:mt-0">
             <div className="flex h-10 w-full overflow-x-auto lg:invisible">
                 {
-                    menus.map((menu, key) => (
-                        <Link
-                            href={{ pathname: '/lore', query: { category: menu.id, id: "0" } }}
-                            className={`cursor-pointer duration-300 flex items-center text-white z-10 ${menu.id === category ? "bg-gradient-to-r from-orange-500 to-yellow-500" : "hover:text-yellow-400"}`} key={key}>
+                    menus.filter(menu => menu.status !== "hidden").map((menu, key) => (
+                        <button
+                            disabled={menu.status === "inactive"}
+                            onClick={() => {
+                                if(menu.status !== "inactive") {
+                                    router.push(`/lore?category=${menu.category}&id=0`);
+                                }
+                            }}
+                            className={`duration-300 flex items-center z-10 
+                                ${
+                                    menu.status === "inactive" ? "cursor-not-allowed text-gray-500" :
+                                    (menu.category === category ? "text-white bg-gradient-to-r from-orange-500 to-yellow-500" : "text-white hover:text-yellow-400")
+                                }
+                            `} key={key}>
                             <span className="px-6 z-10">{menu.title}</span>
-                        </Link>
+                        </button>
                     ))
                 }
             </div>
@@ -318,7 +342,7 @@ const Content = () => {
                                     </div>
                                 </motion.div> :
                                 (
-                                    category === "locations" || category === "cities" ? 
+                                    menus.find(menu => menu.category === category)?.status === "active" ? 
                                         <div className={`absolute filter-bar gap-6 grid grid-cols-1 items-center
                                             ${category === "locations" ? "sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-4" : "md:grid-cols-2"} z-10 overflow-x-hidden overflow-y-auto`}
                                             style={{ 
@@ -369,8 +393,27 @@ const Content = () => {
 const Lore = () => {
     const dispatch = useDispatch();
     const jumpPage = useSelector((state: RootState) => state.page.jumpPage);
+    const [menus, setMenus] = useState<any[]>([]);
 
     useEffect(() => {
+        const fetchLores = async () => {
+            console.log("test");
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/lore/list`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                setMenus(response.data);
+            } catch (error) {
+                console.error('Error fetching lores:', error);
+            } finally {
+
+            }
+        };
+        
+        fetchLores();
         dispatch(setJumpPage(false));
     }, []);
 
@@ -391,7 +434,7 @@ const Lore = () => {
                 <span className="font-bold text-5xl text-white">0%</span>
             </div>
         }>
-            <Content />
+            <Content menus={menus} />
         </Suspense>
         <Footer />
     </div>)
