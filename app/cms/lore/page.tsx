@@ -84,12 +84,6 @@ const LoreManagementPage = () => {
                     onClick: (row) => handleEdit(row),
                     className: 'bg-[#45b5d9] hover:bg-[#45b5d9]/80 duration-300 rounded-xl text-white shadow-md',
                     icon: <BiEdit />
-                },
-                {
-                    label: 'Delete',
-                    onClick: (row) => handleDelete(row),
-                    className: 'bg-red-500 hover:bg-red-600 text-white',
-                    icon: <BiTrash />
                 }
             ]
         },
@@ -451,7 +445,7 @@ const LoreManagementPage = () => {
                 <button className={`bg-[#45b5d9] hover:bg-[#45b5d9]/80 duration-300 rounded-xl text-white px-4 py-2 text-sm shadow-lg flex items-center justify-center gap-2 z-10`}
                     onClick={() => handleCreateLoreItem()}
                 >
-                    <MdAdd /> Add New Lore
+                    <MdAdd /> Add New Lore Item
                 </button>
             )}
         </div>
@@ -508,6 +502,7 @@ const LoreManagementPage = () => {
                             >
                                 <MenuItem value={"active"}>Active</MenuItem>
                                 <MenuItem value={"inactive"}>Inactive</MenuItem>
+                                <MenuItem value={"hidden"}>Hidden</MenuItem>
                             </Select>
                         </FormControl>
                         <TextField

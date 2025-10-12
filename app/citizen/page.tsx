@@ -634,19 +634,19 @@ const Citizen = () => {
                                                 height={1080}
                                                 src={`/assets/images/nfts/nft_${String(c.id).padStart(4, '0')}.png`}
                                             />
-                                            <div className={`flex flex-col gap-2 p-8 w-full text-white`} style={{
+                                            <div className={`flex flex-col gap-2 p-8 w-full`} style={{
                                                 backgroundColor: bgColors.find(e => e.id === c.background)?.color
                                             }}>
-                                                <div className="text-slate-300">TN7 NFTs Main Collection2</div>
+                                                <div>TN7 NFTs Main Collection2</div>
                                                 <div className={`font-bold text-3xl ${pixelify_sans.className}`}>No. {c.id}</div>
                                                 <div className="flex gap-4 items-center">
                                                     {/*<Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/ranking.png`} />*/}
                                                     <div className="flex flex-col">
-                                                        <div className="text-slate-300 text-xs">RANK</div>
+                                                        <div className="text-xs">RANK</div>
                                                         <div className={`font-bold text-xl ${rubik_distressed.className}`}>1000</div>
                                                     </div>
                                                     <div className="flex flex-col items-center">
-                                                        <div className="text-slate-300 text-xs">LIKES</div>
+                                                        <div className="text-xs">LIKES</div>
                                                         <div className="flex items-center gap-2">
                                                             {/*<AnimatedCounter value={c.likes_count} color="white" fontSize="16px" includeCommas={true} includeDecimals={false} />*/}
                                                             <button
@@ -677,16 +677,23 @@ const Citizen = () => {
                                                             { name: "ELEMENT", image: "element", type: "element" as keyof citizenProps },
                                                             { name: "GLASSES", image: "glasses", type: "glasses" as keyof citizenProps },
                                                         ].map((attr, index) => (
-                                                            c[attr.type] !== null && components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)] ?
-                                                                <div key={index} className={`duration-300 flex gap-2 hover:scale-105 items-center p-4 rounded-md shadow-md text-white`}
+                                                            c[attr.type] !== null && components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === c[attr.type])?.meta_type ?
+                                                                <div key={index} className={`mix-blend-darken duration-300 flex gap-2 hover:scale-105 items-center p-4 rounded-md shadow-md`}
                                                                     style={{
                                                                         backgroundColor: bgColors.find(e => e.id === c.background)?.color
                                                                     }}
                                                                 >
                                                                     {/*<Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/${attr.image}.png`} />*/}
-                                                                    <div className="flex flex-col text-xs ">
-                                                                        <span className="text-slate-100">{attr.name}</span>
-                                                                        <span className="font-bold">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === c[attr.type])?.meta_type || "N/A"}</span>
+                                                                    <div className="flex flex-col w-full">
+                                                                        <span className="font-light text-xs">{attr.name}</span>
+                                                                        <span className="font-bold text-md">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === c[attr.type])?.meta_type || "N/A"}</span>
+                                                                        <div className="flex items-center justify-between mt-2 w-full">
+                                                                            <div className="bg-black/10 backdrop-blur-md rounded-md p-2 flex gap-2 shadow-md">
+                                                                                <span className="font-light text-xs">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === c[attr.type])?.rarity_percent || "0.00%"}</span>
+                                                                                <span className="font-light text-xs">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === c[attr.type])?.rarity_count || 0}</span>
+                                                                            </div>
+                                                                            <span className="font-light text-xs">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === c[attr.type])?.rarity_count_full || 0}</span>
+                                                                        </div>
                                                                     </div>
                                                                 </div> : null
                                                         ))
