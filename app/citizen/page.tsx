@@ -58,17 +58,17 @@ type citizenProps = {
 ];*/
 
 const bgColors = [
-    { id: 2107, color: "#f4e8e2", card_color: "#f4e8e2" },
-    { id: 2112, color: "#bbbfb8", card_color: "#bbbfb8" },
-    { id: 2121, color: "#edf3f2", card_color: "#edf3f2" },
-    { id: 2108, color: "#f7eddc", card_color: "#f7eddc" },
-    { id: 2111, color: "#a4ccf6", card_color: "#a4ccf6" },
-    { id: 2120, color: "#1fd2c7", card_color: "#1fd2c7" },
-    { id: 2117, color: "#844f85", card_color: "#844f85" },
-    { id: 2109, color: "#526280", card_color: "#526280" },
-    { id: 2116, color: "#fd9da7", card_color: "#fd9da7" },
-    { id: 2110, color: "#91a3ac", card_color: "#91a3ac" },
-    { id: 2113, color: "#bddad2", card_color: "#bddad2" },
+    { id: 2107, color: "#f4e8e2", card_color: "#f4e8e2", text_color: "#000000" },
+    { id: 2112, color: "#bbbfb8", card_color: "#bbbfb8", text_color: "#000000" },
+    { id: 2121, color: "#edf3f2", card_color: "#edf3f2", text_color: "#000000" },
+    { id: 2108, color: "#f7eddc", card_color: "#f7eddc", text_color: "#000000" },
+    { id: 2111, color: "#a4ccf6", card_color: "#a4ccf6", text_color: "#000000" },
+    { id: 2120, color: "#1fd2c7", card_color: "#1fd2c7", text_color: "#000000" },
+    { id: 2117, color: "#844f85", card_color: "#844f85", text_color: "#ffffff" },
+    { id: 2109, color: "#526280", card_color: "#526280", text_color: "#ffffff" },
+    { id: 2116, color: "#fd9da7", card_color: "#fd9da7", text_color: "#000000" },
+    { id: 2110, color: "#91a3ac", card_color: "#91a3ac", text_color: "#000000" },
+    { id: 2113, color: "#bddad2", card_color: "#bddad2", text_color: "#000000" },
 ]
 
 const filterReducer = (state: any, action: any) => {
@@ -152,7 +152,8 @@ const Citizen = () => {
         dispatchFilter({ type: "TOGGLE_FILTER", payload: { filterType, value } });
     };
 
-    const handleLikeToggle = async (citizenId: string, event: React.MouseEvent) => {
+    const handleLikeToggle = async (nftId: string, event: React.MouseEvent) => {
+        console.log(nftId);
         event.stopPropagation(); // 防止触发父元素的点击事件
 
         if (!isAuthenticated) {
@@ -164,7 +165,7 @@ const Citizen = () => {
         const token = localStorage.getItem('token');
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/citizen/${citizenId}/toggle-like`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/nfts/${nftId}/toggle-like`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -176,11 +177,11 @@ const Citizen = () => {
                 const data = await response.json();
 
                 // 更新citizens数组中的likes_count
-                setCitizens(prevCitizens =>
-                    prevCitizens.map(citizen =>
-                        citizen.id === citizenId
-                            ? { ...citizen, likes_count: data.likes_count }
-                            : citizen
+                setNfts(prevNfts =>
+                    prevNfts.map(nft =>
+                        nft.id === nftId
+                            ? { ...nft, likes_count: data.likes_count }
+                            : nft
                     )
                 );
 
@@ -188,9 +189,9 @@ const Citizen = () => {
                 setLikedCitizens(prev => {
                     const newSet = new Set(prev);
                     if (data.is_liked) {
-                        newSet.add(citizenId);
+                        newSet.add(nftId);
                     } else {
-                        newSet.delete(citizenId);
+                        newSet.delete(nftId);
                     }
                     return newSet;
                 });
@@ -628,17 +629,18 @@ const Citizen = () => {
                                                 <IoIosClose />
                                             </button>
                                             <Image
-                                                alt={c.id.toString()}
+                                                alt={c.code.padStart(4, '0')}
                                                 className="lg:w-[50%]"
                                                 width={1080}
                                                 height={1080}
-                                                src={`/assets/images/nfts/nft_${String(c.id).padStart(4, '0')}.png`}
+                                                src={`/assets/images/nfts/nft_${c.code.padStart(4, '0')}.png`}
                                             />
                                             <div className={`flex flex-col gap-2 p-8 w-full`} style={{
-                                                backgroundColor: bgColors.find(e => e.id === c.background)?.color
+                                                backgroundColor: bgColors.find(e => e.id === c.background)?.color,
+                                                color: bgColors.find(e => e.id === c.background)?.text_color
                                             }}>
                                                 <div>TN7 NFTs Main Collection2</div>
-                                                <div className={`font-bold text-3xl ${pixelify_sans.className}`}>No. {c.id}</div>
+                                                <div className={`font-bold text-3xl ${pixelify_sans.className}`}>No. ${c.code.padStart(4, '0')}</div>
                                                 <div className="flex gap-4 items-center">
                                                     {/*<Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/ranking.png`} />*/}
                                                     <div className="flex flex-col">
@@ -678,9 +680,9 @@ const Citizen = () => {
                                                             { name: "GLASSES", image: "glasses", type: "glasses" as keyof citizenProps },
                                                         ].map((attr, index) => (
                                                             c[attr.type] !== null && components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === c[attr.type])?.meta_type ?
-                                                                <div key={index} className={`mix-blend-darken duration-300 flex gap-2 hover:scale-105 items-center p-4 rounded-md shadow-md`}
+                                                                <div key={index} className={`bg-black/5 backdrop-blur-lg duration-300 flex gap-2 hover:scale-105 items-center p-4 rounded-md shadow-md`}
                                                                     style={{
-                                                                        backgroundColor: bgColors.find(e => e.id === c.background)?.color
+                                                                        color: bgColors.find(e => e.id === c.background)?.text_color
                                                                     }}
                                                                 >
                                                                     {/*<Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/${attr.image}.png`} />*/}
@@ -713,10 +715,10 @@ const Citizen = () => {
                                     className="cursor-pointer duration-300 rounded-xl hover:scale-[1.05] sm:h-56 sm:w-56 shadow-lg shadow-black/50 hover:shadow-xl hover:shadow-red-500/20"
                                     width={1080}
                                     height={1080}
-                                    src={`/assets/images/nfts/nft_${String(c.id).padStart(4, '0')}.png`}
+                                    src={`/assets/images/nfts/nft_${c.code.padStart(4, '0')}.png`}
                                 />
                                 <div className={`flex items-center justify-between ${pixelify_sans.className} text-gray-100`}>
-                                    <span className="font-bold">No. {c.id}</span>
+                                    <span className="font-bold">No. {c.code.padStart(4, '0')}</span>
                                     <div className="flex gap-2 items-center text-xs text-gray-300">
                                         <AnimatedCounter value={c.likes_count} color="white" fontSize="16px" includeCommas={true} includeDecimals={false} />
                                         <button
