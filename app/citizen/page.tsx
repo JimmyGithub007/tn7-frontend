@@ -219,7 +219,7 @@ const Citizen = () => {
 
         const keyword = debouncedSearchKeyword.toLowerCase().trim();
         const searchableText = [
-            c.id.toString(),
+            c.code.padStart(4, '0'),
             components["Background"].find(e => e.id === c.background)?.meta_type,
             components["Type"].find(e => e.id === c.type)?.meta_type,
             components["Outfit"].find(e => e.id === c.outfit)?.meta_type,
