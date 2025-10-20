@@ -135,6 +135,8 @@ const Citizen = () => {
     const [nfts, setNfts] = useState<any[]>([]);
     const [components, setComponents] = useState<{ [key: string]: any[] }>({});
     const [likedCitizens, setLikedCitizens] = useState<Set<string>>(new Set());
+    const [selectedCitizen, setSelectedCitizen] = useState<any>(null);
+    const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
 
     const [filters, dispatchFilter] = useReducer(filterReducer, {});
 
@@ -402,8 +404,8 @@ const Citizen = () => {
                                 >
                                     <div
                                         className={`duration-200 rounded-sm h-4 shadow-sm w-4 ${filters[category.toLowerCase()]?.includes(item.id)
-                                                ? "bg-red-500"
-                                                : "bg-gray-600"
+                                            ? "bg-red-500"
+                                            : "bg-gray-600"
                                             }`}
                                     ></div>
                                     <div className="flex justify-between w-full">
@@ -622,93 +624,7 @@ const Citizen = () => {
                                 viewport={{ once: true }}
                                 className="flex flex-col gap-2"
                                 key={index}
-                                onClick={() => {
-                                    dispatch(setContent(
-                                        <div className="flex flex-col lg:flex-row max-h-[calc(100vh-20px)] max-w-[500px] lg:max-w-[1024px] xl:max-w-[1280px] overflow-y-auto relative">
-                                            <button onClick={() => dispatch(setIsOpen(false))} className="absolute duration-200 p-2 right-4 rounded-full hover:bg-gray-700 hover:shadow-sm top-4 text-4xl text-gray-300 hover:text-white">
-                                                <IoIosClose />
-                                            </button>
-                                            <Image
-                                                alt={c.code.padStart(4, '0')}
-                                                className="lg:w-[50%]"
-                                                width={1080}
-                                                height={1080}
-                                                src={`/assets/images/nfts/nft_${c.code.padStart(4, '0')}.png`}
-                                            />
-                                            <div className={`flex flex-col gap-2 p-8 w-full`} style={{
-                                                backgroundColor: bgColors.find(e => e.id === c.background)?.color,
-                                                color: bgColors.find(e => e.id === c.background)?.text_color
-                                            }}>
-                                                <div>TN7 NFTs Main Collection2</div>
-                                                <div className={`font-bold text-3xl`}>No. {c.code.padStart(4, '0')}</div>
-                                                <div className="flex gap-4 items-center">
-                                                    {/*<Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/ranking.png`} />*/}
-                                                    <div className="flex flex-col">
-                                                        <div className="text-xs">RANK</div>
-                                                        <div className={`font-bold text-xl`}>1000</div>
-                                                    </div>
-                                                    <div className="flex flex-col items-center">
-                                                        <div className="text-xs">LIKES</div>
-                                                        <div className="flex items-center gap-2">
-                                                            {/*<AnimatedCounter value={c.likes_count} color="white" fontSize="16px" includeCommas={true} includeDecimals={false} />*/}
-                                                            <button
-                                                                onClick={(e) => handleLikeToggle(c.id, e)}
-                                                                className={`duration-200 active:scale-[1.2] transition-colors ${likedCitizens.has(c.id)
-                                                                        ? 'text-red-500 hover:opacity-80'
-                                                                        : 'text-gray-400 hover:text-red-500 hover:scale-[0.9]'
-                                                                    }`}
-                                                            >
-                                                                <BiLike className={`text-2xl ${likedCitizens.has(c.id) ? 'fill-current' : ''}`} />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div id="attributes" className="gap-4 grid grid-cols-1 lg:grid-cols-2">
-                                                    {
-                                                        [
-                                                            { name: "BACKGROUND", image: "background", type: "background" as keyof citizenProps },
-                                                            { name: "TYPE", image: "type", type: "type" as keyof citizenProps },
-                                                            { name: "OUTFIT", image: "outfit", type: "outfit" as keyof citizenProps },
-                                                            { name: "EYES", image: "eyes", type: "eyes" as keyof citizenProps },
-                                                            { name: "MOUTH", image: "mouth", type: "mouth" as keyof citizenProps },
-                                                            { name: "HAIR", image: "hair", type: "hair" as keyof citizenProps },
-                                                            { name: "TATTOO", image: "tattoo", type: "tattoo" as keyof citizenProps },
-                                                            { name: "OBJECT", image: "object", type: "object" as keyof citizenProps },
-                                                            { name: "SPECIAL", image: "special", type: "special" as keyof citizenProps },
-                                                            { name: "PET", image: "pet", type: "pet" as keyof citizenProps },
-                                                            { name: "ELEMENT", image: "element", type: "element" as keyof citizenProps },
-                                                            { name: "GLASSES", image: "glasses", type: "glasses" as keyof citizenProps },
-                                                        ].map((attr, index) => (
-                                                            c[attr.type] !== null && components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === c[attr.type])?.meta_type ?
-                                                                <div key={index} className={`bg-black/5 backdrop-blur-lg duration-300 flex gap-2 hover:scale-105 items-center p-4 rounded-md shadow-md`}
-                                                                    style={{
-                                                                        color: bgColors.find(e => e.id === c.background)?.text_color
-                                                                    }}
-                                                                >
-                                                                    {/*<Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/${attr.image}.png`} />*/}
-                                                                    <div className="flex flex-col w-full">
-                                                                        <span className="font-light text-xs">{attr.name}</span>
-                                                                        <span className="font-bold text-md">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === c[attr.type])?.meta_type || "N/A"}</span>
-                                                                        <div className="flex items-center justify-between mt-2 w-full">
-                                                                            <div className="bg-black/10 backdrop-blur-md rounded-md p-2 flex gap-2 shadow-md">
-                                                                                <span className="font-light text-xs">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === c[attr.type])?.rarity_percent || "0.00%"}</span>
-                                                                                <span className="font-light text-xs">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === c[attr.type])?.rarity_count || 0}</span>
-                                                                            </div>
-                                                                            <span className="font-light text-xs">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === c[attr.type])?.rarity_count_full || 0}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div> : null
-                                                        ))
-                                                    }
-                                                </div>
-                                                <div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ));
-                                    dispatch(setIsOpen(true));
-                                }}
+                                onClick={() => { setSelectedCitizen(c); setIsOpenModal(true); }}
                             >
                                 <Image
                                     alt={c.id.toString()}
@@ -724,8 +640,8 @@ const Citizen = () => {
                                         <button
                                             onClick={(e) => handleLikeToggle(c.id, e)}
                                             className={`transition-colors duration-200 active:scale-[1.2] ${likedCitizens.has(c.id)
-                                                    ? 'text-red-500 hover:opacity-80'
-                                                    : 'text-gray-400 hover:text-red-500 hover:scale-[0.9]'
+                                                ? 'text-red-500 hover:opacity-80'
+                                                : 'text-gray-400 hover:text-red-500 hover:scale-[0.9]'
                                                 }`}
                                         >
                                             <BiLike className={`text-xl ${likedCitizens.has(c.id) ? 'fill-current' : ''}`} />
@@ -737,7 +653,95 @@ const Citizen = () => {
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
+        <AnimatePresence>
+            {
+                isOpenModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="bg-black/50 fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+                        <motion.div
+                            initial={{ opacity: 0, y: 100 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 100 }}
+                            transition={{ duration: 0.3 }}
+                            className="flex flex-col lg:flex-row max-h-[calc(100vh-20px)] max-w-[500px] lg:max-w-[1024px] xl:max-w-[1280px] overflow-y-auto relative rounded-2xl overflow-hidden">
+                            <button onClick={() => setIsOpenModal(false)} className="absolute duration-200 p-2 right-4 rounded-full hover:bg-gray-700 hover:shadow-sm top-4 text-4xl text-gray-300 hover:text-white">
+                                <IoIosClose />
+                            </button>
+                            <Image
+                                alt={selectedCitizen.code.padStart(4, '0')}
+                                className="lg:w-[50%]"
+                                width={1080}
+                                height={1080}
+                                src={`/assets/images/nfts/nft_${selectedCitizen.code.padStart(4, '0')}.png`}
+                            />
+                            <div className={`flex flex-col gap-2 p-8 w-full`} style={{
+                                backgroundColor: bgColors.find(e => e.id === selectedCitizen.background)?.color,
+                                color: bgColors.find(e => e.id === selectedCitizen.background)?.text_color
+                            }}>
+                                <div>TN7 NFTs Main Collection2</div>
+                                <div className={`font-bold text-3xl`}>No. {selectedCitizen.code.padStart(4, '0')}</div>
+                                <div className="flex gap-4 items-center">
+                                    <div className="text-xs text-left">RANK <br /> N/A</div>
+                                    <div className="text-xs text-left">LIKES <br /> {filteredNfts.find(e => e.id === selectedCitizen.id)?.likes_count || 0}</div>
+                                    <button
+                                        onClick={(e) => handleLikeToggle(selectedCitizen.id, e)}
+                                        className={`duration-200 active:scale-[1.2] transition-colors ${likedCitizens.has(selectedCitizen.id)
+                                            ? 'text-red-500 hover:opacity-80'
+                                            : `bg-${bgColors.find(e => e.id === selectedCitizen.background)?.text_color} hover:text-red-500 hover:scale-[0.9]`
+                                            }`}
+                                    >
+                                        <BiLike className={`text-2xl ${likedCitizens.has(selectedCitizen.id) ? 'fill-current' : ''}`} />
+                                    </button>
+                                </div>
+                                <div id="attributes" className="gap-4 grid grid-cols-1 lg:grid-cols-2">
+                                    {
+                                        [
+                                            { name: "BACKGROUND", image: "background", type: "background" as keyof citizenProps },
+                                            { name: "TYPE", image: "type", type: "type" as keyof citizenProps },
+                                            { name: "OUTFIT", image: "outfit", type: "outfit" as keyof citizenProps },
+                                            { name: "EYES", image: "eyes", type: "eyes" as keyof citizenProps },
+                                            { name: "MOUTH", image: "mouth", type: "mouth" as keyof citizenProps },
+                                            { name: "HAIR", image: "hair", type: "hair" as keyof citizenProps },
+                                            { name: "TATTOO", image: "tattoo", type: "tattoo" as keyof citizenProps },
+                                            { name: "OBJECT", image: "object", type: "object" as keyof citizenProps },
+                                            { name: "SPECIAL", image: "special", type: "special" as keyof citizenProps },
+                                            { name: "PET", image: "pet", type: "pet" as keyof citizenProps },
+                                            { name: "ELEMENT", image: "element", type: "element" as keyof citizenProps },
+                                            { name: "GLASSES", image: "glasses", type: "glasses" as keyof citizenProps },
+                                        ].map((attr, index) => (
+                                            selectedCitizen[attr.type] !== null && components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === selectedCitizen[attr.type])?.meta_type ?
+                                                <div key={index} className={`bg-black/5 backdrop-blur-lg duration-300 flex gap-2 hover:scale-105 items-center p-4 rounded-md shadow-md`}
+                                                    style={{
+                                                        color: bgColors.find(e => e.id === selectedCitizen.background)?.text_color
+                                                    }}
+                                                >
+                                                    {/*<Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/${attr.image}.png`} />*/}
+                                                    <div className="flex flex-col w-full">
+                                                        <span className="font-light text-xs">{attr.name}</span>
+                                                        <span className="font-bold text-md">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === selectedCitizen[attr.type])?.meta_type || "N/A"}</span>
+                                                        <div className="flex items-center justify-between mt-2 w-full">
+                                                            <div className="bg-black/10 backdrop-blur-md rounded-md p-2 flex gap-2 shadow-md">
+                                                                <span className="font-light text-xs">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === selectedCitizen[attr.type])?.rarity_percent || "0.00%"}</span>
+                                                                <span className="font-light text-xs">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === selectedCitizen[attr.type])?.rarity_count || 0}</span>
+                                                            </div>
+                                                            <span className="font-light text-xs">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === selectedCitizen[attr.type])?.rarity_count_full || 0}</span>
+                                                        </div>
+                                                    </div>
+                                                </div> : null
+                                        ))
+                                    }
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )
+            }
+        </AnimatePresence>
     </div>);
 };
 
