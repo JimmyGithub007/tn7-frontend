@@ -8,6 +8,7 @@ import Footer from "./Footer";
 import MouseFollower from "./MouseFollower";
 import GlitchText from "./GlitchText";
 import EntryDialog from "./(entry)/EntryDialog";
+import BlurLoadingFrame from "./BlurLoadingFrame";
 
 export {
     WebGL,
@@ -20,4 +21,5 @@ export {
     MouseFollower,
     GlitchText,
     EntryDialog,
+    BlurLoadingFrame,
 }

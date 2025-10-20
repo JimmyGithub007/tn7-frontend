@@ -50,7 +50,7 @@ const Universe = () => {
     return (
         <div className="fixed flex justify-center h-screen items-center w-full">
             <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/universe/webp/Background.webp`} priority />
-            <Loader />
+            <Loader src={`/assets/images/universe/webp/universe_blur.webp`} alt="loading" />
             <Swiper
                 loop={false}
                 freeMode={true}
