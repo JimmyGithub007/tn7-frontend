@@ -640,12 +640,12 @@ const Citizen = () => {
                                                 color: bgColors.find(e => e.id === c.background)?.text_color
                                             }}>
                                                 <div>TN7 NFTs Main Collection2</div>
-                                                <div className={`font-bold text-3xl ${pixelify_sans.className}`}>No. ${c.code.padStart(4, '0')}</div>
+                                                <div className={`font-bold text-3xl`}>No. {c.code.padStart(4, '0')}</div>
                                                 <div className="flex gap-4 items-center">
                                                     {/*<Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/ranking.png`} />*/}
                                                     <div className="flex flex-col">
                                                         <div className="text-xs">RANK</div>
-                                                        <div className={`font-bold text-xl ${rubik_distressed.className}`}>1000</div>
+                                                        <div className={`font-bold text-xl`}>1000</div>
                                                     </div>
                                                     <div className="flex flex-col items-center">
                                                         <div className="text-xs">LIKES</div>
@@ -717,7 +717,7 @@ const Citizen = () => {
                                     height={1080}
                                     src={`/assets/images/nfts/nft_${c.code.padStart(4, '0')}.png`}
                                 />
-                                <div className={`flex items-center justify-between ${pixelify_sans.className} text-gray-100`}>
+                                <div className={`flex items-center justify-between text-gray-100`}>
                                     <span className="font-bold">No. {c.code.padStart(4, '0')}</span>
                                     <div className="flex gap-2 items-center text-xs text-gray-300">
                                         <AnimatedCounter value={c.likes_count} color="white" fontSize="16px" includeCommas={true} includeDecimals={false} />

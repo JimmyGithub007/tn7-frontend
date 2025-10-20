@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 //import { Lilita_One } from "next/font/google";
-import { Footer, GlitchText, Header } from "@/components";
+import { BlurLoadingFrame, Footer, GlitchText, Header } from "@/components";
 import { CgClose } from "react-icons/cg";
 import { IoIosArrowRoundForward } from "react-icons/io";
 import { TbPlayerTrackNextFilled } from "react-icons/tb";
@@ -281,18 +281,7 @@ const WorldMap = () => {
                 message={message}
             />}
             <AnimatePresence>{/*Loading Percentage For Unity*/}
-                {   !loaderHidden && (
-                    <motion.div
-                        id="loader"
-                        className="absolute bg-black flex h-full items-center justify-center left-0 w-full top-0 z-[300]"
-                        initial={{ y: 0 }}
-                        animate={{ y: 0 }}
-                        exit={{ y: "100%" }}
-                        transition={{ duration: 1, ease: "easeInOut" }}
-                    >
-                        <GlitchText text={`${loadingPercentage}%`} />
-                    </motion.div>
-                )}
+                {   !loaderHidden && <BlurLoadingFrame src={`/assets/images/worldmap/webp/worldmap_blur.webp`} alt="loading" /> }
             </AnimatePresence>
             <AnimatePresence>
                 {   jumpPage && (

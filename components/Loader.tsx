@@ -3,13 +3,17 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import GlitchText from "./GlitchText";
+import { BlurLoadingFrame } from ".";
 
 interface LoaderProps {
     setIsLoadedParent?: (value: boolean) => void;
+    src?: string;
+    alt?: string;
 }
 
-const Loader = ({ setIsLoadedParent }: LoaderProps) => {
+const Loader = ({ setIsLoadedParent, src, alt = "loading" }: LoaderProps) => {
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [loadingPercentage, setLoadingPercentage] = useState(0);
 
     useEffect(() => {
@@ -32,16 +36,18 @@ const Loader = ({ setIsLoadedParent }: LoaderProps) => {
 
     return (<AnimatePresence>
         {!isLoaded && (
-            <motion.div
-                id="loader"
-                className="absolute flex h-full items-center justify-center left-0 w-full top-0 bg-black z-[300]"
-                initial={{ y: 0 }}
-                animate={{ y: 0 }}
-                exit={{ y: "-100%" }}
-                transition={{ duration: 1, ease: "easeInOut" }}
-            >
-                <GlitchText text={`${loadingPercentage}%`} />
-            </motion.div>
+            src ? <BlurLoadingFrame src={src} alt={alt} /> : (
+                <motion.div
+                    id="loader"
+                    className="absolute flex h-full items-center justify-center left-0 w-full top-0 bg-black z-[300]"
+                    initial={{ y: 0 }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "-100%" }}
+                    transition={{ duration: 1, ease: "easeInOut" }}
+                >
+                    <GlitchText text={`${loadingPercentage}%`} />
+                </motion.div>
+            )
         )}
     </AnimatePresence>)
 }
