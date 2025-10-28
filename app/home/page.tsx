@@ -305,7 +305,7 @@ const Home = () => {
             />
             }
             <AnimatePresence>
-                {!loaderHidden && <BlurLoadingFrame src={`/assets/images/home/tvBG_blur.webp`} alt="loading" /> }
+                {!loaderHidden && <BlurLoadingFrame src={`/assets/images/home/webp/tvBG_blur.webp`} alt="loading" /> }
             </AnimatePresence>
             <AnimatePresence>
                 {   jumpPage && (

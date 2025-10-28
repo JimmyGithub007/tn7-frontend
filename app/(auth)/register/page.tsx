@@ -67,8 +67,8 @@ const RegisterPage = () => {
     }
 
     return (<div className="fixed h-screen w-full overflow-hidden flex justify-center items-center">
-        <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/entry/entryBG.png`} priority />
-        <Loader />
+        <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/login/webp/loginBG.webp`} priority />
+        <Loader src={`/assets/images/login/webp/loginBG_blur.webp`} alt="loading" />
         <div className="relative w-full sm:max-w-[300px] md:max-w-[400px] flex flex-col items-center justify-center">
             <Image alt=""
                 height={198} width={1425} src={`/assets/images/entry/entryContentTopCardFrame.png`}
@@ -167,7 +167,7 @@ const RegisterPage = () => {
                             dispatch(setJumpPage(true));
                             const timeout = setTimeout(() => {
                                 router.push(`/login`);
-                            }, 200);
+                            }, 500);
                             return () => clearTimeout(timeout);
                         }}>
                             LOGIN
