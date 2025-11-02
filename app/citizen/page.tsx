@@ -7,7 +7,7 @@ import { BsArrowLeft } from "react-icons/bs";
 import { MdClose } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { setContent, setIsOpen } from "@/store/slice/dialogSlice";
-import { IoIosClose } from "react-icons/io";
+import { IoIosArrowBack, IoIosClose } from "react-icons/io";
 import { Pixelify_Sans, Rubik_Distressed } from "next/font/google";
 import { RootState } from "@/store";
 import Lenis from '@studio-freight/lenis';
@@ -669,9 +669,6 @@ const Citizen = () => {
                             exit={{ opacity: 0, y: 100 }}
                             transition={{ duration: 0.3 }}
                             className="flex flex-col lg:flex-row max-h-[calc(100vh-20px)] max-w-[500px] lg:max-w-[1024px] xl:max-w-[1280px] overflow-y-auto relative rounded-2xl overflow-hidden">
-                            <button onClick={() => setIsOpenModal(false)} className="absolute duration-200 p-2 right-4 rounded-full hover:bg-gray-700 hover:shadow-sm top-4 text-4xl text-gray-300 hover:text-white">
-                                <IoIosClose />
-                            </button>
                             <Image
                                 alt={selectedCitizen.code.padStart(4, '0')}
                                 className="lg:w-[50%]"
@@ -679,6 +676,14 @@ const Citizen = () => {
                                 height={1080}
                                 src={`/assets/images/nfts/nft_${selectedCitizen.code.padStart(4, '0')}.png`}
                             />
+                            <button onClick={() => setIsOpenModal(false)} 
+                                className="absolute duration-200 flex items-center left-4 bottom-4 text-2xl hover:opacity-50"
+                                style={{
+                                    color: bgColors.find(e => e.id === selectedCitizen.background)?.text_color
+                                }}    
+                            >
+                                <IoIosArrowBack /> BACK
+                            </button>
                             <div className={`flex flex-col gap-2 p-8 w-full`} style={{
                                 backgroundColor: bgColors.find(e => e.id === selectedCitizen.background)?.color,
                                 color: bgColors.find(e => e.id === selectedCitizen.background)?.text_color
@@ -723,7 +728,7 @@ const Citizen = () => {
                                                     {/*<Image className="w-6 h-6" alt="" width={512} height={512} src={`/assets/images/icons/${attr.image}.png`} />*/}
                                                     <div className="flex flex-col w-full">
                                                         <span className="font-light text-xs">{attr.name}</span>
-                                                        <span className="font-bold text-md">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === selectedCitizen[attr.type])?.meta_type || "N/A"}</span>
+                                                        <span className="font-bold text-sm">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === selectedCitizen[attr.type])?.meta_type || "N/A"}</span>
                                                         <div className="flex items-center justify-between mt-2 w-full">
                                                             <div className="bg-black/10 backdrop-blur-md rounded-md p-2 flex gap-2 shadow-md">
                                                                 <span className="font-light text-xs">{components[attr.type.charAt(0).toUpperCase() + attr.type.slice(1)].find(e => e.id === selectedCitizen[attr.type])?.rarity_percent || "0.00%"}</span>

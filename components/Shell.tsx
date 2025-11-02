@@ -96,7 +96,8 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
                         <motion.div
                             className="absolute bg-black h-full left-0 w-full top-0 z-[300]"
                             initial={{ y: "-100%" }}
-                            animate={{ y: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ opacity: 0 }}
                             transition={{ duration: 0.2, ease: "easeInOut" }} />
                     )}
                 </AnimatePresence>
