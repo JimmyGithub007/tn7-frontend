@@ -100,7 +100,7 @@ const ComicsChapter = () => {
                                 {
                                     content.map((value, key) => (
                                         <Link key={key} href={`/comics/${id}/${value.id}`} className={`${value.id === chapter ? "opacity-30 cursor-not-allowed" : ""} flex flex-col gap-2 group items-center`}>
-                                            <Image className={`${value.id === chapter ? "border-4 border-green-400" : "group-hover:saturate-150 group-hover:scale-105"} duration-300 w-20`} alt="prelude" height={315} width={315} src={`/assets/images/comics/prelude.png`} priority />
+                                            <Image className={`${value.id === chapter ? "border-4 border-green-400" : "group-hover:saturate-150 group-hover:scale-105"} duration-300 w-20`} alt="prelude" height={315} width={315} src={`/assets/images/comics/mittaria/prelude/prelude.png`} priority />
                                             <div className={`${value.id === chapter ? "text-green-400" : ""}`}>{value.title}</div>
                                         </Link>
                                     ))
@@ -111,12 +111,12 @@ const ComicsChapter = () => {
                 </motion.div>}
             </AnimatePresence>
             <div className="max-w-[800px] mt-48 sm:mt-16">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18].map((value, index) => (
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19].map((value, index) => (
                     <Image
                         key={index}
-                        src={`/assets/images/comics/chapter${chapter}/${value}.png`}
-                        width={1876}
-                        height={1900}
+                        src={`/assets/images/comics/mittaria/prelude/Mittaria-Webtoon---Prelude-(Small)_${value.toString().padStart(2, '0')}.jpg`}
+                        width={592}
+                        height={924}
                         alt={`${index + 1}`}
                         className="object-contain"
                     />
