@@ -245,7 +245,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                           className={`py-4 text-left ${pathname === "/entry"
                             ? "text-yellow-400 hover:text-yellow-300"
                             : "hover:text-white"
-                            }`}
+                            } disabled:opacity-50 disabled:cursor-not-allowed`}
                           onClick={() => {
                             if (pathname === "/entry") return;
                             dispatch(setJumpPage(true));
@@ -255,6 +255,7 @@ const Sidebar = ({ isOpenMenu }: { isOpenMenu: boolean }) => {
                             return () => clearTimeout(timeout);
                           }}
                           onMouseEnter={() => handleMouseEnter(6, "Public Entries")}
+                          disabled
                         >
                           {menuText[6] || "Public Entries"}
                         </button>
@@ -481,7 +482,7 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
       }}
     />
     <div className="fixed right-24 top-4 z-[100] flex gap-4">
-      {!mounted ? (
+      {/*!mounted ? (
         <div className="bg-white/20 backdrop-blur-sm text-white h-10 px-4 rounded-full sm:rounded-lg flex items-center justify-center gap-2">
           <Spin size="small" />
         </div>
@@ -503,7 +504,7 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
         >
           {address?.slice(0, 6) + "..." + address?.slice(-4)}
         </button>
-      )}
+      )}*/}
       {/* 用户按钮 - 显示用户头像或默认图标 */}
       {isAuthenticated ? (
         <div className="relative">
