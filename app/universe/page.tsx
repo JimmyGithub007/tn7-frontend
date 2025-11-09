@@ -16,7 +16,7 @@ const universes = [
     { id: 1, name: "COMICS", image: "u1", url: "/comics", available: true },
     { id: 2, name: "LORE", image: "u2", url: "/lore?category=cities&id=0", available: true },
     { id: 3, name: "WORLD MAP", image: "u3", url: "/worldmap", available: true },
-    { id: 4, name: "PUBLIC ENTRIES", image: "u4", url: "/entry/public/story", available: true },
+    { id: 4, name: "PUBLIC ENTRIES", image: "u4", url: "/entry/public/story", available: false },
     { id: 5, name: "VIDEOS", image: "u5", url: "/videos", available: false }
 ];
 

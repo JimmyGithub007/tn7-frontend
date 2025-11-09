@@ -28,10 +28,10 @@ interface versionProps {
 
 const PCVersion: React.FC<versionProps> = ({ handleHoverTV, handleClickTV, setLoadingProgression, message }) => {
     const { unityProvider, loadingProgression, addEventListener, removeEventListener, sendMessage } = useUnityContext({
-        loaderUrl: "/unity/build/HomeSceneV1.loader.js",
-        dataUrl: "/unity/build/HomeSceneV1.data.unityweb",
-        frameworkUrl: "/unity/build/HomeSceneV1.framework.js.unityweb",
-        codeUrl: "/unity/build/HomeSceneV1.wasm.unityweb",
+        loaderUrl: "/unity/build/HomeScene.loader.js",
+        dataUrl: "/unity/build/HomeScene.data.unityweb",
+        frameworkUrl: "/unity/build/HomeScene.framework.js.unityweb",
+        codeUrl: "/unity/build/HomeScene.wasm.unityweb",
     });
 
     useEffect(() => {

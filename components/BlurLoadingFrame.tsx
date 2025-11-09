@@ -23,7 +23,7 @@ const BlurLoadingFrame = ({ src, alt }: BlurLoadingFrameProps) => {
                 <motion.div
                     className="absolute inset-0"
                     animate={{
-                        scale: [1.05, 1.08, 1.05],
+                        scale: [1.01, 1.02, 1.01],
                         filter: ["blur(8px)", "blur(12px)", "blur(8px)"],
                     }}
                     transition={{
@@ -55,7 +55,7 @@ const BlurLoadingFrame = ({ src, alt }: BlurLoadingFrameProps) => {
                 />
 
                 {/* 动态光效 */}
-                <motion.div
+                {/*<motion.div
                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
                     animate={{
                         x: ["-100%", "100%"],
@@ -65,7 +65,7 @@ const BlurLoadingFrame = ({ src, alt }: BlurLoadingFrameProps) => {
                         repeat: Infinity,
                         ease: "easeInOut"
                     }}
-                />
+                />*/}
             </div>
         </motion.div>
     );
