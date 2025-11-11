@@ -26,7 +26,7 @@ const Loader = ({ setIsLoadedParent, src, alt = "loading" }: LoaderProps) => {
             setLoadingPercentage((prev) => {
                 if (prev >= 100) {
                     clearInterval(interval);
-                    setTimeout(() => setIsLoaded(true), 500); // Delay after reaching 100%
+                    setTimeout(() => setIsLoaded(true), 300); // Delay after reaching 100%
                     return 100;
                 }
                 return prev + 5; // Increase percentage every interval
@@ -42,8 +42,8 @@ const Loader = ({ setIsLoadedParent, src, alt = "loading" }: LoaderProps) => {
                     className="absolute flex h-full items-center justify-center left-0 w-full top-0 bg-black z-[300]"
                     initial={{ y: 0 }}
                     animate={{ y: 0 }}
-                    exit={{ y: "-100%" }}
-                    transition={{ duration: 1, ease: "easeInOut" }}
+                    exit={{ y: 0, opacity: 0 }}
+                    transition={{ duration: 1.5, ease: "easeInOut" }}
                 >
                     <GlitchText text={`${loadingPercentage}%`} />
                 </motion.div>

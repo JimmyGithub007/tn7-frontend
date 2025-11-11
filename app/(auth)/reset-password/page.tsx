@@ -74,7 +74,8 @@ const ResetPasswordPage = ({ searchParams }: { searchParams: { token: string } }
 
     return (<div className="fixed h-screen w-full overflow-hidden flex justify-center items-center">
         <Image id="background" className="absolute top-0 left-0 w-full h-full object-cover" alt="" width={5760} height={3260} src={`/assets/images/login/webp/loginBG.webp`} priority />
-        <Loader src={`/assets/images/login/webp/loginBG_blur.webp`} alt="loading" />
+        {/* <Loader src={`/assets/images/login/webp/loginBG_blur.webp`} alt="loading" /> */}
+        <Loader />
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

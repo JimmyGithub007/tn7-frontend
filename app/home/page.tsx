@@ -305,7 +305,19 @@ const Home = () => {
             />
             }
             <AnimatePresence>
-                {!loaderHidden && <BlurLoadingFrame src={`/assets/images/home/webp/tvBG_blur.webp`} alt="loading" /> }
+                {!loaderHidden &&
+                    <motion.div
+                        id="loader"
+                        className="absolute bg-black flex h-full items-center justify-center left-0 w-full top-0 z-[300]"
+                        initial={{ y: 0 }}
+                        animate={{ y: 0 }}
+                        exit={{ y: 0, opacity: 0 }}
+                        transition={{ duration: 1.5, ease: "easeInOut" }}
+                    >
+                        <GlitchText text={`${loadingPercentage}%`} />
+                    </motion.div>
+                }
+                {/*<BlurLoadingFrame src={`/assets/images/home/webp/tvBG_blur.webp`} alt="loading" /> */}
             </AnimatePresence>
             <AnimatePresence>
                 {   jumpPage && (
