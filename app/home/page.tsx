@@ -217,7 +217,7 @@ const Home = () => {
                         }
                         return prev + 1;
                     });
-                }, 10);
+                }, 5);
                 return () => clearInterval(interval);
             } else {
                 setLoadingPercentage(100);
@@ -255,7 +255,7 @@ const Home = () => {
             const timeout = setTimeout(() => {
                 startHome();
                 setLoaderHidden(true);
-            }, 1500); // 确保动画有时间完成
+            }, 100); // 确保动画有时间完成
             return () => clearTimeout(timeout);
         }
     }, [loadingPercentage]);
@@ -319,7 +319,7 @@ const Home = () => {
                         <GlitchText text={`${loadingPercentage}%`} />
                     </motion.div>
                 }
-                {/*<BlurLoadingFrame src={`/assets/images/home/webp/tvBG_blur.webp`} alt="loading" /> */}
+                {/*<BlurLoadingFrame src={`/assets/images/home/webp/tvBG_blur.webp`} alt="loading" />*/}
             </AnimatePresence>
             <AnimatePresence>
                 {   jumpPage && (
