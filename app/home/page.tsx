@@ -217,7 +217,7 @@ const Home = () => {
                         }
                         return prev + 1;
                     });
-                }, 50);
+                }, 10);
                 return () => clearInterval(interval);
             } else {
                 setLoadingPercentage(100);
@@ -234,7 +234,7 @@ const Home = () => {
             }, 150); // 每 200ms 增加 1%
             return () => clearInterval(interval);
         } else if (loadingProgression < 0.9) {
-            if (isMobile) {
+            //if (isMobile) {
                 const interval = setInterval(() => {
                     setLoadingPercentage((prev) => {
                         if (prev >= 99) {
@@ -244,9 +244,9 @@ const Home = () => {
                         return prev + 1;
                     });
                 }, 350);
-            } else {
+            /*} else {
                 setLoadingPercentage(Math.round(loadingProgression * 100));
-            }
+            }*/
         }
     }, [isMobile, loadingProgression]);
 
@@ -292,18 +292,20 @@ const Home = () => {
 
     return (
         <div className="bg-black h-screen w-full relative overflow-hidden">
-            {isMobile ? <MobileVersionHomeScene
+            <MobileVersionHomeScene
                 setHoverTvId={setHoverTvId}
                 setTvData={setTvData}
                 tvData={tvData}
                 clickTV={clickTV}
                 onSceneReady={() => setLoadingProgression(1)}
-            /> : <PCVersion handleHoverTV={handleHoverTV}
-                handleClickTV={handleClickTV}
-                setLoadingProgression={setLoadingProgression}
-                message={message}
-            />
-            }
+            />{/*
+                <PCVersion
+                    setLoadingProgression={setLoadingProgression}
+                    handleHoverTV={handleHoverTV}
+                    handleClickTV={handleClickTV}
+                    message={message}
+                />
+            */}
             <AnimatePresence>
                 {!loaderHidden &&
                     <motion.div
@@ -328,8 +330,8 @@ const Home = () => {
                         transition={{ duration: 0.2, ease: "easeInOut" }} />
                 )}
             </AnimatePresence>
-            {   !isMobile && hoverTvId > 0 && <div className="absolute cursor-pointer w-full h-full opacity-0 z-[100] top-0 left-0" onClick={() => clickTV(hoverTvId) }></div> }
-            {   !isMobile &&
+            {   /*!isMobile && hoverTvId > 0 && <div className="absolute cursor-pointer w-full h-full opacity-0 z-[100] top-0 left-0" onClick={() => clickTV(hoverTvId) }></div> } */}
+            {   /*!isMobile &&
                 [1, 2, 3, 4].map((value, key) => (
                     <div key={key} className="absolute h-12 overflow-hidden w-full flex justify-center hidden lg:block" style={{ 
                         left: isMobile ? 0 : tvData.find(e => e.id === value)?.x || 0, top: tvData.find(e => e.id === value)?.y || 0 
@@ -352,7 +354,7 @@ const Home = () => {
                         </AnimatePresence>                
                     </div>
                 ))
-           }
+           */}
             <Footer />
         </div>
     );
