@@ -281,7 +281,20 @@ const WorldMap = () => {
                 message={message}
             />}
             <AnimatePresence>{/*Loading Percentage For Unity*/}
-                {   !loaderHidden && <BlurLoadingFrame src={`/assets/images/worldmap/webp/worldmap_blur.webp`} alt="loading" /> }
+                {
+                    !loaderHidden &&
+                    <motion.div
+                        id="loader"
+                        className="absolute bg-black flex h-full items-center justify-center left-0 w-full top-0 z-[300]"
+                        initial={{ y: 0 }}
+                        animate={{ y: 0 }}
+                        exit={{ y: 0, opacity: 0 }}
+                        transition={{ duration: 1.5, ease: "easeInOut" }}
+                    >
+                        <GlitchText text={`${loadingPercentage}%`} />
+                    </motion.div>
+                }
+                {/*   !loaderHidden && <BlurLoadingFrame src={`/assets/images/worldmap/webp/worldmap_blur.webp`} alt="loading" /> */}
             </AnimatePresence>
             <AnimatePresence>
                 {   jumpPage && (
