@@ -9,6 +9,7 @@ const tvs = [
   { id: 1, x: 10, y: 50, pX: 10, pY: 50, width: 710, height: 450 },
   { id: 2, x: -730, y: 77, pX: -600, pY: 77, width: 459, height: 357 },
   { id: 3, x: 492, y: 163, pX: 470, pY: 130, width: 188, height: 353 },
+  { id: 4, x: -700, y: -220, pX: -670, pY: -190, width: 269, height: 283 },
 ];
 
 // 地图尺寸和拖动限制
@@ -326,6 +327,13 @@ const TvHitbox = ({ setHoverTvId, setTvData, tvData, clickTV, id, x, y, pX, pY, 
   );
 };
 
+// 统一的移动设备检测函数
+const checkIsMobile = (): boolean => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  ) || (typeof window !== 'undefined' && window.innerWidth <= 768);
+};
+
 const MapScene: React.FC<{ 
   setHoverTvId: (tvId: number) => void, 
   setTvData: (data: { id: number, name: string, x: number, y: number }[]) => void,
@@ -334,21 +342,76 @@ const MapScene: React.FC<{
   onSceneReady: () => void,
   isDragging: boolean,
   setIsDragging: (isDragging: boolean) => void,
-}> = ({ setHoverTvId, setTvData, tvData, clickTV, onSceneReady, isDragging, setIsDragging }) => {
+  isMobile: boolean,
+}> = ({ setHoverTvId, setTvData, tvData, clickTV, onSceneReady, isDragging, setIsDragging, isMobile }) => {
   const group = useRef<THREE.Group>(null);
   const ventsRef = useRef<THREE.Mesh>(null);
   const chairRef = useRef<THREE.Mesh>(null);
   const [lastX, setLastX] = useState(0);
+  const targetX = useRef(0); // 用于平滑过渡的目标位置
+
+  // 桌面版：使用 useFrame 实现鼠标视差效果（不需要按下）
+  useFrame(({ mouse, size }) => {
+    if (!isMobile && group.current) {
+      // 计算视差移动范围
+      const halfMap = MAP_WIDTH / 2;
+      const halfView = VIEWPORT_WIDTH / 2;
+      const maxOffset = halfMap - halfView;
+      
+      // 根据鼠标位置计算目标位置（mouse.x 范围是 -1 到 1）
+      // 负号表示反向：鼠标向右移动时，地图向左移动
+      targetX.current = mouse.x * maxOffset * -0.2; // 0.2 是视差强度，可以调整
+
+      // 平滑过渡到目标位置
+      const currentX = group.current.position.x;
+      const lerpFactor = 0.1; // 平滑系数，可以调整
+      const nextX = currentX + (targetX.current - currentX) * lerpFactor;
+
+      // 应用边界限制
+      let clampedX = nextX;
+      if (clampedX < -maxOffset) {
+        const exceeded = -maxOffset - clampedX;
+        clampedX = -maxOffset - exceeded * 0.3;
+      } else if (clampedX > maxOffset) {
+        const exceeded = clampedX - maxOffset;
+        clampedX = maxOffset + exceeded * 0.3;
+      }
+
+      const actualDelta = clampedX - currentX;
+      group.current.position.x = clampedX;
+
+      // Parallax logic: opposite direction, different speeds
+      if (ventsRef.current) {
+        ventsRef.current.position.x -= actualDelta * 0.2;
+      }
+      if (chairRef.current) {
+        chairRef.current.position.x += actualDelta * 0.3;
+      }
+    }
+  });
 
   const onPointerDown = (e: any) => {
-    setIsDragging(true);
-    setLastX(e.clientX);
+    // 移动设备：支持触摸拖动
+    if (isMobile && e.pointerType === 'mouse') {
+      // 手机版忽略鼠标事件
+      return;
+    }
+    if (isMobile) {
+      setIsDragging(true);
+      setLastX(e.clientX);
+    }
+    // 桌面版不需要处理按下事件，因为使用 useFrame 的 mouse
   };
 
-  const onPointerUp = () => setIsDragging(false);
+  const onPointerUp = () => {
+    if (isMobile) {
+      setIsDragging(false);
+    }
+  };
 
   const onPointerMove = (e: any) => {
-    if (isDragging && group.current) {
+    // 只在移动设备拖动时处理
+    if (isMobile && isDragging && group.current) {
       const deltaX = e.clientX - lastX;
 
       // Main group move
@@ -373,10 +436,10 @@ const MapScene: React.FC<{
 
       // Parallax logic: opposite direction, different speeds
       if (ventsRef.current) {
-        ventsRef.current.position.x -= actualDelta * 0.2; // slower and opposite
+        ventsRef.current.position.x -= actualDelta * 0.2;
       }
       if (chairRef.current) {
-        chairRef.current.position.x += actualDelta * 0.3; // a bit faster
+        chairRef.current.position.x += actualDelta * 0.3;
       }
 
       setLastX(e.clientX);
@@ -427,11 +490,11 @@ const MapScene: React.FC<{
       </mesh>
       <mesh position={[0, 100, 2.05]} scale={[1, -1, 1]}>
         <planeGeometry args={[1920, 1068]} />
-        <meshBasicMaterial map={vignetteTexture} transparent opacity={0.9} />
+        <meshBasicMaterial map={vignetteTexture} transparent opacity={0.2} />
       </mesh>
       <mesh position={[0, -50, 2.05]}>
         <planeGeometry args={[1920, 1068]} />
-        <meshBasicMaterial map={vignetteTexture} transparent opacity={0.9} />
+        <meshBasicMaterial map={vignetteTexture} transparent opacity={0.2} />
       </mesh>
     </group>
   );
@@ -445,12 +508,24 @@ const MobileVersionHomeScene: React.FC<{
   onSceneReady: () => void,
 }> = ({ setHoverTvId, setTvData, tvData, clickTV, onSceneReady }) => {
   const [ isDragging, setIsDragging ] = useState(false);
+  const [ isMobile, setIsMobile ] = useState(false);
+
+  // 检测是否为移动设备（使用统一的检测函数）
+  useEffect(() => {
+    const updateMobile = () => {
+      setIsMobile(checkIsMobile());
+    };
+    updateMobile();
+    window.addEventListener('resize', updateMobile);
+    return () => window.removeEventListener('resize', updateMobile);
+  }, []);
+
   return (
-    <Canvas orthographic camera={{ zoom: 1, position: [0, 0, 100] }}>
+    <Canvas orthographic>
       <color attach="background" args={['#000000']} />
-      <MapScene setHoverTvId={setHoverTvId} setTvData={setTvData} tvData={tvData} clickTV={clickTV} onSceneReady={onSceneReady} setIsDragging={setIsDragging} isDragging={isDragging} />
-      { !isDragging && <Fingers /> }
-      <OrthographicCamera makeDefault position={[0, 0, 100]} />
+      <MapScene setHoverTvId={setHoverTvId} setTvData={setTvData} tvData={tvData} clickTV={clickTV} onSceneReady={onSceneReady} setIsDragging={setIsDragging} isDragging={isDragging} isMobile={isMobile} />
+      { isMobile && !isDragging && <Fingers /> }
+      <OrthographicCamera makeDefault position={[0, 0, 100]} zoom={1.1} />
     </Canvas>
   );
 }
