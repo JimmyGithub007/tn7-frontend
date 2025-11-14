@@ -386,13 +386,13 @@ const Header = ({ setIsOpenMenuParent, isOpenMenuParent }: { setIsOpenMenuParent
 
   const jumpPage = useSelector((state: RootState) => state.page.jumpPage);
 
-  // 自动签名登录
+  // 自动签名登录（排除登录和注册页面，这些页面会自己处理）
   useEffect(() => {
-    if (isConnected && !isAuthenticated && !isLoading && mounted) {
+    if (isConnected && !isAuthenticated && !isLoading && mounted && pathname !== '/login' && pathname !== '/register') {
       handleWalletLogin();
     }
     // eslint-disable-next-line
-  }, [isConnected, isAuthenticated, isLoading, mounted]);
+  }, [isConnected, isAuthenticated, isLoading, mounted, pathname]);
 
   //handle hydration error
   useEffect(() => {

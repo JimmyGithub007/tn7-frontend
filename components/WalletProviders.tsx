@@ -40,6 +40,7 @@ const WalletProviders = ({ children }: { children: React.ReactNode }) => {
                     initialChain={mainnet}
                     showRecentTransactions={true}
                     modalSize="compact"
+                    locale="en"
                 >
                     {children}
                 </RainbowKitProvider>

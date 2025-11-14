@@ -117,6 +117,12 @@ const LoginPage = () => {
         }
     }, [isConnected, address, signMessageAsync, walletLogin, enqueueSnackbar, dispatch, router]);
 
+    // Auto trigger wallet login when wallet is connected
+    useEffect(() => {
+        if (showWalletLogin && isConnected && address && !isAuthenticated && !walletLoading) {
+            handleWalletLogin();
+        }
+    }, [showWalletLogin, isConnected, address, isAuthenticated, walletLoading, handleWalletLogin]);
 
     useEffect(() => {
         dispatch(setJumpPage(false));
@@ -164,42 +170,44 @@ const LoginPage = () => {
                     
                     {showWalletLogin ? (
                         // Wallet Login UI
-                        <div className="flex flex-col gap-4 w-full">
-                            <div className="flex justify-center">
-                                <ConnectButton />
-                            </div>
-                            {isConnected && (
-                                <button
-                                    type="button"
-                                    onClick={handleWalletLogin}
-                                    disabled={walletLoading}
-                                    className="w-full bg-[#45b5d9] duration-300 rounded-xl text-white px-4 py-2 text-sm shadow-lg flex items-center justify-center gap-2 hover:bg-[#45b5d9]/80"
-                                >
-                                    {walletLoading ? 'SIGNING IN...' : 'SIGN IN WITH WALLET'}
-                                    {walletLoading && <CircularProgress size={20} />}
-                                </button>
+                        <div className="flex flex-col gap-4 w-full relative py-4">
+                            {walletLoading || isConnected ? (
+                                <div className="flex flex-col justify-center items-center gap-3 py-8">
+                                    <CircularProgress size={40} />
+                                    <span className="text-white text-sm">
+                                        {walletLoading ? 'SIGNING IN...' : 'CONNECTING WALLET...'}
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className="flex justify-center">
+                                    <ConnectButton />
+                                </div>
                             )}
-                            <button
-                                type="button"
-                                className="text-xs text-gray-400 hover:text-white duration-300 text-center"
-                                onClick={() => {
-                                    setShowWalletLogin(false);
-                                }}
-                            >
-                                Back to email login
-                            </button>
-                            <div className="text-sm text-center">
-                                Don&apos;t have an account?{' '}
-                                <button type="button" className="text-[#45b5d9] hover:text-[#45b5d9]/80 duration-300" onClick={() => {
-                                    dispatch(setJumpPage(true));
-                                    const timeout = setTimeout(() => {
-                                        router.push(`/register`);
-                                    }, 500);
-                                    return () => clearTimeout(timeout);
-                                }}>
-                                    REGISTER
-                                </button>
-                            </div>
+                            {!walletLoading && !isConnected && (
+                                <>
+                                    <button
+                                        type="button"
+                                        className="text-xs text-gray-400 hover:text-white duration-300 text-center"
+                                        onClick={() => {
+                                            setShowWalletLogin(false);
+                                        }}
+                                    >
+                                        Back to email login
+                                    </button>
+                                    <div className="text-sm text-center">
+                                        Don&apos;t have an account?{' '}
+                                        <button type="button" className="text-[#45b5d9] hover:text-[#45b5d9]/80 duration-300" onClick={() => {
+                                            dispatch(setJumpPage(true));
+                                            const timeout = setTimeout(() => {
+                                                router.push(`/register`);
+                                            }, 500);
+                                            return () => clearTimeout(timeout);
+                                        }}>
+                                            REGISTER
+                                        </button>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     ) : (
                         // Email Login UI
