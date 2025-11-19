@@ -631,7 +631,7 @@ const Citizen = () => {
                                     className="cursor-pointer duration-300 rounded-xl hover:scale-[1.05] sm:h-56 sm:w-56 shadow-lg shadow-black/50 hover:shadow-xl hover:shadow-red-500/20"
                                     width={1080}
                                     height={1080}
-                                    src={`/assets/images/nfts/nft_${c.code.padStart(4, '0')}.png`}
+                                    src={`/assets/images/nfts/${c.code.padStart(4, '0')}.png`}
                                 />
                                 <div className={`flex items-center justify-between text-gray-100`}>
                                     <span className="font-bold">No. {c.code.padStart(4, '0')}</span>
@@ -674,7 +674,7 @@ const Citizen = () => {
                                 className="lg:w-[50%]"
                                 width={1080}
                                 height={1080}
-                                src={`/assets/images/nfts/nft_${selectedCitizen.code.padStart(4, '0')}.png`}
+                                src={`/assets/images/nfts/${selectedCitizen.code.padStart(4, '0')}.png`}
                             />
                             <button onClick={() => setIsOpenModal(false)} 
                                 className="absolute duration-200 flex items-center left-4 bottom-4 text-2xl hover:opacity-50"
