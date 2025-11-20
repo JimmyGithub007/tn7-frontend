@@ -354,7 +354,7 @@ const DashboardPage = () => {
                             <div className="bg-[#45b5d9]/80 flex items-center justify-center rounded-xl text-md font-bold h-8 w-full text-white">
                                 <div className="flex items-center gap-2">
                                     <div>RANK #</div>
-                                    <AnimatedCounter value={1000} color="white" fontSize="16px" includeCommas={true} includeDecimals={false} />
+                                    <AnimatedCounter value={0} color="white" fontSize="16px" includeCommas={true} includeDecimals={false} />
                                 </div>
                             </div>
                             <div className="flex flex-col items-center justify-center text-lg md:text-xl font-bold text-white">
@@ -432,7 +432,7 @@ const DashboardPage = () => {
                                 />
                                 <div className="text-white text-lg font-bold">LUNEX POINTS</div>
                                 <div className="bg-no-repeat bg-contain bg-center w-full h-full flex items-center justify-center z-10" style={{ backgroundImage: `url(/assets/images/share/lunex.png)` }}>
-                                    <AnimatedCounter value={1000} color="white" fontSize="32px" includeCommas={true} includeDecimals={false} />
+                                    <AnimatedCounter value={0} color="white" fontSize="32px" includeCommas={true} includeDecimals={false} />
                                 </div>
                             </div>
                             <div className="flex flex-col gap-2 items-center justify-center h-full w-full py-6 relative min-h-[200px]">
@@ -460,7 +460,7 @@ const DashboardPage = () => {
                                 <button onClick={() => router.push('/citizen')} className="bg-[#45b5d9] duration-300 flex hover:bg-[#45b5d9]/80 min-w-[100px] h-[100px] items-center justify-center text-white text-center text-sm rounded-lg shadow-md">
                                     GET YOUR <br /> CHARACTERS
                                 </button>
-                                {Citizens.map((c, key) => (
+                                {/*{Citizens.map((c, key) => (
                                     <Image
                                         key={key}
                                         alt="10032"
@@ -524,7 +524,7 @@ const DashboardPage = () => {
                                             dispatch(setIsOpen(true));
                                         }}
                                     />
-                                ))}
+                                ))}*/}
                             </div>
                         </div>
                         <div className="h-full min-h-[200px] overflow-hidden relative w-full">
