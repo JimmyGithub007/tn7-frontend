@@ -219,8 +219,11 @@ const TvHitbox = ({ setHoverTvId, setTvData, tvData, clickTV, id, x, y, pX, pY, 
 
   useEffect(() => {
     if (hovered) {
+      // 改变鼠标光标为指针
+      document.body.style.cursor = 'pointer';
+      
       const fullText =
-        id === 1 ? "TN7 UNIVERSE" : id === 2 ? "LORE" : "WORLD MAP";
+        id === 1 ? "TN7 UNIVERSE" : id === 2 ? "LORE" : id === 3 ? "WORLD MAP" : "CITIZEN";
   
       const glitchFrames:any = [];
       for (let i = 1; i <= fullText.length; i++) {
@@ -242,9 +245,13 @@ const TvHitbox = ({ setHoverTvId, setTvData, tvData, clickTV, id, x, y, pX, pY, 
         if (frame >= glitchFrames.length) clearInterval(interval);
       }, 50); // 每帧 50ms
   
-      return () => clearInterval(interval);
+      return () => {
+        clearInterval(interval);
+        document.body.style.cursor = 'default';
+      };
     } else {
       setDisplayText("");
+      document.body.style.cursor = 'default';
     }
   }, [hovered, id]);  
 
@@ -268,6 +275,13 @@ const TvHitbox = ({ setHoverTvId, setTvData, tvData, clickTV, id, x, y, pX, pY, 
     }, 100);
     return () => clearInterval(interval);
   }, [tvFrames.length]);
+
+  // 组件卸载时恢复光标
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = 'default';
+    };
+  }, []);
 
   return (
     <>
