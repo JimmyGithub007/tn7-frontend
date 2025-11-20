@@ -441,8 +441,8 @@ const DashboardPage = () => {
                                     placeholder="blur"
                                     blurDataURL={`/assets/images/share/smallFrame.png`}
                                 />
-                                <div className="text-white text-lg font-bold">BADGES</div>
-                                <div className="flex flex-wrap gap-2 p-4 z-10">
+                                {/*<div className="text-white text-lg font-bold">BADGES</div>*/}
+                                {/*<div className="flex flex-wrap gap-2 p-4 z-10">
                                     <Image className="cursor-pointer hover:scale-105 duration-300" alt="" width={50} height={50} src={`/assets/images/lore/badges/webp/b1.webp`} />
                                     <Image className="cursor-pointer hover:scale-105 duration-300" alt="" width={50} height={50} src={`/assets/images/lore/badges/webp/b2.webp`} />
                                     <Image className="cursor-pointer hover:scale-105 duration-300" alt="" width={50} height={50} src={`/assets/images/lore/badges/webp/b3.webp`} />
@@ -450,7 +450,8 @@ const DashboardPage = () => {
                                     <Image className="cursor-pointer hover:scale-105 duration-300" alt="" width={50} height={50} src={`/assets/images/lore/badges/webp/b5.webp`} />
                                     <Image className="cursor-pointer hover:scale-105 duration-300" alt="" width={50} height={50} src={`/assets/images/lore/badges/webp/b6.webp`} />
                                     <Image className="cursor-pointer hover:scale-105 duration-300" alt="" width={50} height={50} src={`/assets/images/lore/badges/webp/b7.webp`} />
-                                </div>
+                                </div>*/}
+                                <div className="text-white text-4xl font-bold">COMING SOON</div>
                             </div>
                         </div>
                         <div className="flex flex-col gap-4">
@@ -537,7 +538,10 @@ const DashboardPage = () => {
                                 placeholder="blur"
                                 blurDataURL={`/assets/images/share/middleFrame.png`}
                             />
-                            <div className="absolute top-0 left-0 flex flex-col items-center justify-center h-full w-full gap-4 z-10">
+                            <div className="absolute top-0 left-0 flex flex-col items-center justify-center h-full w-full gap-4 z-1">
+                                <div className="text-white text-4xl font-bold">COMING SOON</div> 
+                            </div>
+                            {/*<div className="absolute top-0 left-0 flex flex-col items-center justify-center h-full w-full gap-4 z-10">
                                 {
                                     authUser && authUser?.id === id ? (
                                         <div className="flex items-center justify-center gap-8">
@@ -579,7 +583,7 @@ const DashboardPage = () => {
                                         return () => clearTimeout(timeout);
                                     }} className="bg-[#45b5d9] duration-300 flex items-center hover:bg-[#45b5d9]/80 gap-2 rounded-xl text-sm font-bold text-white py-1 px-4 shadow-md">ENTER</button>
                                 </div>
-                            </div>
+                            </div>*/}
                         </div>
                     </div>
                 </div>
