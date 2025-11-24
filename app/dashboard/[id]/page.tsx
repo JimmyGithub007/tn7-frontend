@@ -9,7 +9,7 @@ import { IoClose } from "react-icons/io5";
 import { useRouter, useParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setContent, setIsOpen } from "@/store/slice/dialogSlice";
-import { IoIosClose } from "react-icons/io";
+import { IoIosClose, IoIosCloseCircle } from "react-icons/io";
 import { Pixelify_Sans, Rubik_Distressed } from "next/font/google";
 import { MdAddCircle } from "react-icons/md";
 import { useAuth } from "@/hooks/useAuth";
@@ -227,7 +227,7 @@ const DashboardPage = () => {
         }
     };
 
-    const handleDisconnectWallet = async (walletId: string) => {
+    const handleDeleteWallet = async (walletId: string) => {
         try {
             const token = localStorage.getItem("token");
             const response = await axios.delete(
@@ -236,12 +236,12 @@ const DashboardPage = () => {
                     headers: { Authorization: token ? `Bearer ${token}` : "" }
                 }
             );
-            enqueueSnackbar('Wallet disconnected successfully', { variant: 'success' });
+            enqueueSnackbar('Wallet deleted successfully', { variant: 'success' });
             fetchUser(); // 刷新用户信息
         } catch (error: any) {
-            console.error('Disconnect wallet failed:', error);
+            console.error('Delete wallet failed:', error);
             enqueueSnackbar(
-                error?.response?.data?.message || 'Failed to disconnect wallet',
+                error?.response?.data?.message || 'Failed to delete wallet',
                 { variant: 'error' }
             );
         }
@@ -447,10 +447,9 @@ const DashboardPage = () => {
                 };
                 
                 addWalletAsync();
-            } else {
-                // 如果钱包已经在账户中，关闭对话框
-                setShowWalletDialog(false);
             }
+            // 如果钱包已经在账户中，不自动关闭对话框，让用户选择是否切换钱包
+            // 对话框UI会显示相应的提示信息
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [address, showWalletDialog, isConnected, isAddingWallet]);
@@ -576,7 +575,7 @@ const DashboardPage = () => {
                                         {user.wallets.map((wallet) => (
                                             <div
                                                 key={wallet.id}
-                                                className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1 flex items-center justify-between gap-2"
+                                                className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 flex items-center justify-between gap-2"
                                             >
                                                 <div className="flex items-center gap-2 flex-1 min-w-0">
                                                     <FaWallet className="text-white flex-shrink-0" />
@@ -591,16 +590,11 @@ const DashboardPage = () => {
                                                 </div>
                                                 {authUser && authUser?.id === id && (
                                                     <button
-                                                        onClick={() => handleDisconnectWallet(wallet.id)}
-                                                        className={`text-xs flex-shrink-0 px-3 py-1.5 rounded-lg duration-300 transition-all ${
-                                                            user.wallets && user.wallets.length === 1
-                                                                ? 'text-red-400/50 cursor-not-allowed opacity-50'
-                                                                : 'text-red-400 hover:text-white hover:bg-red-500/80 cursor-pointer active:scale-95'
-                                                        }`}
-                                                        disabled={user.wallets && user.wallets.length === 1}
-                                                        title={user.wallets && user.wallets.length === 1 ? "Cannot disconnect the last wallet" : "Disconnect wallet"}
+                                                        onClick={() => handleDeleteWallet(wallet.id)}
+                                                        className="text-lg flex-shrink-0 rounded-lg duration-300 transition-all text-red-400 hover:text-white cursor-pointer active:scale-95"
+                                                        title="Delete wallet from account"
                                                     >
-                                                        Disconnect
+                                                        <IoIosCloseCircle />
                                                     </button>
                                                 )}
                                             </div>
@@ -944,9 +938,15 @@ const DashboardPage = () => {
                                         ) : (
                                             <div className="flex flex-col gap-2">
                                                 <p className="text-xs text-white/60 text-center">
-                                                    This wallet will be automatically added when you connect it. Click &quot;SWITCH WALLET&quot; to disconnect current wallet and connect a new one.
+                                                    This wallet is not in your account yet. Add it now or switch to a different wallet.
                                                 </p>
                                                 <div className="flex gap-2">
+                                                    <button
+                                                        onClick={handleAddWallet}
+                                                        className="bg-[#45b5d9] duration-300 flex-1 hover:bg-[#45b5d9]/80 items-center justify-center text-white gap-2 h-10 rounded-lg shadow-md font-bold"
+                                                    >
+                                                        ADD WALLET
+                                                    </button>
                                                     <button
                                                         onClick={async () => {
                                                             // 先断开当前连接（只断开前端，不影响数据库）
@@ -958,7 +958,7 @@ const DashboardPage = () => {
                                                             openConnectModal?.();
                                                             // 注意：不要关闭 showWalletDialog，让 useEffect 能够监听到新钱包连接
                                                         }}
-                                                        className="bg-[#45b5d9] duration-300 flex-1 hover:bg-[#45b5d9]/80 items-center justify-center text-white gap-2 h-10 rounded-lg shadow-md font-bold"
+                                                        className="bg-white/20 backdrop-blur-sm duration-300 flex-1 hover:bg-white/30 items-center justify-center text-white gap-2 h-10 rounded-lg shadow-md"
                                                     >
                                                         SWITCH WALLET
                                                     </button>
