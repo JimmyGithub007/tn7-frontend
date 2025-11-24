@@ -3,7 +3,7 @@
 import { EntryDialog, Header, Loader } from "@/components";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { TbEdit } from "react-icons/tb";
-import { FaCheck, FaInstagram, FaSpinner, FaUpload, FaUser, FaXTwitter } from "react-icons/fa6";
+import { FaCheck, FaInstagram, FaSpinner, FaUpload, FaUser, FaXTwitter, FaWallet } from "react-icons/fa6";
 import { AnimatePresence, motion } from "framer-motion";
 import { IoClose } from "react-icons/io5";
 import { useRouter, useParams } from "next/navigation";
@@ -16,12 +16,22 @@ import { useAuth } from "@/hooks/useAuth";
 import { setJumpPage } from "@/store/slice/pageSlice";
 import { useDropzone } from 'react-dropzone';
 import { AnimatedCounter } from  'react-animated-counter';
+import { useAccount, useSignMessage, useDisconnect } from 'wagmi';//(底层功能库) 提供与以太坊钱包交互的核心功能
+import { useConnectModal } from '@rainbow-me/rainbowkit';// (UI库) 提供与RainbowKit集成相关的功能
+import { useSnackbar } from 'notistack';
+import dynamic from 'next/dynamic';
 
 import Image from "next/image";
 import axios from "axios";
 
-const pixelify_sans = Pixelify_Sans({ subsets: ["latin"], weight: "400" });
-const rubik_distressed = Rubik_Distressed({ subsets: ["latin"], weight: "400" });
+// Dynamic import for ConnectButton to avoid SSR issues
+const ConnectButton = dynamic(
+    () => import('@rainbow-me/rainbowkit').then(mod => mod.ConnectButton),
+    { ssr: false }
+);
+
+//const pixelify_sans = Pixelify_Sans({ subsets: ["latin"], weight: "400" });
+//const rubik_distressed = Rubik_Distressed({ subsets: ["latin"], weight: "400" });
 
 type citizenProps = {
     code: number;
@@ -82,6 +92,13 @@ type User = {
         rejected: number;
         total: number;
     };
+    wallets?: Array<{
+        id: string;
+        address: string;
+        is_primary: boolean;
+        created_at: string;
+        updated_at: string;
+    }>;
     // 你可以加更多字段
 };
 
@@ -125,6 +142,15 @@ const DashboardPage = () => {
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [isOpenDialog, setIsOpenDialog] = useState(false);
+    const [showWalletDialog, setShowWalletDialog] = useState(false);
+    const [isAddingWallet, setIsAddingWallet] = useState(false);
+    
+    // Wallet hooks
+    const { address, isConnected } = useAccount();
+    const { signMessageAsync } = useSignMessage();
+    const { disconnect } = useDisconnect();
+    const { openConnectModal } = useConnectModal();
+    const { enqueueSnackbar } = useSnackbar();
 
     const handleRemoveFile = () => {
         // Here we just clear the frontend state. 
@@ -199,6 +225,76 @@ const DashboardPage = () => {
         } catch (error) {
             console.error('Disconnect failed:', error);
         }
+    };
+
+    const handleDisconnectWallet = async (walletId: string) => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.delete(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/wallets/${walletId}`,
+                {
+                    headers: { Authorization: token ? `Bearer ${token}` : "" }
+                }
+            );
+            enqueueSnackbar('Wallet disconnected successfully', { variant: 'success' });
+            fetchUser(); // 刷新用户信息
+        } catch (error: any) {
+            console.error('Disconnect wallet failed:', error);
+            enqueueSnackbar(
+                error?.response?.data?.message || 'Failed to disconnect wallet',
+                { variant: 'error' }
+            );
+        }
+    };
+
+    const handleAddWallet = async () => {
+        if (!isConnected || !address) {
+            enqueueSnackbar('Please connect wallet first', { variant: 'warning' });
+            return;
+        }
+
+        // 检查钱包是否已经在数据库中
+        const existingWallet = user?.wallets?.find(
+            w => w.address.toLowerCase() === address.toLowerCase()
+        );
+        if (existingWallet) {
+            // 如果钱包已经在数据库中，不需要重复添加
+            enqueueSnackbar('This wallet is already in your account', { variant: 'info' });
+            setShowWalletDialog(false);
+            fetchUser(); // 刷新用户信息
+            return;
+        }
+
+        try {
+            setIsAddingWallet(true);
+            const message = 'Sign to add wallet to TN7!';
+            const signature = await signMessageAsync({ message });
+
+            const token = localStorage.getItem("token");
+            await axios.post(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/wallets`,
+                { address, signature },
+                {
+                    headers: { Authorization: token ? `Bearer ${token}` : "" }
+                }
+            );
+
+            enqueueSnackbar('Wallet added successfully', { variant: 'success' });
+            setShowWalletDialog(false);
+            fetchUser(); // 刷新用户信息
+        } catch (error: any) {
+            console.error('Add wallet failed:', error);
+            enqueueSnackbar(
+                error?.response?.data?.message || 'Failed to add wallet',
+                { variant: 'error' }
+            );
+        } finally {
+            setIsAddingWallet(false);
+        }
+    };
+
+    const formatAddress = (address: string) => {
+        return `${address.slice(0, 6)}...${address.slice(-4)}`;
     };
 
     const handleFollow = async () => {
@@ -308,6 +404,57 @@ const DashboardPage = () => {
         dispatch(setJumpPage(false));
     }, []);
 
+    // 监听钱包地址变化，当用户切换钱包后自动添加到数据库
+    useEffect(() => {
+        // 只有在钱包对话框中，且已连接钱包，且不在添加过程中才执行
+        if (showWalletDialog && isConnected && address && !isAddingWallet) {
+            // 检查新连接的钱包是否已经在账户中
+            const existingWallet = user?.wallets?.find(
+                w => w.address.toLowerCase() === address.toLowerCase()
+            );
+            
+            // 如果钱包不在账户中，自动添加到数据库
+            if (!existingWallet) {
+                console.log("Adding wallet to database");
+                // 使用 async 函数处理
+                const addWalletAsync = async () => {
+                    try {
+                        setIsAddingWallet(true);
+                        const message = 'Sign to add wallet to TN7!';
+                        const signature = await signMessageAsync({ message });
+
+                        const token = localStorage.getItem("token");
+                        await axios.post(
+                            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/wallets`,
+                            { address, signature },
+                            {
+                                headers: { Authorization: token ? `Bearer ${token}` : "" }
+                            }
+                        );
+
+                        enqueueSnackbar('Wallet added successfully', { variant: 'success' });
+                        setShowWalletDialog(false);
+                        fetchUser(); // 刷新用户信息
+                    } catch (error: any) {
+                        console.error('Auto add wallet failed:', error);
+                        enqueueSnackbar(
+                            error?.response?.data?.message || 'Failed to add wallet',
+                            { variant: 'error' }
+                        );
+                    } finally {
+                        setIsAddingWallet(false);
+                    }
+                };
+                
+                addWalletAsync();
+            } else {
+                // 如果钱包已经在账户中，关闭对话框
+                setShowWalletDialog(false);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [address, showWalletDialog, isConnected, isAddingWallet]);
+
     if (authLoading || !isAuthenticated || (isAuthenticated && authUser?.id === id && !authUser?.completed)) {
         return <div className="bg-black h-screen w-full"></div>;
     }
@@ -328,13 +475,13 @@ const DashboardPage = () => {
                     blurDataURL={`/assets/images/entry/entryListCenterCardFrame.png`}
                 />
                 <div className="gap-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 w-[85%] z-10 overflow-y-auto filter-bar">
-                    <div ref={profileCard} className="col-span-1 relative w-full min-h-[700px] h-full">
+                    <div ref={profileCard} className="col-span-1 relative w-full min-h-[730px] h-full">
                         <Image className="absolute top-0 left-0 w-full h-full" alt=""
                             height={2276} width={1258} src={`/assets/images/share/middleVerticalFrame.png`}
                             placeholder="blur"
                             blurDataURL={`/assets/images/share/middleVerticalFrame.png`}
                         />
-                        <div className="flex flex-col items-center gap-4 text-white z-[50] absolute top-0 left-0 w-full h-full px-8" style={{ paddingTop: profileCardTop, paddingBottom: profileCardTop }}>
+                        <div className="flex flex-col items-center gap-2 text-white z-[50] absolute top-0 left-0 w-full h-full px-8" style={{ paddingTop: profileCardTop, paddingBottom: profileCardTop }}>
                             <div className="bg-black/80 backdrop-blur-md flex items-center justify-center rounded-2xl overflow-hidden relative shadow-md overflow-hidden"
                                 style={{ width: profileCardWidth < 0 ? 302.6 : profileCardWidth, height: profileCardWidth < 0 ? 302.6 : profileCardWidth }}
                             >
@@ -357,7 +504,7 @@ const DashboardPage = () => {
                                     <AnimatedCounter value={0} color="white" fontSize="16px" includeCommas={true} includeDecimals={false} />
                                 </div>
                             </div>
-                            <div className="flex flex-col items-center justify-center text-lg md:text-xl font-bold text-white">
+                            <div className="flex flex-col items-center justify-center text-md md:text-lg font-bold text-white">
                                 {user?.name}
                                 <div className="text-xs text-white">{user?.email}</div>
                             </div>
@@ -378,7 +525,8 @@ const DashboardPage = () => {
                                     <AnimatedCounter value={user?.followings?.length} color="white" fontSize="14px" includeCommas={true} includeDecimals={false} />
                                 </div>
                             </div>
-                            <div className="flex flex-col items-center gap-3 w-full">
+                            {/* Twitter, Instagram Integration */}
+                            <div className="flex flex-col items-center gap-2 w-full">
                                 {user?.social_media?.find(sm => sm.category === 'twitter') ? (
                                     // Connected
                                     <div className="flex items-center gap-2 text-green-400">
@@ -418,6 +566,68 @@ const DashboardPage = () => {
                                         <FaInstagram />
                                         CONNECT
                                     </button>
+                                )}
+                            </div>
+                            {/* Wallets */}
+                            <div className="flex flex-col items-center gap-3 w-full">
+                                <div className="text-white text-sm font-bold">WALLETS</div>
+                                {user?.wallets && user.wallets.length > 0 ? (
+                                    <div className="flex flex-col gap-2 w-full">
+                                        {user.wallets.map((wallet) => (
+                                            <div
+                                                key={wallet.id}
+                                                className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1 flex items-center justify-between gap-2"
+                                            >
+                                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                                    <FaWallet className="text-white flex-shrink-0" />
+                                                    <span className="text-white text-xs font-mono truncate">
+                                                        {formatAddress(wallet.address)}
+                                                    </span>
+                                                    {wallet.is_primary && (
+                                                        <span className="bg-[#45b5d9] text-white text-xs px-2 py-0.5 rounded-lg flex-shrink-0 shadow-md">
+                                                            PRIMARY
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {authUser && authUser?.id === id && (
+                                                    <button
+                                                        onClick={() => handleDisconnectWallet(wallet.id)}
+                                                        className={`text-xs flex-shrink-0 px-3 py-1.5 rounded-lg duration-300 transition-all ${
+                                                            user.wallets && user.wallets.length === 1
+                                                                ? 'text-red-400/50 cursor-not-allowed opacity-50'
+                                                                : 'text-red-400 hover:text-white hover:bg-red-500/80 cursor-pointer active:scale-95'
+                                                        }`}
+                                                        disabled={user.wallets && user.wallets.length === 1}
+                                                        title={user.wallets && user.wallets.length === 1 ? "Cannot disconnect the last wallet" : "Disconnect wallet"}
+                                                    >
+                                                        Disconnect
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ))}
+                                        {authUser && authUser?.id === id && (
+                                            <button
+                                                onClick={() => setShowWalletDialog(true)}
+                                                className="bg-white/20 backdrop-blur-sm duration-300 flex hover:bg-white/30 items-center justify-center text-white gap-2 h-8 w-full rounded-lg shadow-md text-xs"
+                                            >
+                                                <MdAddCircle />
+                                                ADD WALLET
+                                            </button>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col items-center gap-2 w-full">
+                                        <div className="text-white/60 text-xs">No wallets connected</div>
+                                        {authUser && authUser?.id === id && (
+                                            <button
+                                                onClick={() => setShowWalletDialog(true)}
+                                                className="bg-white/20 backdrop-blur-sm duration-300 flex hover:bg-white/30 items-center justify-center text-white gap-2 h-8 w-40 rounded-lg shadow-md text-xs"
+                                            >
+                                                <FaWallet />
+                                                CONNECT WALLET
+                                            </button>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -648,6 +858,132 @@ const DashboardPage = () => {
                             }} className="bg-white/20 backdrop-blur-sm duration-300 flex hover:bg-white/30 items-center justify-center text-white gap-4 h-8 w-full rounded-lg shadow-md">
                             CLOSE
                         </button>
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+        <AnimatePresence>
+            {showWalletDialog && (
+                <motion.div
+                    initial={{ opacity: 0, y: 100 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 100 }}
+                    transition={{ duration: 0.3 }}
+                    className={`fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-black/50 backdrop-blur-md text-white`}
+                >
+                    <div className="flex flex-col gap-4 bg-white/20 backdrop-blur-sm rounded-2xl p-6 max-w-md w-[90%]">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-xl font-bold">Add Wallet</h2>
+                            <button
+                                onClick={() => setShowWalletDialog(false)}
+                                className="text-white/60 hover:text-white duration-300"
+                            >
+                                <IoClose size={24} />
+                            </button>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            {isConnected && address ? (
+                                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                                    <div className="text-xs text-white/60 mb-1">Connected Wallet</div>
+                                    <div className="text-sm font-mono text-white mb-2">
+                                        {formatAddress(address)}
+                                    </div>
+                                    {user?.wallets?.some(w => w.address.toLowerCase() === address.toLowerCase()) ? (
+                                        <div className="text-xs text-yellow-400 mt-2">
+                                            ⚠️ This wallet is already in your account
+                                        </div>
+                                    ) : (
+                                        <div className="text-xs text-green-400 mt-2">
+                                            ✓ This wallet can be added to your account
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                                    <div className="text-xs text-white/60 mb-2 text-center">
+                                        Connect a wallet to add it to your account
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {isAddingWallet ? (
+                                <div className="flex items-center justify-center gap-2 py-4">
+                                    <FaSpinner className="animate-spin" />
+                                    <span>Adding wallet...</span>
+                                </div>
+                            ) : (
+                                <>
+                                    {isConnected && address ? (
+                                        user?.wallets?.some(w => w.address.toLowerCase() === address.toLowerCase()) ? (
+                                            <div className="flex flex-col gap-2">
+                                                <p className="text-xs text-white/60 text-center">
+                                                    This wallet is already in your account. Click &quot;SWITCH WALLET&quot; to disconnect and connect a different wallet.
+                                                </p>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={async () => {
+                                                            // 先断开当前连接
+                                                            disconnect();
+                                                            // 等待一下让断开完成
+                                                            await new Promise(resolve => setTimeout(resolve, 300));
+                                                            // 然后打开连接模态框
+                                                            openConnectModal?.();
+                                                        }}
+                                                        className="bg-[#45b5d9] duration-300 flex-1 hover:bg-[#45b5d9]/80 items-center justify-center text-white gap-2 h-10 rounded-lg shadow-md font-bold"
+                                                    >
+                                                        SWITCH WALLET
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setShowWalletDialog(false)}
+                                                        className="bg-white/20 backdrop-blur-sm duration-300 flex-1 hover:bg-white/30 items-center justify-center text-white gap-2 h-10 rounded-lg shadow-md"
+                                                    >
+                                                        CANCEL
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col gap-2">
+                                                <p className="text-xs text-white/60 text-center">
+                                                    This wallet will be automatically added when you connect it. Click &quot;SWITCH WALLET&quot; to disconnect current wallet and connect a new one.
+                                                </p>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={async () => {
+                                                            // 先断开当前连接（只断开前端，不影响数据库）
+                                                            disconnect();
+                                                            // 等待一下让断开完成
+                                                            await new Promise(resolve => setTimeout(resolve, 300));
+                                                            // 保持对话框打开，这样 useEffect 可以监听到新钱包连接
+                                                            // 然后打开连接模态框，让用户选择新钱包
+                                                            openConnectModal?.();
+                                                            // 注意：不要关闭 showWalletDialog，让 useEffect 能够监听到新钱包连接
+                                                        }}
+                                                        className="bg-[#45b5d9] duration-300 flex-1 hover:bg-[#45b5d9]/80 items-center justify-center text-white gap-2 h-10 rounded-lg shadow-md font-bold"
+                                                    >
+                                                        SWITCH WALLET
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setShowWalletDialog(false)}
+                                                        className="bg-white/20 backdrop-blur-sm duration-300 flex-1 hover:bg-white/30 items-center justify-center text-white gap-2 h-10 rounded-lg shadow-md"
+                                                    >
+                                                        CANCEL
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )
+                                    ) : (
+                                        <div className="flex flex-col gap-2">
+                                            <div className="flex justify-center">
+                                                <ConnectButton />
+                                            </div>
+                                            <p className="text-xs text-white/60 text-center mt-2">
+                                                You can connect multiple wallets to your account
+                                            </p>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
                     </div>
                 </motion.div>
             )}
