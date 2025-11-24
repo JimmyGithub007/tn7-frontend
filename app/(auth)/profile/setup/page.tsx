@@ -289,7 +289,7 @@ const ProfileSetupPage = () => {
                                 )}
                             />
                         </div>
-                        <div className="flex flex-col z-10">
+                        {/*<div className="flex flex-col z-10">
                             <div>SOCIALS (Optional)</div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <button type="button" onClick={() => { }} className="bg-white/20 backdrop-blur-sm duration-300 flex hover:bg-white/30 items-center justify-center text-white gap-4 h-8 w-full rounded-xl shadow-md">
@@ -301,8 +301,8 @@ const ProfileSetupPage = () => {
                                     CONNECT
                                 </button>
                             </div>
-                        </div>
-                        <div className="flex flex-col z-10">
+                        </div>*/}
+                        {/*<div className="flex flex-col z-10">
                             <div>WALLET (Optional)</div>
                             <div>
                                 {
@@ -331,7 +331,7 @@ const ProfileSetupPage = () => {
                                     )
                                 }
                             </div>
-                        </div>
+                        </div>*/}
                         <button
                             type="submit"
                             className="bg-[#45b5d9] hover:bg-[#45b5d9]/80 duration-300 rounded-xl text-white px-4 py-2 text-sm shadow-lg flex items-center justify-center gap-2 z-10"
