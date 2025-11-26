@@ -160,12 +160,15 @@ const DashboardPage = () => {
     };
 
     const handleConnectInstagram = async () => {
-        const clientId = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
+        // Instagram Business Login 使用 Instagram 自己的 OAuth 端点
+        const instagramAppId = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
         const redirectUri = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/callback/instagram`;
         const state = crypto.randomUUID();
 
-        const scope = "user_profile,user_media";
-        const url = `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&response_type=code&state=${state}`;
+        // Instagram Business Login 需要的权限
+        const scope = "instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish,instagram_business_manage_insights";
+        // 使用 Instagram OAuth 端点
+        const url = `https://www.instagram.com/oauth/authorize?client_id=${instagramAppId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&response_type=code&state=${state}`;
         window.location.href = url;
     };
 
